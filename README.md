@@ -1,6 +1,3 @@
-# CodeBlaze-Web-Frontend
-This Repository contains CodeBlaze frontend
-
 # CodeBlaze Web Frontend
 
 Welcome to the official frontend repository of **CodeBlaze** — your one-stop destination for cutting-edge software solutions and IT services.
