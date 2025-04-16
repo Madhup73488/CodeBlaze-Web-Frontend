@@ -1,13 +1,44 @@
 import { Sun, Moon, Menu, X, ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
+
 function Navbar({ theme, color, toggleTheme, toggleColor }) {
   const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const dropdownRefs = useRef({});
   const navRef = useRef(null);
+  const loaderTimeoutRef = useRef(null);
+
+  // Start the loader and simulate a page transition
+  const startLoader = (event) => {
+    // Only start loader for actual navigation clicks (not dropdowns or toggles)
+    const target = event.currentTarget;
+    if (
+      !target.classList.contains("dropdown-trigger") &&
+      !target.classList.contains("theme-toggle") &&
+      !target.classList.contains("color-toggle")
+    ) {
+      event.preventDefault(); // Prevent immediate navigation
+
+      // Get the href if it's a Link
+      const href = target.getAttribute("href") || "";
+
+      setLoading(true);
+
+      // Simulate a loading delay then navigate
+      loaderTimeoutRef.current = setTimeout(() => {
+        setLoading(false);
+
+        // If it's a navigation link with href, navigate after loader completes
+        if (href) {
+          window.location.href = href;
+        }
+      }, 1500); // Adjust loading time as needed
+    }
+  };
 
   const toggleMobileMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -30,7 +61,9 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
   // Handle dropdown section click - prevent closing dropdown
   const handleDropdownSectionClick = (e) => {
     e.stopPropagation();
-    // Add any additional click handling for dropdown items here
+
+    // Start loader for dropdown section clicks (simulating navigation)
+    startLoader(e);
 
     // Close menu on mobile after selecting an item
     if (window.innerWidth <= 768) {
@@ -67,6 +100,10 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
     // Clean up
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      // Clear any pending timeouts when component unmounts
+      if (loaderTimeoutRef.current) {
+        clearTimeout(loaderTimeoutRef.current);
+      }
     };
   }, [activeDropdown, handleClickOutside]);
 
@@ -88,15 +125,39 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
     toggleColor();
   };
 
+  const handleContactClick = (e) => {
+    startLoader(e);
+    // After starting loader, scroll to contact section
+    setTimeout(() => {
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth",
+      });
+    }, 1500); // Match this with loader timeout
+  };
+
   return (
     <>
+      {/* Top loading bar */}
+      {loading && (
+        <div className="top-loader-container">
+          <div
+            className="top-loader"
+            style={{ backgroundColor: primaryColor }}
+          />
+        </div>
+      )}
+
+      {/* Page overlay when loading */}
+      {loading && <div className="page-dim-overlay" />}
+
       <nav className={`navbar ${theme}`} ref={navRef}>
         <div className="navbar-brand">
           <div
             className="logo-box"
             style={{ backgroundColor: primaryColor }}
           ></div>
-          <Link to="/" className="brand-text">
+          <Link to="/" className="brand-text" onClick={startLoader}>
             CodeBlaze
           </Link>
         </div>
@@ -107,7 +168,7 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
 
         <div className={`nav-slide-wrapper ${isMenuOpen ? "open" : ""}`}>
           <div className="nav-links">
-            <Link to="/" className="link">
+            <Link to="/" className="link" onClick={startLoader}>
               Home
             </Link>
 
@@ -241,18 +302,10 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
               </div>
             )}
 
-            <Link to="/careers" className="link">
+            <Link to="/careers" className="link" onClick={startLoader}>
               Careers
             </Link>
-            <div
-              className="link"
-              onClick={() =>
-                window.scrollTo({
-                  top: document.body.scrollHeight,
-                  behavior: "smooth",
-                })
-              }
-            >
+            <div className="link" onClick={handleContactClick}>
               Contact Us
             </div>
           </div>
@@ -303,6 +356,44 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
 
       <style jsx>
         {`
+          /* Top Loader Styles */
+          .top-loader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            overflow: hidden;
+            z-index: 100;
+          }
+
+          .top-loader {
+            height: 100%;
+            width: 50%;
+            position: absolute;
+            animation: loading 1.5s infinite;
+          }
+
+          .page-dim-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.2);
+            z-index: 90;
+            backdrop-filter: blur(1px);
+          }
+
+          @keyframes loading {
+            0% {
+              left: -50%;
+            }
+            100% {
+              left: 100%;
+            }
+          }
+
           /* Base navbar styles */
           .navbar {
             display: flex;
