@@ -226,7 +226,7 @@ function Footer({ theme = "dark", color = "purple" }) {
 
             <div className="flex gap-3">
               <a
-                href="#"
+                href="https://www.linkedin.com/company/codeblazee/"
                 className={`w-10 h-10 ${currentTheme.socialBg} rounded-full flex items-center justify-center transition-colors duration-200`}
               >
                 <Linkedin size={18} className={currentTheme.text} />
