@@ -58,12 +58,10 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
     setActiveDropdown(activeDropdown === dropdownName ? null : dropdownName);
   };
 
-  // Handle dropdown section click - prevent closing dropdown
-  const handleDropdownSectionClick = (e) => {
+  // Modified dropdown section click handler
+  const handleDropdownSectionClick = (e, to) => {
     e.stopPropagation();
-
-    // Start loader for dropdown section clicks (simulating navigation)
-    startLoader(e);
+    e.preventDefault(); // Prevent default link behavior
 
     // Close menu on mobile after selecting an item
     if (window.innerWidth <= 768) {
@@ -72,6 +70,13 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
         setIsMenuOpen(false);
       }, 300);
     }
+    // Start loader
+    setLoading(true);
+    // Navigate after loader completes
+    loaderTimeoutRef.current = setTimeout(() => {
+      setLoading(false);
+      window.location.href = to;
+    }, 1500);
   };
 
   // Use useCallback to memoize the handler function
@@ -192,33 +197,49 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
                   <div className="dropdown-content">
                     <div
                       className="dropdown-section"
-                      onClick={handleDropdownSectionClick}
+                      onClick={(e) => handleDropdownSectionClick(e, "/aboutus")}
                     >
-                      <h3 className="dropdown-title">About Us</h3>
-                      <p className="dropdown-desc">
-                        Learn about our company background
-                      </p>
+                      <div>
+                        <h3 className="dropdown-title">About Us</h3>
+                        <p className="dropdown-desc">
+                          Learn about our company background
+                        </p>
+                      </div>
                     </div>
                     <div
                       className="dropdown-section"
-                      onClick={handleDropdownSectionClick}
+                      onClick={(e) => handleDropdownSectionClick(e, "/ourteam")}
                     >
-                      <h3 className="dropdown-title">Our Team</h3>
-                      <p className="dropdown-desc">Meet our leadership team</p>
+                      <div>
+                        <h3 className="dropdown-title">Our Team</h3>
+                        <p className="dropdown-desc">
+                          Meet our leadership team
+                        </p>
+                      </div>
                     </div>
                     <div
                       className="dropdown-section"
-                      onClick={handleDropdownSectionClick}
+                      onClick={(e) =>
+                        handleDropdownSectionClick(e, "/ourmission")
+                      }
                     >
-                      <h3 className="dropdown-title">Our Mission</h3>
-                      <p className="dropdown-desc">What drives us forward</p>
+                      <div>
+                        <h3 className="dropdown-title">Our Mission</h3>
+                        <p className="dropdown-desc">What drives us forward</p>
+                      </div>
                     </div>
                     <div
                       className="dropdown-section"
-                      onClick={handleDropdownSectionClick}
+                      onClick={(e) =>
+                        handleDropdownSectionClick(e, "/ourvalues")
+                      }
                     >
-                      <h3 className="dropdown-title">Our Values</h3>
-                      <p className="dropdown-desc">The principles we live by</p>
+                      <div>
+                        <h3 className="dropdown-title">Our Values</h3>
+                        <p className="dropdown-desc">
+                          The principles we live by
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -245,57 +266,79 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
                   <div className="dropdown-content">
                     <div
                       className="dropdown-section"
-                      onClick={handleDropdownSectionClick}
+                      onClick={(e) =>
+                        handleDropdownSectionClick(e, "/payments")
+                      }
                     >
-                      <h3 className="dropdown-title">Payments</h3>
-                      <p className="dropdown-desc">
-                        Manage PAs & build native checkouts
-                      </p>
+                      <div>
+                        <h3 className="dropdown-title">Payments</h3>
+                        <p className="dropdown-desc">
+                          Manage PAs & build native checkouts
+                        </p>
+                      </div>
                     </div>
                     <div
                       className="dropdown-section"
-                      onClick={handleDropdownSectionClick}
+                      onClick={(e) =>
+                        handleDropdownSectionClick(e, "/hypercheckout")
+                      }
                     >
-                      <h3 className="dropdown-title">HyperCheckout</h3>
-                      <p className="dropdown-desc">
-                        Route payments & build native 1-click checkouts
-                      </p>
+                      <div>
+                        <h3 className="dropdown-title">HyperCheckout</h3>
+                        <p className="dropdown-desc">
+                          Route payments & build native 1-click checkouts
+                        </p>
+                      </div>
                     </div>
                     <div
                       className="dropdown-section"
-                      onClick={handleDropdownSectionClick}
+                      onClick={(e) =>
+                        handleDropdownSectionClick(e, "/expresscheckout")
+                      }
                     >
-                      <h3 className="dropdown-title">Express Checkout</h3>
-                      <p className="dropdown-desc">
-                        Unified Payment APIs for enterprises and startups
-                      </p>
+                      <div>
+                        <h3 className="dropdown-title">Express Checkout</h3>
+                        <p className="dropdown-desc">
+                          Unified Payment APIs for enterprises and startups
+                        </p>
+                      </div>
                     </div>
                     <div
                       className="dropdown-section"
-                      onClick={handleDropdownSectionClick}
+                      onClick={(e) =>
+                        handleDropdownSectionClick(e, "/upistack")
+                      }
                     >
-                      <h3 className="dropdown-title">UPI Stack</h3>
-                      <p className="dropdown-desc">
-                        Solutions for merchants & Banks
-                      </p>
+                      <div>
+                        <h3 className="dropdown-title">UPI Stack</h3>
+                        <p className="dropdown-desc">
+                          Solutions for merchants & Banks
+                        </p>
+                      </div>
                     </div>
                     <div
                       className="dropdown-section"
-                      onClick={handleDropdownSectionClick}
+                      onClick={(e) => handleDropdownSectionClick(e, "/payouts")}
                     >
-                      <h3 className="dropdown-title">Payouts</h3>
-                      <p className="dropdown-desc">
-                        Instant and Seamless Payouts with IMPS, UPI
-                      </p>
+                      <div>
+                        <h3 className="dropdown-title">Payouts</h3>
+                        <p className="dropdown-desc">
+                          Instant and Seamless Payouts with IMPS, UPI
+                        </p>
+                      </div>
                     </div>
                     <div
                       className="dropdown-section"
-                      onClick={handleDropdownSectionClick}
+                      onClick={(e) =>
+                        handleDropdownSectionClick(e, "/paymentlinks")
+                      }
                     >
-                      <h3 className="dropdown-title">Payment Links</h3>
-                      <p className="dropdown-desc">
-                        Create & send Payment links & forms
-                      </p>
+                      <div>
+                        <h3 className="dropdown-title">Payment Links</h3>
+                        <p className="dropdown-desc">
+                          Create & send Payment links & forms
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>

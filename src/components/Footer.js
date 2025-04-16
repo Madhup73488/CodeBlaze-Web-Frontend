@@ -323,7 +323,7 @@ function Footer({ theme = "dark", color = "purple" }) {
               Terms of Service
             </a>
             <a
-              href="#"
+              href="/privacy"
               className={`text-sm ${currentTheme.subtext} ${currentColor.hover} transition-colors`}
             >
               Privacy Policy
