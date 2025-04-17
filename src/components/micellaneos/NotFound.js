@@ -170,13 +170,13 @@ const NotFound = ({ theme = "light", color = "indigo" }) => {
             <div className="mt-12 text-center md:text-left">
               <p className={`${themeStyles.supportText} text-sm`}>
                 Need help?{" "}
-                <a
-                  href="/support"
+                <Link
+                  to="/support"
                   className={`${themeStyles.supportLink} font-medium`}
                   style={{ color: colors.primary }}
                 >
                   Visit our support page
-                </a>
+                </Link>
               </p>
             </div>
           </div>
