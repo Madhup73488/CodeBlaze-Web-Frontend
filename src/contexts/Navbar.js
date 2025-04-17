@@ -1,44 +1,30 @@
 import { Sun, Moon, Menu, X, ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useLoader } from "./LoaderContext"; // Assuming a global loader context
 
 function Navbar({ theme, color, toggleTheme, toggleColor }) {
   const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { startLoader, stopLoader } = useLoader(); // Using global loader hook
 
   const dropdownRefs = useRef({});
   const navRef = useRef(null);
-  const loaderTimeoutRef = useRef(null);
 
-  // Clean up timeouts on unmount
-  useEffect(() => {
-    return () => {
-      if (loaderTimeoutRef.current) {
-        clearTimeout(loaderTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  const startLoader = useCallback(
+  const handleNavigation = useCallback(
     (to) => {
-      setLoading(true);
+      startLoader(); // Use global loader
 
-      // Clear any existing timeout
-      if (loaderTimeoutRef.current) {
-        clearTimeout(loaderTimeoutRef.current);
-      }
-
-      loaderTimeoutRef.current = setTimeout(() => {
-        setLoading(false);
+      setTimeout(() => {
+        stopLoader(); // Stop loader after navigation
         if (to) {
           navigate(to);
         }
       }, 1500);
     },
-    [navigate]
+    [navigate, startLoader, stopLoader]
   );
 
   const toggleMobileMenu = () => {
@@ -67,9 +53,9 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
         setIsMenuOpen(false);
       }
 
-      startLoader(to);
+      handleNavigation(to);
     },
-    [startLoader]
+    [handleNavigation]
   );
 
   const handleClickOutside = useCallback(
@@ -114,15 +100,10 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
 
   const handleContactClick = (e) => {
     e.preventDefault();
-    setLoading(true);
+    startLoader(); // Use global loader
 
-    // Clear any existing timeout
-    if (loaderTimeoutRef.current) {
-      clearTimeout(loaderTimeoutRef.current);
-    }
-
-    loaderTimeoutRef.current = setTimeout(() => {
-      setLoading(false);
+    setTimeout(() => {
+      stopLoader(); // Stop loader
       window.scrollTo({
         top: document.body.scrollHeight,
         behavior: "smooth",
@@ -132,19 +113,6 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
 
   return (
     <>
-      {/* Top loading bar */}
-      {loading && (
-        <div className="top-loader-container">
-          <div
-            className="top-loader"
-            style={{ backgroundColor: primaryColor }}
-          />
-        </div>
-      )}
-
-      {/* Page overlay when loading */}
-      {loading && <div className="page-dim-overlay" />}
-
       <nav className={`navbar ${theme}`} ref={navRef}>
         <div className="navbar-brand">
           <div
@@ -156,7 +124,7 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
             className="brand-text"
             onClick={(e) => {
               e.preventDefault();
-              startLoader("/");
+              handleNavigation("/");
             }}
           >
             CodeBlaze
@@ -174,7 +142,7 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
               className="link"
               onClick={(e) => {
                 e.preventDefault();
-                startLoader("/");
+                handleNavigation("/");
               }}
             >
               Home
@@ -353,7 +321,7 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
               className="link"
               onClick={(e) => {
                 e.preventDefault();
-                startLoader("/careers");
+                handleNavigation("/careers");
               }}
             >
               Careers
@@ -408,40 +376,7 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
       )}
 
       <style jsx>{`
-        /* Top Loader Styles */
-        .top-loader-container {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 4px;
-          overflow: hidden;
-          z-index: 100;
-        }
-        .top-loader {
-          height: 100%;
-          width: 50%;
-          position: absolute;
-          animation: loading 1.5s infinite;
-        }
-        .page-dim-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0, 0, 0, 0.2);
-          z-index: 90;
-          backdrop-filter: blur(1px);
-        }
-        @keyframes loading {
-          0% {
-            left: -50%;
-          }
-          100% {
-            left: 100%;
-          }
-        } /* Base navbar styles */
+        /* Base navbar styles */
         .navbar {
           display: flex;
           justify-content: space-between;
