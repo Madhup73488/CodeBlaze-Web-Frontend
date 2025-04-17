@@ -8,9 +8,16 @@ import ProductDevelopment from "./components/ProductDevelopment";
 import FeaturedTechnology from "./components/FeaturedTechnology";
 import Products from "./components/Products";
 import Careers from "./pages/Careers"; // Import the new Careers component
-import ContactCTA from "./components/ContactCTA";
+// import ContactCTA from "./components/ContactCTA";
 import Footer from "./components/Footer";
+import AboutUs from "./components/whoarewe/AboutUs";
+import OurTeam from "./components/whoarewe/OurTeam";
+import OurMission from "./components/whoarewe/OurMission";
+import OurValues from "./components/whoarewe/OurValues";
+import NotFound from "./components/micellaneos/NotFound";
+import Support from "./components/micellaneos/Support";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import PrivacyPolicy from "./components/micellaneos/PrivacyPolicy";
 
 function App() {
   const [theme, setTheme] = useState("dark");
@@ -58,9 +65,35 @@ function App() {
             path="/careers"
             element={<Careers theme={theme} color={color} />}
           />
+          <Route
+            path="/aboutus"
+            element={<AboutUs theme={theme} color={color} />}
+          />
+          <Route
+            path="/ourteam"
+            element={<OurTeam theme={theme} color={color} />}
+          />
+          <Route
+            path="/ourmission"
+            element={<OurMission theme={theme} color={color} />}
+          />
+          <Route
+            path="/ourvalues"
+            element={<OurValues theme={theme} color={color} />}
+          />
+          <Route
+            path="/support"
+            element={<Support theme={theme} color={color} />}
+          />
+          <Route
+            path="/privacy"
+            element={<PrivacyPolicy theme={theme} color={color} />}
+          />
+          {/* Catch-all route should be last */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
 
-        <ContactCTA theme={theme} color={color} />
+        {/* <ContactCTA theme={theme} color={color} /> */}
         <Footer theme={theme} color={color} />
       </div>
     </Router>
