@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   ChevronRight,
   Mail,
@@ -9,11 +10,14 @@ import {
   Instagram,
   Send,
   ArrowUp,
+  Loader,
 } from "lucide-react";
 
 function Footer({ theme = "dark", color = "purple" }) {
   const [email, setEmail] = useState("");
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const location = useLocation();
 
   const footerLinks = {
     main: ["Home", "Our Services", "Career", "Contact Us", "Privacy Policy"],
@@ -78,6 +82,11 @@ function Footer({ theme = "dark", color = "purple" }) {
   const currentTheme = themeConfig[theme] || themeConfig.dark;
   const currentColor = colorConfig[color] || colorConfig.purple;
 
+  // Listen for location changes to scroll to top when route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+
   // Handle scroll to top button visibility
   useEffect(() => {
     const handleScroll = () => {
@@ -111,10 +120,36 @@ function Footer({ theme = "dark", color = "purple" }) {
     // Add success notification logic here
   };
 
+  // Handle link clicks to show loading indicator
+  const handleLinkClick = () => {
+    setIsLoading(true);
+    // Simulating navigation delay - in a real app, this would be handled by the router
+    setTimeout(() => {
+      setIsLoading(false);
+      window.scrollTo(0, 0);
+    }, 800);
+  };
+
+  // Map paths for links
+  const getRoutePath = (linkText) => {
+    // Convert link text to route path
+    return linkText.toLowerCase().replace(/\s+/g, "-");
+  };
+
   return (
     <footer
       className={`${currentTheme.background} pt-16 pb-8 relative overflow-hidden`}
     >
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="flex flex-col items-center">
+            <Loader className={`animate-spin text-${color}-500`} size={48} />
+            <span className="text-white mt-4">Loading...</span>
+          </div>
+        </div>
+      )}
+
       {/* Decorative elements */}
       <div
         className={`absolute top-0 right-10 w-64 h-64 rounded-full bg-gradient-to-br ${currentColor.primary} opacity-10 blur-3xl`}
@@ -165,20 +200,22 @@ function Footer({ theme = "dark", color = "purple" }) {
                   Contact Us
                 </h4>
                 <div className="space-y-4">
-                  <a
-                    href="mailto:info@codeblaze.com"
+                  <Link
+                    to="/contact"
+                    onClick={handleLinkClick}
                     className={`flex items-center gap-3 ${currentTheme.subtext} ${currentColor.hover} transition-colors`}
                   >
                     <Mail size={16} />
                     <span>info@codeblaze.com</span>
-                  </a>
-                  <a
-                    href="tel:+97145555555"
+                  </Link>
+                  <Link
+                    to="/contact"
+                    onClick={handleLinkClick}
                     className={`flex items-center gap-3 ${currentTheme.subtext} ${currentColor.hover} transition-colors`}
                   >
                     <Phone size={16} />
                     <span>+971 4 555 5555</span>
-                  </a>
+                  </Link>
                 </div>
               </div>
 
@@ -186,10 +223,9 @@ function Footer({ theme = "dark", color = "purple" }) {
                 <h4 className={`font-semibold ${currentTheme.text} mb-3`}>
                   Visit Us
                 </h4>
-                <a
-                  href="https://maps.google.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  to="/location"
+                  onClick={handleLinkClick}
                   className={`flex items-start gap-3 ${currentTheme.subtext} ${currentColor.hover} transition-colors max-w-xs`}
                 >
                   <MapPin size={16} className="mt-1 flex-shrink-0" />
@@ -197,7 +233,7 @@ function Footer({ theme = "dark", color = "purple" }) {
                     W10, The Shed St, 8th St, Al Quoz, Al Quoz Industrial Area
                     3, Dubai, UAE
                   </span>
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -225,24 +261,27 @@ function Footer({ theme = "dark", color = "purple" }) {
             </p>
 
             <div className="flex gap-3">
-              <a
-                href="https://www.linkedin.com/company/codeblazee/"
+              <Link
+                to="/linkedin"
+                onClick={handleLinkClick}
                 className={`w-10 h-10 ${currentTheme.socialBg} rounded-full flex items-center justify-center transition-colors duration-200`}
               >
                 <Linkedin size={18} className={currentTheme.text} />
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                to="/twitter"
+                onClick={handleLinkClick}
                 className={`w-10 h-10 ${currentTheme.socialBg} rounded-full flex items-center justify-center transition-colors duration-200`}
               >
                 <Twitter size={18} className={currentTheme.text} />
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                to="/instagram"
+                onClick={handleLinkClick}
                 className={`w-10 h-10 ${currentTheme.socialBg} rounded-full flex items-center justify-center transition-colors duration-200`}
               >
                 <Instagram size={18} className={currentTheme.text} />
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -254,13 +293,14 @@ function Footer({ theme = "dark", color = "purple" }) {
             <ul className="space-y-2">
               {footerLinks.main.map((link, index) => (
                 <li key={index}>
-                  <a
-                    href="#"
+                  <Link
+                    to={`/${getRoutePath(link)}`}
+                    onClick={handleLinkClick}
                     className={`flex items-center gap-2 ${currentTheme.subtext} ${currentColor.hover} transition-colors`}
                   >
                     <ChevronRight size={14} />
                     <span>{link}</span>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -274,13 +314,14 @@ function Footer({ theme = "dark", color = "purple" }) {
             <ul className="space-y-2">
               {footerLinks.whoWeAre.map((link, index) => (
                 <li key={index}>
-                  <a
-                    href="#"
+                  <Link
+                    to={`/who-we-are/${getRoutePath(link)}`}
+                    onClick={handleLinkClick}
                     className={`flex items-center gap-2 ${currentTheme.subtext} ${currentColor.hover} transition-colors`}
                   >
                     <ChevronRight size={14} />
                     <span>{link}</span>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -294,13 +335,14 @@ function Footer({ theme = "dark", color = "purple" }) {
             <ul className="space-y-2">
               {footerLinks.services.map((service, index) => (
                 <li key={index}>
-                  <a
-                    href="#"
+                  <Link
+                    to={`/services/${getRoutePath(service)}`}
+                    onClick={handleLinkClick}
                     className={`flex items-center gap-2 ${currentTheme.subtext} ${currentColor.hover} transition-colors`}
                   >
                     <ChevronRight size={14} />
                     <span>{service}</span>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -316,24 +358,27 @@ function Footer({ theme = "dark", color = "purple" }) {
           </p>
 
           <div className="flex gap-6 mt-4 sm:mt-0">
-            <a
-              href="#"
+            <Link
+              to="/terms-of-service"
+              onClick={handleLinkClick}
               className={`text-sm ${currentTheme.subtext} ${currentColor.hover} transition-colors`}
             >
               Terms of Service
-            </a>
-            <a
-              href="/privacy"
+            </Link>
+            <Link
+              to="/privacy"
+              onClick={handleLinkClick}
               className={`text-sm ${currentTheme.subtext} ${currentColor.hover} transition-colors`}
             >
               Privacy Policy
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to="/cookies"
+              onClick={handleLinkClick}
               className={`text-sm ${currentTheme.subtext} ${currentColor.hover} transition-colors`}
             >
               Cookies
-            </a>
+            </Link>
           </div>
         </div>
       </div>

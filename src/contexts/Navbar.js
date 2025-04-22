@@ -1,44 +1,36 @@
 import { Sun, Moon, Menu, X, ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useLoader } from "./LoaderContext"; // Assuming a global loader context
 
 function Navbar({ theme, color, toggleTheme, toggleColor }) {
   const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { startLoader, stopLoader } = useLoader(); // Using global loader hook
 
   const dropdownRefs = useRef({});
   const navRef = useRef(null);
-  const loaderTimeoutRef = useRef(null);
 
-  // Clean up timeouts on unmount
-  useEffect(() => {
-    return () => {
-      if (loaderTimeoutRef.current) {
-        clearTimeout(loaderTimeoutRef.current);
-      }
-    };
-  }, []);
+  const closeAllMenus = () => {
+    setIsMenuOpen(false);
+    setActiveDropdown(null);
+  };
 
-  const startLoader = useCallback(
+  const handleNavigation = useCallback(
     (to) => {
-      setLoading(true);
+      startLoader(); // Use global loader
+      closeAllMenus(); // Close menus before navigation
 
-      // Clear any existing timeout
-      if (loaderTimeoutRef.current) {
-        clearTimeout(loaderTimeoutRef.current);
-      }
-
-      loaderTimeoutRef.current = setTimeout(() => {
-        setLoading(false);
+      setTimeout(() => {
+        stopLoader(); // Stop loader after navigation
         if (to) {
           navigate(to);
         }
       }, 1500);
     },
-    [navigate]
+    [navigate, startLoader, stopLoader]
   );
 
   const toggleMobileMenu = () => {
@@ -60,16 +52,10 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
     (to, e) => {
       e.preventDefault();
       e.stopPropagation();
-
-      // Close menu on mobile
-      if (window.innerWidth <= 768) {
-        setActiveDropdown(null);
-        setIsMenuOpen(false);
-      }
-
-      startLoader(to);
+      closeAllMenus(); // Always close menus when clicking on a dropdown section
+      handleNavigation(to);
     },
-    [startLoader]
+    [handleNavigation]
   );
 
   const handleClickOutside = useCallback(
@@ -96,6 +82,20 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
     };
   }, [activeDropdown, handleClickOutside]);
 
+  // Effect to close menu when window resizes
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768 && isMenuOpen) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [isMenuOpen]);
+
   const setDropdownRef = (element, name) => {
     if (element) {
       dropdownRefs.current[name] = element;
@@ -114,15 +114,11 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
 
   const handleContactClick = (e) => {
     e.preventDefault();
-    setLoading(true);
+    closeAllMenus(); // Close menus when clicking contact
+    startLoader(); // Use global loader
 
-    // Clear any existing timeout
-    if (loaderTimeoutRef.current) {
-      clearTimeout(loaderTimeoutRef.current);
-    }
-
-    loaderTimeoutRef.current = setTimeout(() => {
-      setLoading(false);
+    setTimeout(() => {
+      stopLoader(); // Stop loader
       window.scrollTo({
         top: document.body.scrollHeight,
         behavior: "smooth",
@@ -132,19 +128,6 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
 
   return (
     <>
-      {/* Top loading bar */}
-      {loading && (
-        <div className="top-loader-container">
-          <div
-            className="top-loader"
-            style={{ backgroundColor: primaryColor }}
-          />
-        </div>
-      )}
-
-      {/* Page overlay when loading */}
-      {loading && <div className="page-dim-overlay" />}
-
       <nav className={`navbar ${theme}`} ref={navRef}>
         <div className="navbar-brand">
           <div
@@ -156,7 +139,7 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
             className="brand-text"
             onClick={(e) => {
               e.preventDefault();
-              startLoader("/");
+              handleNavigation("/");
             }}
           >
             CodeBlaze
@@ -174,7 +157,7 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
               className="link"
               onClick={(e) => {
                 e.preventDefault();
-                startLoader("/");
+                handleNavigation("/");
               }}
             >
               Home
@@ -251,18 +234,18 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
 
             <div
               className={`link dropdown-trigger ${
-                activeDropdown === "services" ? "active" : ""
+                activeDropdown === "forstudents" ? "active" : ""
               }`}
-              ref={(el) => setDropdownRef(el, "services")}
-              onMouseEnter={() => handleMouseEnter("services")}
-              onClick={() => handleDropdownClick("services")}
+              ref={(el) => setDropdownRef(el, "forstudents")}
+              onMouseEnter={() => handleMouseEnter("forstudents")}
+              onClick={() => handleDropdownClick("forstudents")}
             >
-              Services <ChevronDown size={15} />
+              For Students <ChevronDown size={15} />
             </div>
-            {activeDropdown === "services" && (
+            {activeDropdown === "forstudents" && (
               <div
                 className="dropdown-overlay"
-                onMouseEnter={() => handleMouseEnter("services")}
+                onMouseEnter={() => handleMouseEnter("forstudents")}
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="dropdown-menu-container">
@@ -270,76 +253,84 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
                     <div
                       className="dropdown-section"
                       onClick={(e) =>
-                        handleDropdownSectionClick("/payments", e)
+                        handleDropdownSectionClick("/placement-guidance", e)
                       }
                     >
                       <div>
-                        <h3 className="dropdown-title">Payments</h3>
+                        <h3 className="dropdown-title">Placement Guidance</h3>
                         <p className="dropdown-desc">
-                          Manage PAs & build native checkouts
+                          Personalized support to ace your placements and crack
+                          interviews.
                         </p>
                       </div>
                     </div>
                     <div
                       className="dropdown-section"
                       onClick={(e) =>
-                        handleDropdownSectionClick("/hypercheckout", e)
+                        handleDropdownSectionClick("/internships", e)
                       }
                     >
                       <div>
-                        <h3 className="dropdown-title">HyperCheckout</h3>
+                        <h3 className="dropdown-title">Internships</h3>
                         <p className="dropdown-desc">
-                          Route payments & build native 1-click checkouts
+                          Explore real-world internship opportunities and skill
+                          development.
                         </p>
                       </div>
                     </div>
                     <div
                       className="dropdown-section"
                       onClick={(e) =>
-                        handleDropdownSectionClick("/expresscheckout", e)
+                        handleDropdownSectionClick("/project-support", e)
                       }
                     >
                       <div>
-                        <h3 className="dropdown-title">Express Checkout</h3>
+                        <h3 className="dropdown-title">Project Support</h3>
                         <p className="dropdown-desc">
-                          Unified Payment APIs for enterprises and startups
+                          Get expert help and guidance to complete academic or
+                          personal projects.
                         </p>
                       </div>
                     </div>
                     <div
                       className="dropdown-section"
                       onClick={(e) =>
-                        handleDropdownSectionClick("/upistack", e)
+                        handleDropdownSectionClick("/webinars", e)
                       }
                     >
                       <div>
-                        <h3 className="dropdown-title">UPI Stack</h3>
+                        <h3 className="dropdown-title">Webinars</h3>
                         <p className="dropdown-desc">
-                          Solutions for merchants & Banks
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      className="dropdown-section"
-                      onClick={(e) => handleDropdownSectionClick("/payouts", e)}
-                    >
-                      <div>
-                        <h3 className="dropdown-title">Payouts</h3>
-                        <p className="dropdown-desc">
-                          Instant and Seamless Payouts with IMPS, UPI
+                          Join interactive webinars hosted by industry experts
+                          and educators.
                         </p>
                       </div>
                     </div>
                     <div
                       className="dropdown-section"
                       onClick={(e) =>
-                        handleDropdownSectionClick("/paymentlinks", e)
+                        handleDropdownSectionClick("/mentorship-programs", e)
                       }
                     >
                       <div>
-                        <h3 className="dropdown-title">Payment Links</h3>
+                        <h3 className="dropdown-title">Mentorship Programs</h3>
                         <p className="dropdown-desc">
-                          Create & send Payment links & forms
+                          Connect with mentors for guidance on career and
+                          personal growth.
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      className="dropdown-section"
+                      onClick={(e) =>
+                        handleDropdownSectionClick("/skills-and-roles", e)
+                      }
+                    >
+                      <div>
+                        <h3 className="dropdown-title">Skills & Roles</h3>
+                        <p className="dropdown-desc">
+                          Discover essential skills mapped to trending tech
+                          roles.
                         </p>
                       </div>
                     </div>
@@ -353,7 +344,7 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
               className="link"
               onClick={(e) => {
                 e.preventDefault();
-                startLoader("/careers");
+                handleNavigation("/careers");
               }}
             >
               Careers
@@ -397,51 +388,12 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
       </nav>
 
       {/* Backdrop overlay for mobile */}
-      {(isMenuOpen || activeDropdown) && window.innerWidth <= 768 && (
-        <div
-          className="mobile-backdrop"
-          onClick={() => {
-            setActiveDropdown(null);
-            setIsMenuOpen(false);
-          }}
-        />
+      {(isMenuOpen || activeDropdown) && (
+        <div className="mobile-backdrop" onClick={closeAllMenus} />
       )}
 
       <style jsx>{`
-        /* Top Loader Styles */
-        .top-loader-container {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 4px;
-          overflow: hidden;
-          z-index: 100;
-        }
-        .top-loader {
-          height: 100%;
-          width: 50%;
-          position: absolute;
-          animation: loading 1.5s infinite;
-        }
-        .page-dim-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0, 0, 0, 0.2);
-          z-index: 90;
-          backdrop-filter: blur(1px);
-        }
-        @keyframes loading {
-          0% {
-            left: -50%;
-          }
-          100% {
-            left: 100%;
-          }
-        } /* Base navbar styles */
+        /* Base navbar styles */
         .navbar {
           display: flex;
           justify-content: space-between;
@@ -470,6 +422,10 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
           width: 2rem;
           height: 2rem;
           border-radius: 4px;
+        }
+        .brand-text {
+          text-decoration: none;
+          color: inherit;
         }
         .hamburger {
           display: none;
@@ -568,6 +524,13 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
         }
         .mobile-backdrop {
           display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.3);
+          z-index: 30;
         } /* Mobile Styles */
         @media (max-width: 768px) {
           .hamburger {
@@ -632,13 +595,6 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
           }
           .mobile-backdrop {
             display: block;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 30;
           }
         }
       `}</style>

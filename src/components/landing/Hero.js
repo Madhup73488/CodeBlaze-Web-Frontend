@@ -1,4 +1,4 @@
-import HeroImg from "../assets/images/banner_systemnew.png";
+import HeroImg from "../../assets/images/banner_systemnew.png";
 import { useEffect, useState } from "react";
 
 function Hero({ theme, color }) {

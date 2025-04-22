@@ -1,15 +1,7 @@
-// App.js - Updated with Careers component
 import { useState } from "react";
-import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import Services from "./components/Services";
-import Strategy from "./components/Strategy";
-import ProductDevelopment from "./components/ProductDevelopment";
-import FeaturedTechnology from "./components/FeaturedTechnology";
-import Products from "./components/Products";
-import Careers from "./pages/Careers"; // Import the new Careers component
-// import ContactCTA from "./components/ContactCTA";
-import Footer from "./components/Footer";
+import Navbar from "./contexts/Navbar";
+import Careers from "./pages/Careers";
+import Footer from "./components/landing/Footer";
 import AboutUs from "./components/whoarewe/AboutUs";
 import OurTeam from "./components/whoarewe/OurTeam";
 import OurMission from "./components/whoarewe/OurMission";
@@ -18,6 +10,15 @@ import NotFound from "./components/micellaneos/NotFound";
 import Support from "./components/micellaneos/Support";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PrivacyPolicy from "./components/micellaneos/PrivacyPolicy";
+import { LoaderProvider } from "./contexts/LoaderContext";
+import Landing from "./pages/Landing";
+import TermsOfService from "./components/micellaneos/TermsOfService";
+import PlacementGuidance from "./components/ForStudents/PlacementGuidance";
+import Internships from "./components/ForStudents/Internships";
+import ProjectSupport from "./components/ForStudents/ProjectSupport";
+import MentorshipPrograms from "./components/ForStudents/MentorshipPrograms";
+import Webinars from "./components/ForStudents/Webinars";
+import SkillsAndRoles from "./components/ForStudents/SkillsAndRoles";
 
 function App() {
   const [theme, setTheme] = useState("dark");
@@ -32,71 +33,96 @@ function App() {
   };
 
   return (
-    <Router>
-      <div
-        className={`app ${theme}`}
-        style={{
-          backgroundColor: theme === "dark" ? "#0a0a0a" : "#ffffff",
-          color: theme === "dark" ? "#ffffff" : "#0a0a0a",
-        }}
-      >
-        <Navbar
-          theme={theme}
-          color={color}
-          toggleTheme={toggleTheme}
-          toggleColor={toggleColor}
-        />
+    <LoaderProvider color={color}>
+      <Router>
+        <div
+          className={`app ${theme}`}
+          style={{
+            backgroundColor: theme === "dark" ? "#0a0a0a" : "#ffffff",
+            color: theme === "dark" ? "#ffffff" : "#0a0a0a",
+          }}
+        >
+          <Navbar
+            theme={theme}
+            color={color}
+            toggleTheme={toggleTheme}
+            toggleColor={toggleColor}
+          />
 
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <Hero theme={theme} color={color} />
-                <Services theme={theme} color={color} />
-                <Strategy theme={theme} color={color} />
-                <ProductDevelopment theme={theme} color={color} />
-                <FeaturedTechnology theme={theme} color={color} />
-                <Products theme={theme} color={color} />
-              </>
-            }
-          />
-          <Route
-            path="/careers"
-            element={<Careers theme={theme} color={color} />}
-          />
-          <Route
-            path="/aboutus"
-            element={<AboutUs theme={theme} color={color} />}
-          />
-          <Route
-            path="/ourteam"
-            element={<OurTeam theme={theme} color={color} />}
-          />
-          <Route
-            path="/ourmission"
-            element={<OurMission theme={theme} color={color} />}
-          />
-          <Route
-            path="/ourvalues"
-            element={<OurValues theme={theme} color={color} />}
-          />
-          <Route
-            path="/support"
-            element={<Support theme={theme} color={color} />}
-          />
-          <Route
-            path="/privacy"
-            element={<PrivacyPolicy theme={theme} color={color} />}
-          />
-          {/* Catch-all route should be last */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+          <Routes>
+            <Route path="/" element={<Landing theme={theme} color={color} />} />
+            <Route
+              path="/careers"
+              element={<Careers theme={theme} color={color} />}
+            />
+            <Route
+              path="/aboutus"
+              element={<AboutUs theme={theme} color={color} />}
+            />
+            <Route
+              path="/ourteam"
+              element={<OurTeam theme={theme} color={color} />}
+            />
+            <Route
+              path="/ourmission"
+              element={<OurMission theme={theme} color={color} />}
+            />
+            <Route
+              path="/ourvalues"
+              element={<OurValues theme={theme} color={color} />}
+            />
+            <Route
+              path="/support"
+              element={<Support theme={theme} color={color} />}
+            />
+            <Route
+              path="/privacy"
+              element={<PrivacyPolicy theme={theme} color={color} />}
+            />
+            <Route
+              path="/terms-of-service"
+              element={<TermsOfService theme={theme} color={color} />}
+            />
+            {/* Routes of `for students` sections */}
+            <Route
+              path="/placement-guidance"
+              element={<PlacementGuidance theme={theme} color={color} />}
+            />
+            <Route
+              path="/Internships"
+              element={<Internships theme={theme} color={color} />}
+            />
+            <Route
+              path="/mentorship-programs"
+              element={<MentorshipPrograms theme={theme} color={color} />}
+            />
+            <Route
+              path="/webinars"
+              element={<Webinars theme={theme} color={color} />}
+            />
+            <Route
+              path="/skills-and-roles"
+              element={<SkillsAndRoles theme={theme} color={color} />}
+            />
+            <Route
+              path="/mentorship-programs"
+              element={<MentorshipPrograms theme={theme} color={color} />}
+            />
+            <Route
+              path="/project-support"
+              element={<ProjectSupport theme={theme} color={color} />}
+            />
 
-        {/* <ContactCTA theme={theme} color={color} /> */}
-        <Footer theme={theme} color={color} />
-      </div>
-    </Router>
+            {/* Catch-all route should be last */}
+            <Route
+              path="*"
+              element={<NotFound theme={theme} color={color} />}
+            />
+          </Routes>
+          <Footer theme={theme} color={color} />
+        </div>
+      </Router>
+    </LoaderProvider>
   );
 }
 
