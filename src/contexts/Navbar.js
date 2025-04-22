@@ -13,9 +13,15 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
   const dropdownRefs = useRef({});
   const navRef = useRef(null);
 
+  const closeAllMenus = () => {
+    setIsMenuOpen(false);
+    setActiveDropdown(null);
+  };
+
   const handleNavigation = useCallback(
     (to) => {
       startLoader(); // Use global loader
+      closeAllMenus(); // Close menus before navigation
 
       setTimeout(() => {
         stopLoader(); // Stop loader after navigation
@@ -46,13 +52,7 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
     (to, e) => {
       e.preventDefault();
       e.stopPropagation();
-
-      // Close menu on mobile
-      if (window.innerWidth <= 768) {
-        setActiveDropdown(null);
-        setIsMenuOpen(false);
-      }
-
+      closeAllMenus(); // Always close menus when clicking on a dropdown section
       handleNavigation(to);
     },
     [handleNavigation]
@@ -82,6 +82,20 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
     };
   }, [activeDropdown, handleClickOutside]);
 
+  // Effect to close menu when window resizes
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768 && isMenuOpen) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [isMenuOpen]);
+
   const setDropdownRef = (element, name) => {
     if (element) {
       dropdownRefs.current[name] = element;
@@ -100,6 +114,7 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
 
   const handleContactClick = (e) => {
     e.preventDefault();
+    closeAllMenus(); // Close menus when clicking contact
     startLoader(); // Use global loader
 
     setTimeout(() => {
@@ -219,18 +234,18 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
 
             <div
               className={`link dropdown-trigger ${
-                activeDropdown === "services" ? "active" : ""
+                activeDropdown === "forstudents" ? "active" : ""
               }`}
-              ref={(el) => setDropdownRef(el, "services")}
-              onMouseEnter={() => handleMouseEnter("services")}
-              onClick={() => handleDropdownClick("services")}
+              ref={(el) => setDropdownRef(el, "forstudents")}
+              onMouseEnter={() => handleMouseEnter("forstudents")}
+              onClick={() => handleDropdownClick("forstudents")}
             >
-              Services <ChevronDown size={15} />
+              For Students <ChevronDown size={15} />
             </div>
-            {activeDropdown === "services" && (
+            {activeDropdown === "forstudents" && (
               <div
                 className="dropdown-overlay"
-                onMouseEnter={() => handleMouseEnter("services")}
+                onMouseEnter={() => handleMouseEnter("forstudents")}
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="dropdown-menu-container">
@@ -238,76 +253,84 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
                     <div
                       className="dropdown-section"
                       onClick={(e) =>
-                        handleDropdownSectionClick("/payments", e)
+                        handleDropdownSectionClick("/placement-guidance", e)
                       }
                     >
                       <div>
-                        <h3 className="dropdown-title">Payments</h3>
+                        <h3 className="dropdown-title">Placement Guidance</h3>
                         <p className="dropdown-desc">
-                          Manage PAs & build native checkouts
+                          Personalized support to ace your placements and crack
+                          interviews.
                         </p>
                       </div>
                     </div>
                     <div
                       className="dropdown-section"
                       onClick={(e) =>
-                        handleDropdownSectionClick("/hypercheckout", e)
+                        handleDropdownSectionClick("/internships", e)
                       }
                     >
                       <div>
-                        <h3 className="dropdown-title">HyperCheckout</h3>
+                        <h3 className="dropdown-title">Internships</h3>
                         <p className="dropdown-desc">
-                          Route payments & build native 1-click checkouts
+                          Explore real-world internship opportunities and skill
+                          development.
                         </p>
                       </div>
                     </div>
                     <div
                       className="dropdown-section"
                       onClick={(e) =>
-                        handleDropdownSectionClick("/expresscheckout", e)
+                        handleDropdownSectionClick("/project-support", e)
                       }
                     >
                       <div>
-                        <h3 className="dropdown-title">Express Checkout</h3>
+                        <h3 className="dropdown-title">Project Support</h3>
                         <p className="dropdown-desc">
-                          Unified Payment APIs for enterprises and startups
+                          Get expert help and guidance to complete academic or
+                          personal projects.
                         </p>
                       </div>
                     </div>
                     <div
                       className="dropdown-section"
                       onClick={(e) =>
-                        handleDropdownSectionClick("/upistack", e)
+                        handleDropdownSectionClick("/webinars", e)
                       }
                     >
                       <div>
-                        <h3 className="dropdown-title">UPI Stack</h3>
+                        <h3 className="dropdown-title">Webinars</h3>
                         <p className="dropdown-desc">
-                          Solutions for merchants & Banks
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      className="dropdown-section"
-                      onClick={(e) => handleDropdownSectionClick("/payouts", e)}
-                    >
-                      <div>
-                        <h3 className="dropdown-title">Payouts</h3>
-                        <p className="dropdown-desc">
-                          Instant and Seamless Payouts with IMPS, UPI
+                          Join interactive webinars hosted by industry experts
+                          and educators.
                         </p>
                       </div>
                     </div>
                     <div
                       className="dropdown-section"
                       onClick={(e) =>
-                        handleDropdownSectionClick("/paymentlinks", e)
+                        handleDropdownSectionClick("/mentorship-programs", e)
                       }
                     >
                       <div>
-                        <h3 className="dropdown-title">Payment Links</h3>
+                        <h3 className="dropdown-title">Mentorship Programs</h3>
                         <p className="dropdown-desc">
-                          Create & send Payment links & forms
+                          Connect with mentors for guidance on career and
+                          personal growth.
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      className="dropdown-section"
+                      onClick={(e) =>
+                        handleDropdownSectionClick("/skills-and-roles", e)
+                      }
+                    >
+                      <div>
+                        <h3 className="dropdown-title">Skills & Roles</h3>
+                        <p className="dropdown-desc">
+                          Discover essential skills mapped to trending tech
+                          roles.
                         </p>
                       </div>
                     </div>
@@ -365,14 +388,8 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
       </nav>
 
       {/* Backdrop overlay for mobile */}
-      {(isMenuOpen || activeDropdown) && window.innerWidth <= 768 && (
-        <div
-          className="mobile-backdrop"
-          onClick={() => {
-            setActiveDropdown(null);
-            setIsMenuOpen(false);
-          }}
-        />
+      {(isMenuOpen || activeDropdown) && (
+        <div className="mobile-backdrop" onClick={closeAllMenus} />
       )}
 
       <style jsx>{`
@@ -405,6 +422,10 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
           width: 2rem;
           height: 2rem;
           border-radius: 4px;
+        }
+        .brand-text {
+          text-decoration: none;
+          color: inherit;
         }
         .hamburger {
           display: none;
@@ -503,6 +524,13 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
         }
         .mobile-backdrop {
           display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.3);
+          z-index: 30;
         } /* Mobile Styles */
         @media (max-width: 768px) {
           .hamburger {
@@ -567,13 +595,6 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
           }
           .mobile-backdrop {
             display: block;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 30;
           }
         }
       `}</style>

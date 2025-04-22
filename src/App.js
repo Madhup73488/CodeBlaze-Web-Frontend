@@ -13,6 +13,13 @@ import PrivacyPolicy from "./components/micellaneos/PrivacyPolicy";
 import { LoaderProvider } from "./contexts/LoaderContext";
 import Landing from "./pages/Landing";
 import TermsOfService from "./components/micellaneos/TermsOfService";
+import PlacementGuidance from "./components/ForStudents/PlacementGuidance";
+import Internships from "./components/ForStudents/Internships";
+import ProjectSupport from "./components/ForStudents/ProjectSupport";
+import MentorshipPrograms from "./components/ForStudents/MentorshipPrograms";
+import Webinars from "./components/ForStudents/Webinars";
+import SkillsAndRoles from "./components/ForStudents/SkillsAndRoles";
+
 function App() {
   const [theme, setTheme] = useState("dark");
   const [color, setColor] = useState("orange");
@@ -76,6 +83,36 @@ function App() {
               path="/terms-of-service"
               element={<TermsOfService theme={theme} color={color} />}
             />
+            {/* Routes of `for students` sections */}
+            <Route
+              path="/placement-guidance"
+              element={<PlacementGuidance theme={theme} color={color} />}
+            />
+            <Route
+              path="/Internships"
+              element={<Internships theme={theme} color={color} />}
+            />
+            <Route
+              path="/mentorship-programs"
+              element={<MentorshipPrograms theme={theme} color={color} />}
+            />
+            <Route
+              path="/webinars"
+              element={<Webinars theme={theme} color={color} />}
+            />
+            <Route
+              path="/skills-and-roles"
+              element={<SkillsAndRoles theme={theme} color={color} />}
+            />
+            <Route
+              path="/mentorship-programs"
+              element={<MentorshipPrograms theme={theme} color={color} />}
+            />
+            <Route
+              path="/project-support"
+              element={<ProjectSupport theme={theme} color={color} />}
+            />
+
             {/* Catch-all route should be last */}
             <Route
               path="*"
