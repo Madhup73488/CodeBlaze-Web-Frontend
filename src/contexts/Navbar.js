@@ -1,12 +1,14 @@
-import { Sun, Moon, Menu, X, ChevronDown } from "lucide-react";
+import { Sun, Moon, Menu, X, ChevronDown, LogIn } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLoader } from "./LoaderContext"; // Assuming a global loader context
+import AuthModal from "../components/Auth/AuthModal";
 
 function Navbar({ theme, color, toggleTheme, toggleColor }) {
   const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const navigate = useNavigate();
   const { startLoader, stopLoader } = useLoader(); // Using global loader hook
 
@@ -124,6 +126,17 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
         behavior: "smooth",
       });
     }, 1500);
+  };
+
+  // Handler for opening the Auth Modal
+  const openAuthModal = () => {
+    closeAllMenus(); // Close all menus first
+    setIsAuthModalOpen(true);
+  };
+
+  // Handler for closing the Auth Modal
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
   };
 
   return (
@@ -334,6 +347,20 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
                         </p>
                       </div>
                     </div>
+                    <div
+                      className="dropdown-section"
+                      onClick={(e) =>
+                        handleDropdownSectionClick("/job-seekers", e)
+                      }
+                    >
+                      <div>
+                        <h3 className="dropdown-title">Job Seekers Portal</h3>
+                        <p className="dropdown-desc">
+                          Get Job Updates as soon as possible, apply it, get
+                          interveiw call soon, and get hired
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -364,14 +391,13 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
                   : "Switch to dark mode"
               }
               style={{
-                border: `1px solid ${theme === "dark" ? "#ffffff" : "#0a0a0a"}`,
                 color: theme === "dark" ? "#ffffff" : "#0a0a0a",
               }}
             >
               {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
             </button>
 
-            <button
+            {/* <button
               className="color-toggle"
               onClick={handleColorToggle}
               title={
@@ -382,6 +408,19 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
               style={{ backgroundColor: primaryColor }}
             >
               {color === "purple" ? "Orange" : "Purple"}
+            </button> */}
+
+            <button
+              className="login-button"
+              onClick={openAuthModal}
+              style={{
+                backgroundColor: "transparent",
+                color: primaryColor,
+                border: `1px solid ${primaryColor}`,
+              }}
+            >
+              <LogIn size={16} />
+              <span>Login</span>
             </button>
           </div>
         </div>
@@ -391,6 +430,14 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
       {(isMenuOpen || activeDropdown) && (
         <div className="mobile-backdrop" onClick={closeAllMenus} />
       )}
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={closeAuthModal}
+        theme={theme}
+        color={color}
+      />
 
       <style jsx>{`
         /* Base navbar styles */
@@ -445,6 +492,7 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
         .nav-actions {
           display: flex;
           gap: 1rem;
+          align-items: center;
         }
         .link {
           cursor: pointer;
@@ -508,7 +556,8 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
           opacity: 0.9;
         }
         .theme-toggle,
-        .color-toggle {
+        .color-toggle,
+        .login-button {
           padding: 0.5rem;
           border-radius: 0.25rem;
           background: transparent;
@@ -521,6 +570,19 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
         .color-toggle {
           color: #fff;
           border: none;
+        }
+        .login-button {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          border-radius: 0.25rem;
+          font-weight: 500;
+          transition: all 0.2s ease;
+        }
+        .login-button:hover {
+          opacity: 0.9;
+          transform: translateY(-1px);
         }
         .mobile-backdrop {
           display: none;
@@ -572,6 +634,12 @@ function Navbar({ theme, color, toggleTheme, toggleColor }) {
           .nav-actions {
             margin: 1rem 0;
             flex-direction: row;
+            flex-wrap: wrap;
+          }
+          .login-button {
+            margin-top: 0.5rem;
+            width: 100%;
+            justify-content: center;
           }
           .dropdown-overlay {
             position: static;
