@@ -8,7 +8,12 @@ import OurMission from "./components/whoarewe/OurMission";
 import OurValues from "./components/whoarewe/OurValues";
 import NotFound from "./components/micellaneos/NotFound";
 import Support from "./components/micellaneos/Support";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import PrivacyPolicy from "./components/micellaneos/PrivacyPolicy";
 import { LoaderProvider } from "./contexts/LoaderContext";
 import Landing from "./pages/Landing";
@@ -20,6 +25,28 @@ import MentorshipPrograms from "./components/ForStudents/MentorshipPrograms";
 import Webinars from "./components/ForStudents/Webinars";
 import SkillsAndRoles from "./components/ForStudents/SkillsAndRoles";
 import JobSeekers from "./components/JobSeekers/JobSeekers";
+
+import AdminLayout from "./admin/components/layout/AdminLayout";
+import DashboardHome from "./admin/pages/DashboardHome";
+import AdminSettings from "./admin/pages/AdminSettings";
+import AdminNotFound from "./admin/pages/AdminNotFound";
+
+// Jobs
+import JobList from "./admin/pages/jobs/JobList";
+import JobCreate from "./admin/pages/jobs/JobCreate";
+import JobEdit from "./admin/pages/jobs/JobEdit";
+import JobDetail from "./admin/pages/jobs/JobDetail";
+
+// Internships
+import InternshipList from "./admin/pages/internships/InternshipList";
+import InternshipCreate from "./admin/pages/internships/InternshipCreate";
+import InternshipEdit from "./admin/pages/internships/InternshipEdit";
+import InternshipDetail from "./admin/pages/internships/InternshipDetail";
+
+// Applications
+import JobApplications from "./admin/pages/applications/JobApplications";
+import InternshipApplications from "./admin/pages/applications/InternshipApplications";
+
 function App() {
   const [theme, setTheme] = useState("dark");
   const [color, setColor] = useState("orange");
@@ -89,7 +116,7 @@ function App() {
               element={<PlacementGuidance theme={theme} color={color} />}
             />
             <Route
-              path="/Internships"
+              path="/internships"
               element={<Internships theme={theme} color={color} />}
             />
             <Route
@@ -105,10 +132,6 @@ function App() {
               element={<SkillsAndRoles theme={theme} color={color} />}
             />
             <Route
-              path="/mentorship-programs"
-              element={<MentorshipPrograms theme={theme} color={color} />}
-            />
-            <Route
               path="/project-support"
               element={<ProjectSupport theme={theme} color={color} />}
             />
@@ -116,7 +139,41 @@ function App() {
               path="/job-seekers"
               element={<JobSeekers theme={theme} color={color} />}
             />
+            {/* Admin Routes - wrapped in AdminLayout */}
+            <Route path="/admin" element={<AdminLayout />}>
+              {/* Dashboard */}
+              <Route index element={<DashboardHome />} />
+              <Route path="settings" element={<AdminSettings />} />
 
+              {/* Jobs */}
+              <Route path="jobs">
+                <Route index element={<JobList />} />
+                <Route path="create" element={<JobCreate />} />
+                <Route path=":id" element={<JobDetail />} />
+                <Route path=":id/edit" element={<JobEdit />} />
+              </Route>
+
+              {/* Internships */}
+              <Route path="internships">
+                <Route index element={<InternshipList />} />
+                <Route path="create" element={<InternshipCreate />} />
+                <Route path=":id" element={<InternshipDetail />} />
+                <Route path=":id/edit" element={<InternshipEdit />} />
+              </Route>
+
+              {/* Applications */}
+              <Route path="applications">
+                <Route path="jobs" element={<JobApplications />} />
+                <Route
+                  path="internships"
+                  element={<InternshipApplications />}
+                />
+                <Route index element={<Navigate to="jobs" replace />} />
+              </Route>
+
+              {/* Catch any unmatched admin routes */}
+              <Route path="*" element={<AdminNotFound />} />
+            </Route>
             {/* Catch-all route should be last */}
             <Route
               path="*"

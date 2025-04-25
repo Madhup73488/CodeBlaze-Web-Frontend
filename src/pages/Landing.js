@@ -1,6 +1,6 @@
 import Hero from "../components/landing/Hero";
 import ProductDevelopment from "../components/landing/ProductDevelopment";
-import Products from "../components/landing/Products";
+// import Products from "../components/landing/Products";
 import Services from "../components/landing/Services";
 import Strategy from "../components/landing/Strategy";
 import FeaturedTechnology from "../components/landing/FeaturedTechnology";
@@ -13,7 +13,7 @@ const Landing = ({ theme, color }) => {
       <Strategy theme={theme} color={color} />
       <ProductDevelopment theme={theme} color={color} />
       <FeaturedTechnology theme={theme} color={color} />
-      <Products theme={theme} color={color} />
+      {/* <Products theme={theme} color={color} /> */}
     </div>
   );
 };
