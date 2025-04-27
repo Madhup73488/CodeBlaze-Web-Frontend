@@ -19,7 +19,7 @@ import ProjectSupport from "./components/ForStudents/ProjectSupport";
 import MentorshipPrograms from "./components/ForStudents/MentorshipPrograms";
 import Webinars from "./components/ForStudents/Webinars";
 import SkillsAndRoles from "./components/ForStudents/SkillsAndRoles";
-
+import JobSeekers from "./components/JobSeekers/JobSeekers";
 function App() {
   const [theme, setTheme] = useState("dark");
   const [color, setColor] = useState("orange");
@@ -111,6 +111,10 @@ function App() {
             <Route
               path="/project-support"
               element={<ProjectSupport theme={theme} color={color} />}
+            />
+            <Route
+              path="/job-seekers"
+              element={<JobSeekers theme={theme} color={color} />}
             />
 
             {/* Catch-all route should be last */}
