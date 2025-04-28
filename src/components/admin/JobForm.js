@@ -1,23 +1,23 @@
 // components/Admin/JobForm.js
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 
 const JobForm = ({ jobId = null }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
-  
+
   const [jobData, setJobData] = useState({
-    title: '',
-    employmentType: 'Full-time',
-    department: '',
-    location: '',
-    applicationDeadline: '',
-    description: '',
-    requirements: '',
-    responsibilities: '',
-    benefits: '',
+    title: "",
+    employmentType: "Full-time",
+    department: "",
+    location: "",
+    applicationDeadline: "",
+    description: "",
+    requirements: "",
+    responsibilities: "",
+    benefits: "",
   });
 
   useEffect(() => {
@@ -27,11 +27,11 @@ const JobForm = ({ jobId = null }) => {
         try {
           setIsLoading(true);
           const response = await fetch(`/api/admin/jobs/${jobId}`);
-          
+
           if (!response.ok) {
-            throw new Error('Failed to fetch job');
+            throw new Error("Failed to fetch job");
           }
-          
+
           const data = await response.json();
           setJobData(data);
         } catch (err) {
@@ -40,52 +40,49 @@ const JobForm = ({ jobId = null }) => {
           setIsLoading(false);
         }
       };
-      
+
       fetchJob();
     }
   }, [jobId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setJobData(prev => ({
+    setJobData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       setIsLoading(true);
       setError(null);
-      
-      const url = jobId 
-        ? `/api/admin/jobs/${jobId}` 
-        : '/api/admin/jobs';
-      
-      const method = jobId ? 'PUT' : 'POST';
-      
+
+      const url = jobId ? `/api/admin/jobs/${jobId}` : "/api/admin/jobs";
+
+      const method = jobId ? "PUT" : "POST";
+
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(jobData),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to save job');
+        throw new Error(errorData.message || "Failed to save job");
       }
-      
+
       setSuccess(true);
-      
+
       // Redirect after 2 seconds
       setTimeout(() => {
-        router.push('/admin/jobs');
+        router.push("/admin/jobs");
       }, 2000);
-      
     } catch (err) {
       setError(err.message);
     } finally {
@@ -100,21 +97,22 @@ const JobForm = ({ jobId = null }) => {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">
-        {jobId ? 'Edit Job Posting' : 'Create New Job Posting'}
+        {jobId ? "Edit Job Posting" : "Create New Job Posting"}
       </h1>
-      
+
       {error && (
         <div className="bg-red-50 text-red-800 p-4 rounded-md mb-6">
           {error}
         </div>
       )}
-      
+
       {success && (
         <div className="bg-green-50 text-green-800 p-4 rounded-md mb-6">
-          Job posting {jobId ? 'updated' : 'created'} successfully! Redirecting...
+          Job posting {jobId ? "updated" : "created"} successfully!
+          Redirecting...
         </div>
       )}
-      
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block mb-2 font-medium">Job Title</label>
@@ -127,7 +125,7 @@ const JobForm = ({ jobId = null }) => {
             className="w-full p-3 border border-gray-300 rounded-md"
           />
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block mb-2 font-medium">Employment Type</label>
@@ -143,7 +141,7 @@ const JobForm = ({ jobId = null }) => {
               <option value="Internship">Internship</option>
             </select>
           </div>
-          
+
           <div>
             <label className="block mb-2 font-medium">Department</label>
             <input
@@ -155,7 +153,7 @@ const JobForm = ({ jobId = null }) => {
               className="w-full p-3 border border-gray-300 rounded-md"
             />
           </div>
-          
+
           <div>
             <label className="block mb-2 font-medium">Location</label>
             <input
@@ -167,9 +165,11 @@ const JobForm = ({ jobId = null }) => {
               className="w-full p-3 border border-gray-300 rounded-md"
             />
           </div>
-          
+
           <div>
-            <label className="block mb-2 font-medium">Application Deadline</label>
+            <label className="block mb-2 font-medium">
+              Application Deadline
+            </label>
             <input
               type="date"
               name="applicationDeadline"
@@ -179,7 +179,7 @@ const JobForm = ({ jobId = null }) => {
             />
           </div>
         </div>
-        
+
         <div>
           <label className="block mb-2 font-medium">Job Description</label>
           <textarea
@@ -192,7 +192,7 @@ const JobForm = ({ jobId = null }) => {
             placeholder="You can use HTML formatting"
           ></textarea>
         </div>
-        
+
         <div>
           <label className="block mb-2 font-medium">Requirements</label>
           <textarea
@@ -205,7 +205,7 @@ const JobForm = ({ jobId = null }) => {
             placeholder="You can use HTML formatting"
           ></textarea>
         </div>
-        
+
         <div>
           <label className="block mb-2 font-medium">Responsibilities</label>
           <textarea
@@ -218,7 +218,7 @@ const JobForm = ({ jobId = null }) => {
             placeholder="You can use HTML formatting"
           ></textarea>
         </div>
-        
+
         <div>
           <label className="block mb-2 font-medium">Benefits</label>
           <textarea
@@ -231,22 +231,22 @@ const JobForm = ({ jobId = null }) => {
             placeholder="You can use HTML formatting"
           ></textarea>
         </div>
-        
+
         <div className="flex justify-end space-x-4">
           <button
             type="button"
-            onClick={() => router.push('/admin/jobs')}
+            onClick={() => router.push("/admin/jobs")}
             className="px-6 py-2 border border-gray-300 rounded-md"
           >
             Cancel
           </button>
-          
+
           <button
             type="submit"
             disabled={isLoading}
             className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
-            {isLoading ? 'Saving...' : jobId ? 'Update Job' : 'Create Job'}
+            {isLoading ? "Saving..." : jobId ? "Update Job" : "Create Job"}
           </button>
         </div>
       </form>
