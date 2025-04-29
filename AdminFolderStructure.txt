@@ -1,0 +1,38 @@
+/admin
+  ├── components/
+  │   ├── layout/
+  │   │   ├── AdminLayout.jsx        # Moved from root for better organization
+  │   │   ├── Sidebar.jsx
+  │   │   └── Header.jsx
+  │   └── common/                    # Reusable components
+  │       ├── DataTable.jsx
+  │       ├── FormFields.jsx
+  │       └── StatusBadge.jsx
+  ├── hooks/                         # Custom React hooks
+  │   ├── useTable.js
+  │   └── useForm.js
+  ├── context/                       # React context for state management
+  │   └── AdminContext.jsx
+  ├── pages/
+  │   ├── DashboardHome.jsx
+  │   ├── AdminSettings.jsx
+  │   ├── AdminNotFound.jsx
+  │   ├── jobs/
+  │   │   ├── index.jsx              # For route-based code splitting
+  │   │   ├── JobList.jsx
+  │   │   ├── JobCreate.jsx
+  │   │   ├── JobEdit.jsx
+  │   │   └── JobDetail.jsx
+  │   ├── internships/
+  │   │   ├── index.jsx
+  │   │   ├── InternshipList.jsx
+  │   │   ├── InternshipCreate.jsx
+  │   │   ├── InternshipEdit.jsx
+  │   │   └── InternshipDetail.jsx
+  │   └── applications/
+  │       ├── index.jsx
+  │       ├── JobApplications.jsx
+  │       └── InternshipApplications.jsx
+  └── utils/                         # Helper functions
+      ├── api.js
+      └── validation.js
