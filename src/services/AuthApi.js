@@ -1,7 +1,8 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 const API_URL =
-  process.env.REACT_APP_BACKEND_URL || "http://localhost:5000/api/auth";
+  process.env.REACT_APP_BACKEND_URL ||
+  "https://codeblaze-web-backend.onrender.com/api/auth";
 
 const api = axios.create({
   baseURL: API_URL,
