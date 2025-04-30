@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { fetchInternships, deleteInternship } from "../../utils/api";
+import {
+  fetchAdminInternshipById,
+  deleteInternshipAdmin,
+} from "../../utils/api";
 import useTable from "../../hooks/useTable";
 import DataTable from "../../components/common/DataTable";
 import StatusBadge from "../../components/common/StatusBadge";
@@ -76,7 +79,7 @@ const InternshipList = () => {
     const loadInternships = async () => {
       try {
         setLoading(true);
-        const data = await fetchInternships(filters);
+        const data = await fetchAdminInternshipById(filters);
         // Ensure data is an array
         setInternships(Array.isArray(data) ? data : []);
       } catch (error) {
@@ -106,7 +109,7 @@ const InternshipList = () => {
     if (!internshipToDelete) return;
 
     try {
-      await deleteInternship(internshipToDelete.id);
+      await deleteInternshipAdmin(internshipToDelete.id);
       // Remove the deleted item from the state
       setInternships(
         internships.filter((item) => item.id !== internshipToDelete.id)

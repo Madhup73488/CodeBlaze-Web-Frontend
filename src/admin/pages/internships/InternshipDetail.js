@@ -15,10 +15,10 @@ import {
 import StatusBadge from "../../components/common/StatusBadge";
 import DataTable from "../../components/common/DataTable";
 import {
-  fetchInternship,
-  fetchInternshipApplications,
-  deleteInternship,
-  updateInternshipStatus,
+  fetchAdminInternshipById, // Corrected name
+  fetchAdminInternshipApplications, // Corrected name
+  deleteInternshipAdmin, // Corrected name
+  updateInternshipAdmin, // Using this assuming it handles status updates
 } from "../../utils/api";
 import useTable from "../../hooks/useTable";
 
@@ -47,7 +47,7 @@ const InternshipDetail = () => {
     const loadInternship = async () => {
       try {
         setLoading(true);
-        const data = await fetchInternship(id);
+        const data = await fetchAdminInternshipById(id);
         setInternship(data);
       } catch (error) {
         console.error("Failed to load internship", error);
@@ -64,7 +64,7 @@ const InternshipDetail = () => {
     const loadApplications = async () => {
       try {
         setApplicationsLoading(true);
-        const data = await fetchInternshipApplications(id, {
+        const data = await fetchAdminInternshipApplications(id, {
           ...sorting,
           page: pagination.page,
           pageSize: pagination.pageSize,
@@ -87,7 +87,7 @@ const InternshipDetail = () => {
     if (window.confirm("Are you sure you want to delete this internship?")) {
       try {
         setActionInProgress(true);
-        await deleteInternship(id);
+        await deleteInternshipAdmin(id);
         navigate("/admin/internships");
       } catch (error) {
         console.error("Failed to delete internship", error);
@@ -99,7 +99,7 @@ const InternshipDetail = () => {
   const handleStatusChange = async (newStatus) => {
     try {
       setActionInProgress(true);
-      await updateInternshipStatus(id, newStatus);
+      await updateInternshipAdmin(id, newStatus);
       setInternship({ ...internship, status: newStatus });
     } catch (error) {
       console.error("Failed to update status", error);

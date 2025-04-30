@@ -1,9 +1,17 @@
 // src/services/userService.js
 import axios from "axios";
 
+const API_URL =
+  `${process.env.REACT_APP_BACKEND_URL}/api` ||
+  "https://codeblaze-web-backend.onrender.com/users";
+
 // Create axios instance with auth token
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true,
 });
 
 // Add auth token to requests
