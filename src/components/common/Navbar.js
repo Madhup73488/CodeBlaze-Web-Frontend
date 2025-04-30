@@ -877,6 +877,7 @@ function Navbar({ theme, color, toggleTheme, toggleColor, openAuthModal }) {
           border-radius: 0.5rem;
           font-weight: 500;
           transition: all 0.3s ease;
+          cursor: pointer;
         }
         .login-button:hover {
           transform: translateY(-2px);

@@ -1,4 +1,3 @@
-// src/components/profile/ProfileDashboard.jsx
 import React, { useState, useEffect } from "react";
 import { userService } from "../../services/userService";
 import ProfileForm from "./ProfileForm";
@@ -8,7 +7,8 @@ import FileUploadSection from "./FileUploadSection";
 import PasswordChangeForm from "./PasswordChangeForm";
 import { toast } from "react-toastify";
 
-const ProfileDashboard = ({ theme, color }) => {
+const ProfileDashboard = ({ theme = "light", color = "purple" }) => {
+  const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("profile");
@@ -45,14 +45,15 @@ const ProfileDashboard = ({ theme, color }) => {
     }
   };
 
-  // Note: theme and color props are passed down, but styling is primarily via CSS variables
-  // set on the parent container based on these props.
   const renderActiveTab = () => {
     if (loading) {
       return (
         <div className="loading-container">
-          <div className="spinner"></div>
-          <p>Loading profile data...</p>
+          <div
+            className="spinner"
+            style={{ borderTopColor: primaryColor }}
+          ></div>
+          <p>Loading your profile data...</p>
         </div>
       );
     }
@@ -123,190 +124,157 @@ const ProfileDashboard = ({ theme, color }) => {
   };
 
   return (
-    // Apply both theme and color classes to the main container
-    <div className={`profile-dashboard ${theme} ${color}-theme`}>
+    <div className={`profile-dashboard ${theme}`}>
       <div className="profile-header">
-        <h2>My Profile</h2>
-        {/* Accent line similar to OurMission component */}
-        <div className="accent-line"></div>
+        <h1 className="profile-title">
+          My <span style={{ color: primaryColor }}>Profile</span>
+        </h1>
+        <div
+          className="accent-line"
+          style={{ backgroundColor: primaryColor }}
+        ></div>
+        <p className="profile-subtitle">
+          Manage your personal information, experience, education and
+          credentials
+        </p>
       </div>
 
-      <div className="profile-tabs">
-        <button
-          className={`tab ${activeTab === "profile" ? "active" : ""}`}
-          onClick={() => setActiveTab("profile")}
-        >
-          Basic Info
-        </button>
-        <button
-          className={`tab ${activeTab === "experience" ? "active" : ""}`}
-          onClick={() => setActiveTab("experience")}
-        >
-          Experience
-        </button>
-        <button
-          className={`tab ${activeTab === "education" ? "active" : ""}`}
-          onClick={() => setActiveTab("education")}
-        >
-          Education
-        </button>
-        <button
-          className={`tab ${activeTab === "uploads" ? "active" : ""}`}
-          onClick={() => setActiveTab("uploads")}
-        >
-          Resume & Photo
-        </button>
-        <button
-          className={`tab ${activeTab === "password" ? "active" : ""}`}
-          onClick={() => setActiveTab("password")}
-        >
-          Change Password
-        </button>
-      </div>
+      <div className="profile-content">
+        <div className="profile-tabs">
+          {[
+            { id: "profile", label: "Basic Info", icon: "user" },
+            { id: "experience", label: "Experience", icon: "briefcase" },
+            { id: "education", label: "Education", icon: "graduation-cap" },
+            { id: "uploads", label: "Resume & Photo", icon: "file-upload" },
+            { id: "password", label: "Change Password", icon: "lock" },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              className={`tab ${activeTab === tab.id ? "active" : ""}`}
+              onClick={() => setActiveTab(tab.id)}
+              style={
+                activeTab === tab.id
+                  ? {
+                      borderColor: primaryColor,
+                      color: theme === "dark" ? "#fff" : "#fff",
+                      backgroundColor: primaryColor,
+                    }
+                  : {}
+              }
+            >
+              <span className="tab-icon">{renderIcon(tab.icon)}</span>
+              <span className="tab-label">{tab.label}</span>
+            </button>
+          ))}
+        </div>
 
-      <div className="tab-content">{renderActiveTab()}</div>
+        <div className="tab-content">{renderActiveTab()}</div>
+      </div>
 
       <style jsx>{`
-        /* Define Core Variables */
-        :root {
-          --shadow-subtle: 0 2px 4px rgba(0, 0, 0, 0.05);
-          --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Color Palette Definitions */
-        .orange-theme {
-          --color-primary: #f97316; /* Orange 600 */
-          --color-primary-light: #fb923c; /* Orange 400 */
-          --color-primary-very-light: #fff7ed; /* Orange 50 */
-          --color-accent: #ea580c; /* Orange 700 */
-        }
-
-        .purple-theme {
-          --color-primary: #a855f7; /* Purple 600 */
-          --color-primary-light: #c084fc; /* Purple 400 */
-          --color-primary-very-light: #f3e8ff; /* Purple 50 */
-          --color-accent: #9333ea; /* Purple 700 */
-        }
-
-        /* Light Theme Variables */
-        .light {
-          --bg-main: #ffffff;
-          --bg-card: #f8f8f8; /* Lighter card background */
-          --text-primary: #1f2937; /* Gray 800 */
-          --text-secondary: #4b5563; /* Gray 600 */
-          --border-color: #e5e7eb; /* Gray 200 */
-        }
-
-        /* Dark Theme Variables */
-        .dark {
-          --bg-main: #1a1a1a; /* Very dark background */
-          --bg-card: #2d3748; /* Slightly lighter dark background */
-          --text-primary: #e5e7eb; /* Gray 200 */
-          --text-secondary: #9ca3af; /* Gray 400 */
-          --border-color: #4b5563; /* Gray 600 */
-        }
-
-        /* Base Dashboard Styles */
         .profile-dashboard {
-          max-width: 1100px;
-          margin: 2rem auto; /* Increased vertical margin */
-          padding: 2.5rem; /* Increased padding */
-          border-radius: 12px;
-          box-shadow: var(--shadow-md);
-          transition: all 0.3s ease;
+          max-width: 1200px;
+          margin: 2rem auto;
+          padding: 2.5rem 5%;
           font-family: "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
             "Open Sans", "Helvetica Neue", sans-serif;
-          /* Apply theme/color specific variables */
-          background-color: var(--bg-main);
-          color: var(--text-primary);
-          border: 1px solid var(--border-color); /* Subtle border */
         }
 
-        /* Dark mode specific adjustments */
         .profile-dashboard.dark {
-          box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+          background-color: #0a0a0a;
+          color: #ffffff;
+        }
+
+        .profile-dashboard.light {
+          background-color: #ffffff;
+          color: #0a0a0a;
         }
 
         .profile-header {
-          display: flex;
-          flex-direction: column; /* Stack title and accent line */
-          align-items: center; /* Center items */
-          margin-bottom: 3rem; /* Increased space below header */
-          padding-bottom: 1rem; /* Space below text before line */
+          margin-bottom: 3rem;
+          text-align: center;
         }
 
-        .profile-header h2 {
-          font-size: 2rem; /* Slightly smaller heading than mission, still prominent */
+        .profile-title {
+          font-size: 2.5rem;
           font-weight: 700;
-          margin: 0 0 0.5rem 0; /* Space between title and line */
-          color: var(--color-primary); /* Primary color for heading */
+          margin-bottom: 0.5rem;
         }
 
         .accent-line {
           height: 4px;
-          width: 60px; /* Consistent with OurMission */
+          width: 60px;
           border-radius: 2px;
-          background-color: var(--color-primary); /* Primary color for line */
+          margin: 0 auto 1.5rem;
+        }
+
+        .profile-subtitle {
+          font-size: 1.2rem;
+          max-width: 700px;
+          margin: 0 auto;
+          opacity: 0.9;
+        }
+
+        .profile-content {
+          display: flex;
+          gap: 2rem;
+          position: relative;
         }
 
         .profile-tabs {
           display: flex;
-          flex-wrap: wrap; /* Allow wrapping */
-          gap: 0.75rem; /* Consistent gap */
-          margin-bottom: 2.5rem; /* Space below tabs */
-          border-bottom: 1px solid var(--border-color); /* Subtle bottom border */
-          padding-bottom: 0.75rem; /* Space between tabs and border */
+          flex-direction: column;
+          gap: 1rem;
+          width: 250px;
+          position: sticky;
+          top: 2rem;
+          align-self: flex-start;
         }
 
         .tab {
-          padding: 0.75rem 1.25rem; /* Increased padding */
-          border: none;
-          background: transparent; /* Start with transparent background */
+          display: flex;
+          align-items: center;
+          padding: 1rem 1.5rem;
+          border-radius: 10px;
+          border: 2px solid ${theme === "dark" ? "#333" : "#e5e5e5"};
+          background: ${theme === "dark" ? "#111" : "#f8f8f8"};
+          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+          font-weight: 500;
           cursor: pointer;
-          font-weight: 600;
-          font-size: 1rem; /* Base font size */
-          border-radius: 6px; /* Slightly smaller radius than container */
-          transition: all 0.2s ease;
-          color: var(--text-secondary); /* Default tab color */
-          outline: none; /* Remove default outline */
+          transition: all 0.3s ease;
+          text-align: left;
         }
 
         .tab:hover {
-          background-color: var(
-            --color-primary-very-light
-          ); /* Lightest primary color on hover */
-          color: var(--color-primary); /* Primary color text on hover */
+          border-color: ${primaryColor};
+          color: ${primaryColor};
         }
 
         .tab.active {
-          background-color: var(
-            --color-primary
-          ); /* Primary color for active background */
-          color: white; /* White text on active tab */
-          box-shadow: var(--shadow-subtle); /* Subtle shadow for active state */
+          font-weight: 600;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        /* Dark mode tab adjustments */
-        .dark .tab {
-          color: var(--text-secondary); /* Dark mode secondary text */
+        .tab-icon {
+          margin-right: 0.8rem;
+          display: flex;
+          align-items: center;
+          opacity: 0.9;
         }
-        .dark .tab:hover {
-          background-color: rgba(
-            var(--color-primary, #f97316),
-            0.15
-          ); /* Use rgba for transparency with primary color */
-          color: var(
-            --color-primary-light
-          ); /* Lighter primary color on hover in dark mode */
+
+        .tab-icon svg {
+          width: 20px;
+          height: 20px;
         }
-        .dark .tab.active {
-          background-color: var(
-            --color-accent
-          ); /* Use accent for active in dark mode for contrast */
-          color: var(
-            --text-primary
-          ); /* Primary text color (light) on accent background */
-          box-shadow: var(--shadow-subtle);
+
+        .tab-content {
+          flex: 1;
+          background: ${theme === "dark" ? "#111" : "#fff"};
+          border-radius: 12px;
+          padding: 2rem;
+          box-shadow: 0 4px 12px
+            rgba(0, 0, 0, ${theme === "dark" ? "0.3" : "0.1"});
+          min-height: 500px;
         }
 
         .loading-container {
@@ -314,30 +282,17 @@ const ProfileDashboard = ({ theme, color }) => {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          height: 300px; /* Sufficient height */
-          color: var(--text-secondary); /* Use secondary text color */
-          font-size: 1.1rem;
+          height: 400px;
+          opacity: 0.7;
         }
 
-        /* Spinner styles */
         .spinner {
-          width: 50px; /* Slightly smaller than previous */
-          height: 50px;
-          border: 5px solid var(--border-color); /* Use border color for base */
-          border-top-color: var(
-            --color-primary
-          ); /* Primary color for spinner part */
+          width: 60px;
+          height: 60px;
+          border: 5px solid ${theme === "dark" ? "#333" : "#e5e5e5"};
           border-radius: 50%;
           margin-bottom: 1.5rem;
-          animation: spin 0.8s linear infinite;
-        }
-
-        /* Dark mode spinner adjustment */
-        .dark .spinner {
-          border-color: var(--border-color); /* Dark mode border color */
-          border-top-color: var(
-            --color-primary-light
-          ); /* Lighter primary for dark mode spinner */
+          animation: spin 1s linear infinite;
         }
 
         @keyframes spin {
@@ -349,47 +304,36 @@ const ProfileDashboard = ({ theme, color }) => {
           }
         }
 
-        .tab-content {
-          min-height: 450px; /* Maintain minimum height */
-          padding: 2rem; /* Increased padding */
-          background-color: var(--bg-card); /* Card background color */
-          border-radius: 8px; /* Rounded corners */
-          border: 1px solid var(--border-color); /* Subtle border */
-          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.03); /* Subtle inner shadow */
-          transition: all 0.3s ease;
-        }
-
-        /* Dark mode tab content adjustment */
-        .dark .tab-content {
-          border-color: var(--border-color);
-          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Responsive Adjustments */
-        @media (max-width: 768px) {
-          .profile-dashboard {
-            padding: 1.5rem; /* Reduced padding on smaller screens */
-            margin: 1.5rem auto;
-          }
-
-          .profile-header h2 {
-            font-size: 1.8rem;
+        @media (max-width: 920px) {
+          .profile-content {
+            flex-direction: column;
           }
 
           .profile-tabs {
-            flex-direction: column; /* Stack tabs vertically */
-            gap: 0.5rem; /* Smaller gap */
+            width: 100%;
+            flex-direction: row;
+            overflow-x: auto;
+            position: static;
+            padding-bottom: 0.5rem;
           }
 
           .tab {
-            width: 100%; /* Full width tabs */
-            text-align: left;
-            padding: 0.75rem 1rem;
-            font-size: 0.95rem;
+            white-space: nowrap;
+            padding: 0.8rem 1.2rem;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .profile-dashboard {
+            padding: 1.5rem;
+          }
+
+          .profile-title {
+            font-size: 2rem;
           }
 
           .tab-content {
-            padding: 1.5rem; /* Reduced padding */
+            padding: 1.5rem;
           }
         }
 
@@ -399,13 +343,21 @@ const ProfileDashboard = ({ theme, color }) => {
             margin: 1rem auto;
           }
 
-          .profile-header h2 {
-            font-size: 1.5rem;
+          .profile-title {
+            font-size: 1.7rem;
+          }
+
+          .profile-subtitle {
+            font-size: 1rem;
           }
 
           .tab {
+            padding: 0.6rem 1rem;
             font-size: 0.9rem;
-            padding: 0.6rem 0.8rem;
+          }
+
+          .tab-icon {
+            margin-right: 0.5rem;
           }
 
           .tab-content {
@@ -415,6 +367,86 @@ const ProfileDashboard = ({ theme, color }) => {
       `}</style>
     </div>
   );
+};
+
+// Helper function to render tab icons
+const renderIcon = (iconName) => {
+  switch (iconName) {
+    case "user":
+      return (
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      );
+    case "briefcase":
+      return (
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+        </svg>
+      );
+    case "graduation-cap":
+      return (
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+          <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path>
+        </svg>
+      );
+    case "file-upload":
+      return (
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <path d="M12 18v-6"></path>
+          <path d="M8 15l4-4 4 4"></path>
+        </svg>
+      );
+    case "lock":
+      return (
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      );
+    default:
+      return null;
+  }
 };
 
 export default ProfileDashboard;

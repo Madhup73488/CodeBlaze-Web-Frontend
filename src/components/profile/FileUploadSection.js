@@ -1,32 +1,51 @@
-// src/components/profile/FileUploadSection.jsx
 import React, { useState } from "react";
-import { userService } from "../../services/userService";
 import { toast } from "react-toastify";
+import { userService } from "../../services/userService";
 
-// Note: theme and color props are passed down from the parent,
-// but styling primarily relies on CSS variables set by the parent.
 const FileUploadSection = ({
   onUpdate,
   theme,
   color,
-  setSubmitting: setParentSubmitting,
   submitting: parentSubmitting,
+  setSubmitting: setParentSubmitting,
 }) => {
+  // Define primary color based on the color prop
+  const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
+
+  // Create CSS variables for consistent styling
+  const cssVars = {
+    "--color-primary": primaryColor,
+    "--color-primary-light": `${primaryColor}dd`,
+    "--color-primary-very-light": `${primaryColor}22`,
+    "--bg-main": theme === "dark" ? "#0a0a0a" : "#f9fafb",
+    "--bg-card": theme === "dark" ? "#111" : "#fff",
+    "--text-primary": theme === "dark" ? "#fff" : "#333",
+    "--text-secondary": theme === "dark" ? "#aaa" : "#666",
+    "--border-color": theme === "dark" ? "#333" : "#e5e5e5",
+    "--shadow-sm":
+      theme === "dark"
+        ? "0 2px 4px rgba(0, 0, 0, 0.3)"
+        : "0 2px 4px rgba(0, 0, 0, 0.05)",
+    "--shadow-md":
+      theme === "dark"
+        ? "0 4px 6px rgba(0, 0, 0, 0.4)"
+        : "0 4px 6px rgba(0, 0, 0, 0.1)",
+  };
+
   const [resumeFile, setResumeFile] = useState(null);
   const [profileImageFile, setProfileImageFile] = useState(null);
-  // Removed local uploading states, using parent's state
-  // const [resumeUploading, setResumeUploading] = useState(false);
-  // const [imageUploading, setImageUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [activeUpload, setActiveUpload] = useState(null); // Track which upload is active
 
   const handleResumeChange = (e) => {
     const file = e.target.files[0];
     setResumeFile(null); // Clear previous selection on new change
+    
     if (file) {
       // Check if file is a PDF or DOC(X)
       const fileType = file.type;
       const fileSizeMB = file.size / 1024 / 1024;
-      const maxFileSizeMB = 5; // Example limit
+      const maxFileSizeMB = 5;
 
       if (
         fileType === "application/pdf" ||
@@ -51,9 +70,10 @@ const FileUploadSection = ({
     const file = e.target.files[0];
     setProfileImageFile(null); // Clear previous selection on new change
     setPreviewUrl(null); // Clear previous preview
+    
     if (file) {
       const fileSizeMB = file.size / 1024 / 1024;
-      const maxFileSizeMB = 2; // Example limit
+      const maxFileSizeMB = 2;
 
       // Check if file is an image
       if (!file.type.startsWith("image/")) {
@@ -88,7 +108,9 @@ const FileUploadSection = ({
     const formData = new FormData();
     formData.append("resume", resumeFile);
 
-    setParentSubmitting(true); // Use parent's submitting state
+    setParentSubmitting(true);
+    setActiveUpload("resume");
+    
     try {
       await userService.uploadResume(formData);
       toast.success("Resume uploaded successfully");
@@ -101,7 +123,8 @@ const FileUploadSection = ({
       toast.error("Failed to upload resume");
       console.error("Error uploading resume:", error);
     } finally {
-      setParentSubmitting(false); // End parent's submitting state
+      setParentSubmitting(false);
+      setActiveUpload(null);
     }
   };
 
@@ -114,7 +137,9 @@ const FileUploadSection = ({
     const formData = new FormData();
     formData.append("profileImage", profileImageFile);
 
-    setParentSubmitting(true); // Use parent's submitting state
+    setParentSubmitting(true);
+    setActiveUpload("image");
+    
     try {
       await userService.uploadProfileImage(formData);
       toast.success("Profile image uploaded successfully");
@@ -128,379 +153,368 @@ const FileUploadSection = ({
       toast.error("Failed to upload profile image");
       console.error("Error uploading profile image:", error);
     } finally {
-      setParentSubmitting(false); // End parent's submitting state
+      setParentSubmitting(false);
+      setActiveUpload(null);
     }
   };
 
   return (
-    <div className="file-upload-section">
-      <div className="upload-container">
-        <h3>Resume Upload</h3>
-        <p className="info-text">
-          Upload your resume (PDF or DOC/DOCX, max 5MB)
-        </p>
-
-        <div className="upload-area">
-          {/* Styled file input and label */}
-          <label htmlFor="resume-upload-input" className="file-upload-label">
-            Choose File
-          </label>
-          <input
-            type="file"
-            id="resume-upload-input" // Use a specific ID
-            accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            onChange={handleResumeChange}
-            className="hidden-file-input" // Hide the default input
-          />
-
-          <button
-            onClick={uploadResume}
-            // Disabled if no file OR parent is submitting OR a resume file is selected but parent isn't submitting yet
-            disabled={!resumeFile || parentSubmitting}
-            className="upload-btn"
-          >
-            {parentSubmitting && resumeFile ? ( // Show spinner only if this specific file type is being uploaded
-              <>
-                <span className="spinner"></span>
-                Uploading...
-              </>
-            ) : (
-              "Upload Resume"
-            )}
-          </button>
-        </div>
-
-        {resumeFile && (
-          <div className="file-info">
-            <span className="file-name">{resumeFile.name}</span>
-            <span className="file-size">
-              ({(resumeFile.size / 1024 / 1024).toFixed(2)} MB)
-            </span>
-          </div>
-        )}
-      </div>
-
-      <div className="upload-container">
-        <h3>Profile Image</h3>
-        <p className="info-text">
-          Upload a professional profile photo (JPG, PNG, GIF, max 2MB)
-        </p>
-
-        <div className="upload-area image-upload-area">
-          <div className="preview-container">
-            {previewUrl ? (
-              <img src={previewUrl} alt="Preview" className="image-preview" />
-            ) : (
-              <div className="no-preview">
-                <span>Image Preview</span>
+    <div className="file-upload-section" style={cssVars}>
+      <h2 className="section-title">File Uploads</h2>
+      
+      <div className="upload-grid">
+        {/* Resume Upload */}
+        <div className="upload-container">
+          <h3>Resume</h3>
+          <p className="info-text">Upload your resume (PDF or DOC/DOCX, max 5MB)</p>
+          
+          <div className="upload-content">
+            <div className="file-input-container">
+              <label htmlFor="resume-upload-input" className="file-input-label">
+                <span className="file-icon">📄</span>
+                <span className="file-text">
+                  {resumeFile ? resumeFile.name : "Choose file"}
+                </span>
+              </label>
+              <input
+                type="file"
+                id="resume-upload-input"
+                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                onChange={handleResumeChange}
+                className="hidden-file-input"
+              />
+            </div>
+            
+            {resumeFile && (
+              <div className="file-info">
+                <div className="file-meta">
+                  <span className="file-name">{resumeFile.name}</span>
+                  <span className="file-size">
+                    ({(resumeFile.size / 1024 / 1024).toFixed(2)} MB)
+                  </span>
+                </div>
               </div>
             )}
-          </div>
-
-          {/* Styled file input and label for image */}
-          <div className="image-upload-controls">
-            <label
-              htmlFor="profileImage-upload-input"
-              className="file-upload-label"
-            >
-              Choose Image
-            </label>
-            <input
-              type="file"
-              id="profileImage-upload-input" // Use a specific ID
-              accept="image/png, image/jpeg, image/gif" // Specify common image types
-              onChange={handleImageChange}
-              className="hidden-file-input" // Hide the default input
-            />
-
+            
             <button
-              onClick={uploadProfileImage}
-              // Disabled if no file OR parent is submitting OR an image file is selected but parent isn't submitting yet
-              disabled={!profileImageFile || parentSubmitting}
+              onClick={uploadResume}
+              disabled={!resumeFile || parentSubmitting}
               className="upload-btn"
+              style={{ backgroundColor: primaryColor }}
             >
-              {parentSubmitting && profileImageFile ? ( // Show spinner only if this specific file type is being uploaded
+              {parentSubmitting && activeUpload === "resume" ? (
                 <>
                   <span className="spinner"></span>
                   Uploading...
                 </>
               ) : (
-                "Upload Image"
+                "Upload Resume"
               )}
             </button>
           </div>
         </div>
-
-        {profileImageFile && (
-          <div className="file-info">
-            <span className="file-name">{profileImageFile.name}</span>
-            <span className="file-size">
-              ({(profileImageFile.size / 1024 / 1024).toFixed(2)} MB)
-            </span>
+        
+        {/* Profile Image Upload */}
+        <div className="upload-container">
+          <h3>Profile Image</h3>
+          <p className="info-text">Upload a professional profile photo (JPG, PNG, GIF, max 2MB)</p>
+          
+          <div className="upload-content">
+            <div className="preview-container">
+              {previewUrl ? (
+                <img src={previewUrl} alt="Preview" className="image-preview" />
+              ) : (
+                <div className="no-preview">
+                  <span className="preview-icon">🖼️</span>
+                  <span>Image Preview</span>
+                </div>
+              )}
+            </div>
+            
+            <div className="file-controls">
+              <div className="file-input-container">
+                <label htmlFor="profileImage-upload-input" className="file-input-label">
+                  <span className="file-icon">🖼️</span>
+                  <span className="file-text">
+                    {profileImageFile ? profileImageFile.name : "Choose image"}
+                  </span>
+                </label>
+                <input
+                  type="file"
+                  id="profileImage-upload-input"
+                  accept="image/png, image/jpeg, image/gif"
+                  onChange={handleImageChange}
+                  className="hidden-file-input"
+                />
+              </div>
+              
+              {profileImageFile && (
+                <div className="file-info">
+                  <div className="file-meta">
+                    <span className="file-name">{profileImageFile.name}</span>
+                    <span className="file-size">
+                      ({(profileImageFile.size / 1024 / 1024).toFixed(2)} MB)
+                    </span>
+                  </div>
+                </div>
+              )}
+              
+              <button
+                onClick={uploadProfileImage}
+                disabled={!profileImageFile || parentSubmitting}
+                className="upload-btn"
+                style={{ backgroundColor: primaryColor }}
+              >
+                {parentSubmitting && activeUpload === "image" ? (
+                  <>
+                    <span className="spinner"></span>
+                    Uploading...
+                  </>
+                ) : (
+                  "Upload Image"
+                )}
+              </button>
+            </div>
           </div>
-        )}
+        </div>
       </div>
-
+      
       <style jsx>{`
         .file-upload-section {
-          /* Padding handled by parent's tab-content */
-          display: flex;
-          flex-direction: column;
-          gap: 2rem; /* Space between upload containers */
+          font-family: "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+            "Open Sans", "Helvetica Neue", sans-serif;
         }
-
+        
+        .section-title {
+          font-size: 1.5rem;
+          font-weight: 600;
+          margin-bottom: 1.5rem;
+          padding-bottom: 0.75rem;
+          border-bottom: 2px solid var(--border-color);
+          color: var(--text-primary);
+        }
+        
+        .upload-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1.5rem;
+        }
+        
         .upload-container {
-          padding: 1.5rem; /* Padding around each container */
+          background-color: var(--bg-card);
           border: 1px solid var(--border-color);
           border-radius: 8px;
-          background-color: var(
-            --bg-main
-          ); /* Use main background for containers */
-          box-shadow: var(--shadow-subtle);
+          padding: 1.5rem;
+          box-shadow: var(--shadow-sm);
+          display: flex;
+          flex-direction: column;
         }
-
-        .dark .upload-container {
-          background-color: var(
-            --bg-card
-          ); /* Use card background in dark mode */
-        }
-
+        
         .upload-container h3 {
           font-size: 1.2rem;
           font-weight: 600;
-          margin-top: 0;
-          margin-bottom: 0.5rem;
+          margin: 0 0 0.5rem;
           color: var(--text-primary);
         }
-
+        
         .info-text {
           font-size: 0.9rem;
-          color: var(--text-secondary); /* Secondary text color */
+          color: var(--text-secondary);
           margin-bottom: 1.5rem;
         }
-
-        .upload-area {
+        
+        .upload-content {
           display: flex;
-          align-items: center; /* Vertically align items */
-          gap: 1rem; /* Space between file input/label and button */
+          flex-direction: column;
+          gap: 1rem;
         }
-
-        .upload-area.image-upload-area {
-          flex-direction: column; /* Stack preview and controls */
-          align-items: flex-start; /* Align items to the start */
+        
+        .file-input-container {
+          width: 100%;
         }
-
-        /* Hide default file input */
+        
+        .file-input-label {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.8rem 1rem;
+          border: 1px solid var(--border-color);
+          border-radius: 6px;
+          background-color: var(--bg-main);
+          color: var(--text-primary);
+          cursor: pointer;
+          transition: all 0.3s ease;
+          width: 100%;
+        }
+        
+        .file-input-label:hover {
+          border-color: var(--color-primary);
+          box-shadow: 0 0 0 2px var(--color-primary-very-light);
+        }
+        
+        .file-icon {
+          font-size: 1.2rem;
+        }
+        
+        .file-text {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          flex: 1;
+        }
+        
         .hidden-file-input {
           display: none;
         }
-
-        /* Style the file upload label (behaves like a button) */
-        .file-upload-label {
-          display: inline-block;
-          padding: 0.6rem 1.2rem; /* Padding similar to buttons */
-          border: 1px solid var(--border-color);
-          border-radius: 6px;
-          background-color: var(--bg-card); /* Card background */
-          color: var(--text-primary);
-          font-size: 1rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          flex-shrink: 0; /* Prevent shrinking */
-        }
-
-        .dark .file-upload-label {
-          background-color: var(--bg-main); /* Main background in dark mode */
-        }
-
-        .file-upload-label:hover {
-          background-color: var(--border-color); /* Hover on border color */
-          color: var(--text-primary);
-        }
-
-        /* Upload Button Styling (Consistent with other submit buttons) */
-        .upload-btn {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0.6rem 1.5rem; /* Padding */
-          background-color: var(--color-primary); /* Primary color */
-          color: white; /* White text */
-          border: none;
-          border-radius: 6px;
-          font-size: 1rem;
-          font-weight: 600; /* Bolder text */
-          cursor: pointer;
-          transition: all 0.3s ease;
-          min-width: 120px; /* Minimum width */
-          flex-shrink: 0; /* Prevent shrinking */
-        }
-
-        .upload-btn:hover:not(:disabled) {
-          background-color: var(
-            --color-primary-light
-          ); /* Lighter primary on hover */
-          transform: translateY(-1px); /* Subtle lift effect */
-        }
-
-        .upload-btn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-          transform: none;
-        }
-
-        /* Spinner Styling (Consistent with other buttons) */
-        .upload-btn .spinner {
-          display: inline-block;
-          width: 16px;
-          height: 16px;
-          border: 2px solid rgba(255, 255, 255, 0.3);
-          border-radius: 50%;
-          border-top-color: white;
-          animation: spin 1s linear infinite;
-          margin-right: 8px;
-        }
-
-        .dark .upload-btn .spinner {
-          border: 2px solid rgba(var(--text-primary, #e5e7eb), 0.3);
-          border-top-color: var(--text-primary);
-        }
-
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
+        
         .file-info {
-          margin-top: 1rem;
-          font-size: 0.9rem;
-          color: var(--text-secondary); /* Secondary text color */
-          display: flex;
-          gap: 0.5rem;
-          flex-wrap: wrap;
+          padding: 0.5rem 0;
         }
-
+        
+        .file-meta {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.9rem;
+          color: var(--text-secondary);
+        }
+        
         .file-name {
           font-weight: 500;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
-          max-width: 100%; /* Prevent overflow */
+          max-width: 100%;
         }
-
-        .file-size {
-          font-weight: 400;
-        }
-
-        /* Image Specific Styles */
-        .image-upload-area {
-          display: flex; /* Changed to flex */
-          flex-direction: column; /* Stack preview and controls */
-          align-items: flex-start; /* Align items to start */
-          gap: 1.5rem; /* Space between preview and controls */
-        }
-
+        
         .preview-container {
-          width: 150px; /* Fixed width for preview */
-          height: 150px; /* Fixed height for preview */
-          border: 1px dashed var(--border-color); /* Dashed border */
+          width: 100%;
+          height: 180px;
+          border: 1px dashed var(--border-color);
           border-radius: 8px;
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
-          overflow: hidden; /* Hide overflow */
-          background-color: var(--bg-card); /* Card background */
-          flex-shrink: 0; /* Prevent shrinking */
+          overflow: hidden;
+          background-color: var(--bg-main);
+          margin-bottom: 1rem;
         }
-        .dark .preview-container {
-          background-color: var(--bg-main); /* Main background in dark mode */
-        }
-
+        
         .image-preview {
           width: 100%;
           height: 100%;
-          object-fit: cover; /* Cover the container */
+          object-fit: cover;
         }
-
+        
         .no-preview {
-          text-align: center;
-          color: var(--text-secondary);
-          font-size: 0.9rem;
-        }
-
-        .image-upload-controls {
           display: flex;
-          gap: 1rem; /* Space between label and button */
-          flex-wrap: wrap; /* Allow wrapping */
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+          color: var(--text-secondary);
         }
-
-        /* Responsive Adjustments */
+        
+        .preview-icon {
+          font-size: 2rem;
+          opacity: 0.7;
+        }
+        
+        .file-controls {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+        
+        .upload-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.8rem 1.5rem;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: var(--shadow-md);
+          margin-top: 0.5rem;
+        }
+        
+        .upload-btn:hover:not(:disabled) {
+          opacity: 0.9;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 10px
+            ${theme === "dark" ? "rgba(0, 0, 0, 0.4)" : "rgba(0, 0, 0, 0.15)"};
+        }
+        
+        .upload-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          box-shadow: none;
+          transform: none;
+        }
+        
+        .spinner {
+          display: inline-block;
+          width: 18px;
+          height: 18px;
+          border: 3px solid rgba(255, 255, 255, 0.3);
+          border-radius: 50%;
+          border-top-color: white;
+          animation: spin 0.8s linear infinite;
+          margin-right: 10px;
+        }
+        
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+        
         @media (max-width: 768px) {
-          .file-upload-section {
+          .upload-grid {
+            grid-template-columns: 1fr;
             gap: 1.5rem;
           }
-
-          .upload-container {
-            padding: 1rem;
+          
+          .section-title {
+            font-size: 1.4rem;
           }
-
+          
+          .preview-container {
+            height: 150px;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .section-title {
+            font-size: 1.3rem;
+          }
+          
           .upload-container h3 {
             font-size: 1.1rem;
           }
-
+          
           .info-text {
             font-size: 0.85rem;
             margin-bottom: 1rem;
           }
-
-          .upload-area {
-            flex-direction: column; /* Stack label/input and button */
-            align-items: flex-start;
-            gap: 0.8rem;
-          }
-          .upload-area.image-upload-area {
-            gap: 1rem; /* Adjust gap when stacked */
-          }
-
-          .file-upload-label,
-          .upload-btn {
-            width: 100%; /* Full width on smaller screens */
-            justify-content: center;
-            padding: 0.6rem 1rem;
+          
+          .file-input-label {
+            padding: 0.7rem 0.9rem;
             font-size: 0.95rem;
           }
-
+          
           .preview-container {
-            width: 120px; /* Smaller preview */
             height: 120px;
           }
-
-          .image-upload-controls {
-            width: 100%; /* Make controls full width */
-            gap: 0.8rem;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .upload-container h3 {
-            font-size: 1rem;
-          }
-          .info-text {
-            font-size: 0.8rem;
-          }
-          .file-upload-label,
+          
           .upload-btn {
-            font-size: 0.9rem;
-            padding: 0.5rem 0.8rem;
-          }
-          .preview-container {
-            width: 100px; /* Even smaller preview */
-            height: 100px;
-          }
-          .no-preview {
-            font-size: 0.8rem;
+            padding: 0.7rem 1.5rem;
+            font-size: 0.95rem;
+            width: 100%;
           }
         }
       `}</style>

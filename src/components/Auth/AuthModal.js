@@ -38,7 +38,7 @@ function AuthModal({ isOpen, onClose, theme, color }) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [otpInputs, setOtpInputs] = useState(["", "", "", "", "", ""]);
-
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
   const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
 
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
@@ -54,6 +54,12 @@ function AuthModal({ isOpen, onClose, theme, color }) {
     newPassword: "",
     confirmNewPassword: "",
   });
+
+  const Loader = () => (
+    <div className="button-loader">
+      <div className="loader-spinner"></div>
+    </div>
+  );
 
   const handleLoginChange = (e) => {
     const { name, value } = e.target;
@@ -104,48 +110,55 @@ function AuthModal({ isOpen, onClose, theme, color }) {
 
   const handleResetPasswordChange = (e) => {
     const { name, value } = e.target;
+
     setResetPasswordForm({ ...resetPasswordForm, [name]: value });
     if (error) setError(null);
   };
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    const result = await loginUser(loginForm.email, loginForm.password);
-    if (result.success) {
-      onClose();
-    }
+    e.stopPropagation();
+    setIsButtonLoading(true);
+    setTimeout(async () => {
+      const result = await loginUser(loginForm.email, loginForm.password);
+      if (result.success) {
+        onClose();
+      }
+      setIsButtonLoading(false); // Set local loading state back to false
+    }, 2000);
   };
 
   const handleRequestOTP = async (e) => {
     e.preventDefault();
-    if (registerForm.password !== registerForm.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
+    e.stopPropagation();
+    setIsButtonLoading(true);
+    setTimeout(async () => {
+      if (registerForm.password !== registerForm.confirmPassword) {
+        setError("Passwords do not match");
+        return;
+      }
 
-    if (!registerForm.name || !registerForm.email || !registerForm.password) {
-      setError("All fields are required");
-      return;
-    }
+      if (!registerForm.name || !registerForm.email || !registerForm.password) {
+        setError("All fields are required");
+        return;
+      }
 
-    const result = await registerUser(registerForm);
-    // AuthContext's register function handles setting authFlowState on success/failure
-    if (result.success) {
-      console.log(
-        "AuthModal: registerUser returned success. Context should handle state change."
-      );
-      // No local state change needed here for the main flow
-      setOtpInputs(["", "", "", "", "", ""]); // Clear OTP inputs in preparation for the next step
-    } else {
-      console.error("AuthModal: registerUser returned failure.");
-      // Error is already set by AuthContext
-    }
+      const result = await registerUser(registerForm);
+      if (result.success) {
+        console.log(
+          "AuthModal: registerUser returned success. Context should handle state change."
+        );
+        setOtpInputs(["", "", "", "", "", ""]);
+      } else {
+        console.error("AuthModal: registerUser returned failure.");
+      }
+      setIsButtonLoading(false); // Set local loading state back to false
+    }, 2000);
   };
 
-  // This function verifies the OTP and relies on AuthContext
-  // to handle login and state change back to 'initial' on success
   const handleVerifyOTPSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
     const enteredOtp = otpInputs.join("");
     if (enteredOtp.length !== 6) {
       setError("Please enter the complete 6-digit OTP");
@@ -154,53 +167,73 @@ function AuthModal({ isOpen, onClose, theme, color }) {
 
     const result = await verifyUserOTP(userEmailForOTP, enteredOtp);
     if (result.success) {
-      // AuthContext's verifyOTP handles login and setting authFlowState to 'initial'
-      setOtpInputs(["", "", "", "", "", ""]); // Clear OTP inputs on successful verification
-      onClose(); // Close modal as user is now logged in
+      setOtpInputs(["", "", "", "", "", ""]);
+      onClose();
     } else {
-      // Error is already set by AuthContext
       console.error("AuthModal: verifyUserOTP returned failure.");
     }
   };
 
   const handleResendOTP = async () => {
-    const result = await resendUserOTP(userEmailForOTP);
-    if (result.success) {
-      setError("OTP resent successfully.");
-      setOtpInputs(["", "", "", "", "", ""]); // Clear inputs on resend
-    } else {
-      setError("Failed to resend OTP. " + result.message);
+    try {
+      const result = await resendUserOTP(userEmailForOTP);
+      if (result.success) {
+        // Use a success state for the message
+        setError({ type: "success", message: "OTP resent successfully." });
+        setOtpInputs(["", "", "", "", "", ""]);
+      } else {
+        setError({
+          type: "error",
+          message: "Failed to resend OTP. " + result.message,
+        });
+      }
+    } catch (err) {
+      setError({
+        type: "error",
+        message: "Failed to resend OTP. Please try again.",
+      });
     }
   };
 
   const handleForgotPasswordSubmit = async (e) => {
     e.preventDefault();
-    const result = await requestForgotPassword(forgotPasswordForm.email);
-    if (result.success) {
-      setForgotPasswordForm({ email: "" });
-    }
+    e.stopPropagation();
+    setIsButtonLoading(true);
+    setTimeout(async () => {
+      const result = await requestForgotPassword(forgotPasswordForm.email);
+      if (result.success) {
+        setForgotPasswordForm({ email: "" });
+      }
+      setIsButtonLoading(false); // Set local loading state back to false
+    }, 2000);
   };
 
   const handleResetPasswordSubmit = async (e) => {
     e.preventDefault();
-    if (
-      resetPasswordForm.newPassword !== resetPasswordForm.confirmNewPassword
-    ) {
-      setError("New passwords do not match");
-      return;
-    }
-    const result = await resetUserPassword(
-      resetPasswordToken,
-      resetPasswordForm.newPassword
-    );
-    if (result.success) {
-      setResetPasswordForm({ newPassword: "", confirmNewPassword: "" });
-      onClose();
-    }
+    e.stopPropagation();
+    setIsButtonLoading(true);
+    setTimeout(async () => {
+      if (
+        resetPasswordForm.newPassword !== resetPasswordForm.confirmNewPassword
+      ) {
+        setError("New passwords do not match");
+        return;
+      }
+      const result = await resetUserPassword(
+        resetPasswordToken,
+        resetPasswordForm.newPassword
+      );
+      if (result.success) {
+        setResetPasswordForm({ newPassword: "", confirmNewPassword: "" });
+        onClose();
+      }
+      setIsButtonLoading(false); // Set local loading state back to false
+    }, 2000);
   };
 
   const handleForgotPasswordClick = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     setAuthFlowState("forgot_password_form");
     setLoginForm({ email: "", password: "" });
     setError(null);
@@ -221,31 +254,8 @@ function AuthModal({ isOpen, onClose, theme, color }) {
     setError(null);
   };
 
-  // Effect to reset modal state when modal is closed
-  // This effect is triggered by changes to isOpen or authFlowState
-  // When isOpen becomes FALSE, it indicates the modal is dismissed
-  // according to its parent component. The component resets its internal
-  // form states and, if applicable, resets the context's authFlowState
-  // back to 'initial' unless it's the persistent 'reset_password_form'
-  // state driven by the URL.
-  // Note: This effect cannot reliably distinguish between a manual close
-  // (user clicks X) and an automatic close triggered by the parent changing
-  // the 'isOpen' prop for other reasons, based on the current props.
   useEffect(() => {
-    console.log(
-      "AuthModal useEffect triggered. isOpen:",
-      isOpen,
-      "authFlowState:",
-      authFlowState
-    );
-    // If the modal is closed (!isOpen)
     if (!isOpen) {
-      console.log(
-        "AuthModal useEffect: Modal is NOT open (!isOpen is true). authFlowState:",
-        authFlowState
-      );
-
-      // Reset all local form states and UI controls
       setActiveTab("login");
       setShowPassword(false);
       setShowConfirmPassword(false);
@@ -258,53 +268,31 @@ function AuthModal({ isOpen, onClose, theme, color }) {
         confirmPassword: "",
       });
       setOtpInputs(["", "", "", "", "", ""]);
-      setOtpForm({ otp: "" }); // Also reset combined otpForm
+      setOtpForm({ otp: "" });
       setForgotPasswordForm({ email: "" });
       setResetPasswordForm({ newPassword: "", confirmNewPassword: "" });
       setError(null);
 
-      // Reset auth flow state ONLY if it's not the password reset flow OR OTP verification flow
-      // Preserve state for both password reset and OTP verification processes
       if (
         authFlowState !== "reset_password_form" &&
         authFlowState !== "otp_sent"
       ) {
-        console.log("AuthModal useEffect: Resetting authFlowState to initial.");
-        setAuthFlowState("initial"); // This sets context state back to initial
-      } else {
-        console.log(
-          "AuthModal useEffect: Preserving authFlowState:",
-          authFlowState
-        );
+        setAuthFlowState("initial");
       }
     } else {
-      // If the modal is opening or already open (isOpen is true)
-      console.log(
-        "AuthModal useEffect: Modal is OPEN. authFlowState:",
-        authFlowState
-      );
-      // If opening into the reset_password_form state, ensure form is clear
       if (authFlowState === "reset_password_form") {
         setResetPasswordForm({ newPassword: "", confirmNewPassword: "" });
-        setOtpInputs(["", "", "", "", "", ""]); // Clear OTP inputs just in case
+        setOtpInputs(["", "", "", "", "", ""]);
       }
-      // If opening into otp_sent state, ensure OTP inputs are clear
       if (authFlowState === "otp_sent") {
         setOtpInputs(["", "", "", "", "", ""]);
       }
     }
-    // Added setAuthFlowState to dependencies to ensure effect runs when authFlowState changes while modal is open
-    // Removed setError from dependencies as it's unlikely to need to trigger a full reset effect
-  }, [isOpen, authFlowState, setAuthFlowState, setError]); // Depend on isOpen, authFlowState, and setAuthFlowState
-  // If the modal is not open AND the authFlowState is not 'reset_password_form'
-  // (which indicates the modal should be open because of a URL token), return null.
+  }, [isOpen, authFlowState, setAuthFlowState, setError]);
+
   if (!isOpen && authFlowState !== "reset_password_form") return null;
 
   const renderContent = () => {
-    console.log(
-      "AuthModal is rendering. Current authFlowState:",
-      authFlowState
-    );
     if (loading) {
       return <div>Loading...</div>;
     }
@@ -319,8 +307,17 @@ function AuthModal({ isOpen, onClose, theme, color }) {
               enter it below.
             </p>
             {error && (
-              <p className="error-message">
-                <AlertCircle size={16} /> {error}
+              <p
+                className={`${
+                  error.type === "success" ? "success-message" : "error-message"
+                }`}
+              >
+                {error.type === "success" ? (
+                  <CheckCircle size={16} />
+                ) : (
+                  <AlertCircle size={16} />
+                )}
+                {error.message}
               </p>
             )}
           </div>
@@ -353,7 +350,13 @@ function AuthModal({ isOpen, onClose, theme, color }) {
               style={{ backgroundColor: primaryColor }}
               disabled={loading}
             >
-              {loading ? "Verifying..." : "Verify"} <CheckCircle size={18} />
+              {isButtonLoading ? (
+                <Loader />
+              ) : (
+                <>
+                  Verify <CheckCircle size={18} />
+                </>
+              )}
             </button>
           </form>
           <div className="auth-switch">
@@ -364,7 +367,8 @@ function AuthModal({ isOpen, onClose, theme, color }) {
               style={{ color: primaryColor }}
               disabled={loading}
             >
-              {loading ? "Sending..." : "Resend OTP"} <RotateCcw size={16} />
+              {isButtonLoading ? <Loader /> : "Resend OTP"}{" "}
+              <RotateCcw size={16} />
             </button>
           </div>
           <div className="auth-switch">
@@ -419,7 +423,13 @@ function AuthModal({ isOpen, onClose, theme, color }) {
               style={{ backgroundColor: primaryColor }}
               disabled={loading}
             >
-              {loading ? "Sending..." : "Send Reset Link"} <Mail size={18} />
+              {isButtonLoading ? (
+                <Loader />
+              ) : (
+                <>
+                  Send Reset Link <Mail size={18} />
+                </>
+              )}
             </button>
           </form>
           <div className="auth-switch">
@@ -540,8 +550,13 @@ function AuthModal({ isOpen, onClose, theme, color }) {
               style={{ backgroundColor: primaryColor }}
               disabled={loading}
             >
-              {loading ? "Resetting..." : "Reset Password"}{" "}
-              <ArrowRight size={18} />
+              {isButtonLoading ? (
+                <Loader />
+              ) : (
+                <>
+                  Reset Password <ArrowRight size={18} />
+                </>
+              )}
             </button>
           </form>
           <div className="auth-switch">
@@ -651,8 +666,16 @@ function AuthModal({ isOpen, onClose, theme, color }) {
                 }}
                 disabled={loading}
               >
-                {loading ? "Loading..." : isAdmin ? "Admin Login" : "Login"}{" "}
-                <ArrowRight size={18} />
+                {isButtonLoading ? (
+                  <Loader />
+                ) : isAdmin ? (
+                  "Admin Login"
+                ) : (
+                  <>
+                    "Login "
+                    <ArrowRight size={18} />
+                  </>
+                )}{" "}
               </button>
             </form>
 
@@ -847,8 +870,14 @@ function AuthModal({ isOpen, onClose, theme, color }) {
                 style={{ backgroundColor: primaryColor }}
                 disabled={loading}
               >
-                {loading ? "Loading..." : "Create Account"}{" "}
-                <ArrowRight size={18} />
+                {isButtonLoading ? (
+                  <loader />
+                ) : (
+                  <>
+                    Create Account
+                    <ArrowRight size={18} />
+                  </>
+                )}
               </button>
             </form>
 
@@ -1045,12 +1074,13 @@ function AuthModal({ isOpen, onClose, theme, color }) {
         .auth-modal {
           position: relative;
           width: 100%;
-          max-width: 1000px;
+          max-width: 950px; /* Reduced from 1000px */
+          max-height: 85vh; /* Add height constraint */
           background-color: #ffffff;
           border-radius: 16px;
           box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.25),
             0 18px 36px -18px rgba(0, 0, 0, 0.3);
-          overflow: hidden;
+          overflow: auto; /* Change from overflow: hidden to allow scrolling */
           animation: modalSlideUp 0.4s ease-out;
           transform-origin: bottom;
         }
@@ -1286,7 +1316,7 @@ function AuthModal({ isOpen, onClose, theme, color }) {
         }
 
         .tab.active:after {
-          content: "";
+          // content: "";
           position: absolute;
           bottom: -3px;
           left: 50%;
@@ -1484,8 +1514,8 @@ function AuthModal({ isOpen, onClose, theme, color }) {
         }
 
         .otp-input {
-          width: 50px;
-          height: 60px;
+          width: 40px;
+          height: 50px;
           border: 2px solid #d1d5db;
           border-radius: 12px;
           text-align: center;
@@ -1853,6 +1883,28 @@ function AuthModal({ isOpen, onClose, theme, color }) {
 
         .theme-dark {
           color-scheme: dark;
+        }
+
+        // Add this CSS to your styles:
+        .button-loader {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .loader-spinner {
+          width: 18px;
+          height: 18px;
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-radius: 50%;
+          border-top-color: white;
+          animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
         }
       `}</style>
     </div>

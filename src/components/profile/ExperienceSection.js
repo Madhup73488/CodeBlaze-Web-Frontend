@@ -1,11 +1,9 @@
 // src/components/profile/ExperienceSection.jsx
-import React, { useState, useEffect } from "react"; // Added useEffect
+import React, { useState, useEffect } from "react";
 import { userService } from "../../services/userService";
 import { toast } from "react-toastify";
-import format from "date-fns/format"; // Using date-fns for better date formatting
+import format from "date-fns/format";
 
-// Note: theme and color props are passed down from the parent,
-// but styling primarily relies on CSS variables set by the parent.
 const ExperienceSection = ({
   experiences = [],
   onUpdate,
@@ -14,6 +12,29 @@ const ExperienceSection = ({
   setSubmitting: setParentSubmitting,
   submitting: parentSubmitting,
 }) => {
+  // Define primary color based on the color prop (same as ProfileForm)
+  const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
+
+  // Create CSS variables for consistent styling (same as ProfileForm)
+  const cssVars = {
+    "--color-primary": primaryColor,
+    "--color-primary-light": `${primaryColor}dd`,
+    "--color-primary-very-light": `${primaryColor}22`,
+    "--bg-main": theme === "dark" ? "#0a0a0a" : "#f9fafb",
+    "--bg-card": theme === "dark" ? "#111" : "#fff",
+    "--text-primary": theme === "dark" ? "#fff" : "#333",
+    "--text-secondary": theme === "dark" ? "#aaa" : "#666",
+    "--border-color": theme === "dark" ? "#333" : "#e5e5e5",
+    "--shadow-sm":
+      theme === "dark"
+        ? "0 2px 4px rgba(0, 0, 0, 0.3)"
+        : "0 2px 4px rgba(0, 0, 0, 0.05)",
+    "--shadow-md":
+      theme === "dark"
+        ? "0 4px 6px rgba(0, 0, 0, 0.4)"
+        : "0 4px 6px rgba(0, 0, 0, 0.1)",
+  };
+
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
@@ -26,22 +47,18 @@ const ExperienceSection = ({
     description: "",
   });
   const [errors, setErrors] = useState({});
-  // Removed local submitting state, using parent's state
-  // const [submitting, setSubmitting] = useState(false);
 
-  // Effect to handle scrolling when form is shown for editing
   useEffect(() => {
     if (showForm && editingId) {
-      // Use a small timeout to allow form to render before scrolling
       const timer = setTimeout(() => {
         const formElement = document.getElementById("experience-form");
         if (formElement) {
           formElement.scrollIntoView({ behavior: "smooth", block: "center" });
         }
       }, 100);
-      return () => clearTimeout(timer); // Cleanup the timer
+      return () => clearTimeout(timer);
     }
-  }, [showForm, editingId]); // Rerun effect when form visibility or editingId changes
+  }, [showForm, editingId]);
 
   const resetForm = () => {
     setFormData({
@@ -60,14 +77,12 @@ const ExperienceSection = ({
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    // If 'current' is checked, clear the 'to' date
     if (name === "current" && checked) {
       setFormData({
         ...formData,
         [name]: checked,
-        to: "", // Clear 'to' date when 'current' is checked
+        to: "",
       });
-      // Clear 'to' date error if any
       if (errors.to) {
         setErrors({ ...errors, to: null });
       }
@@ -78,7 +93,6 @@ const ExperienceSection = ({
       });
     }
 
-    // Clear error for this field
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -87,7 +101,6 @@ const ExperienceSection = ({
     }
   };
 
-  // Effect to sync form 'to' date with 'current' status if prop changes
   useEffect(() => {
     if (formData.current && formData.to !== "") {
       setFormData((prev) => ({ ...prev, to: "" }));
@@ -95,7 +108,7 @@ const ExperienceSection = ({
         setErrors((prev) => ({ ...prev, to: null }));
       }
     }
-  }, [formData.current]); // Depend on formData.current
+  }, [formData.current]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -113,15 +126,11 @@ const ExperienceSection = ({
     if (!formData.from) {
       newErrors.from = "From Date is required";
       toast.error("From Date is required");
-    } else {
-      // Basic date format validation if needed (input type="date" handles most)
-      if (isNaN(new Date(formData.from))) {
-        newErrors.from = "Invalid From Date";
-        toast.error("Invalid From Date");
-      }
+    } else if (isNaN(new Date(formData.from))) {
+      newErrors.from = "Invalid From Date";
+      toast.error("Invalid From Date");
     }
 
-    // If not current job, to date is required and must be after from date
     if (!formData.current) {
       if (!formData.to) {
         newErrors.to = "To Date is required if not current job";
@@ -129,7 +138,6 @@ const ExperienceSection = ({
       } else {
         const fromDate = new Date(formData.from);
         const toDate = new Date(formData.to);
-
         if (isNaN(toDate)) {
           newErrors.to = "Invalid To Date";
           toast.error("Invalid To Date");
@@ -146,14 +154,10 @@ const ExperienceSection = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
 
-    if (!validateForm()) {
-      return;
-    }
-
-    setParentSubmitting(true); // Use parent's submitting state
+    setParentSubmitting(true);
     try {
-      // Prepare data - ensure dates are sent in a consistent format (e.g., ISO)
       const dataToSend = {
         ...formData,
         from: formData.from ? new Date(formData.from).toISOString() : null,
@@ -162,7 +166,6 @@ const ExperienceSection = ({
             ? new Date(formData.to).toISOString()
             : null,
       };
-      // Remove 'to' key if 'current' is true
       if (dataToSend.current) {
         delete dataToSend.to;
       }
@@ -178,12 +181,11 @@ const ExperienceSection = ({
       setParentSubmitting(false);
       resetForm();
       setShowForm(false);
-      onUpdate(); // Refresh parent component to refetch profile data
+      onUpdate();
     } catch (error) {
       setParentSubmitting(false);
       toast.error("Failed to save experience");
       console.error("Error saving experience:", error);
-      // Optionally set form errors based on API response if available
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       }
@@ -191,7 +193,6 @@ const ExperienceSection = ({
   };
 
   const handleEdit = (exp) => {
-    // Format dates for input type="date" (YYYY-MM-DD)
     const formattedFrom = exp.from
       ? format(new Date(exp.from), "yyyy-MM-dd")
       : "";
@@ -208,39 +209,39 @@ const ExperienceSection = ({
     });
     setEditingId(exp._id);
     setShowForm(true);
-    // Scroll to form handled by useEffect
   };
 
   const handleDelete = async (expId) => {
     if (window.confirm("Are you sure you want to delete this experience?")) {
-      setParentSubmitting(true); // Indicate busy state globally
+      setParentSubmitting(true);
       try {
         await userService.deleteExperience(expId);
         toast.success("Experience deleted successfully");
-        onUpdate(); // Refresh parent component
+        onUpdate();
       } catch (error) {
         toast.error("Failed to delete experience");
         console.error("Error deleting experience:", error);
       } finally {
-        setParentSubmitting(false); // End busy state
+        setParentSubmitting(false);
       }
     }
   };
 
   return (
-    <div className="experience-section">
-      <div className="section-header">
-        <h3>Work Experience</h3>
+    <div className={`experience-section ${theme}`} style={cssVars}>
+      <h2 className="section-title">Work Experience</h2>
+
+      <div className="section-header-controls">
         <button
           onClick={() => {
-            // Reset form and toggle visibility
             if (showForm) {
               resetForm();
             }
             setShowForm(!showForm);
           }}
           className={`add-btn ${showForm ? "cancel" : "add"}`}
-          disabled={parentSubmitting} // Disable button while parent is submitting
+          disabled={parentSubmitting}
+          style={{ backgroundColor: showForm ? "transparent" : primaryColor }}
         >
           {showForm ? "Cancel" : "Add Experience"}
         </button>
@@ -252,54 +253,56 @@ const ExperienceSection = ({
           className="experience-form"
           onSubmit={handleSubmit}
         >
-          <h4>{editingId ? "Update Experience" : "Add New Experience"}</h4>
+          <h3 className="form-section-title">
+            {editingId ? "Update Experience" : "Add New Experience"}
+          </h3>
 
-          <div className="form-group">
-            <label htmlFor="title">
-              Job Title<span className="required">*</span>
-            </label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              className={errors.title ? "input-error" : ""}
-            />
-            {errors.title && (
-              <span className="error-message">{errors.title}</span>
-            )}
-          </div>
+          <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="title">
+                Job Title<span className="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                className={errors.title ? "input-error" : ""}
+              />
+              {errors.title && (
+                <span className="error-message">{errors.title}</span>
+              )}
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="company">
-              Company<span className="required">*</span>
-            </label>
-            <input
-              type="text"
-              id="company"
-              name="company"
-              value={formData.company}
-              onChange={handleChange}
-              className={errors.company ? "input-error" : ""}
-            />
-            {errors.company && (
-              <span className="error-message">{errors.company}</span>
-            )}
-          </div>
+            <div className="form-group">
+              <label htmlFor="company">
+                Company<span className="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="company"
+                name="company"
+                value={formData.company}
+                onChange={handleChange}
+                className={errors.company ? "input-error" : ""}
+              />
+              {errors.company && (
+                <span className="error-message">{errors.company}</span>
+              )}
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="location">Location</label>
-            <input
-              type="text"
-              id="location"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-            />
-          </div>
+            <div className="form-group">
+              <label htmlFor="location">Location</label>
+              <input
+                type="text"
+                id="location"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+              />
+            </div>
 
-          <div className="form-row">
             <div className="form-group">
               <label htmlFor="from">
                 From Date<span className="required">*</span>
@@ -311,7 +314,7 @@ const ExperienceSection = ({
                 value={formData.from}
                 onChange={handleChange}
                 className={errors.from ? "input-error" : ""}
-                max={formData.to || format(new Date(), "yyyy-MM-dd")} // Cannot be after 'to' date or today
+                max={formData.to || format(new Date(), "yyyy-MM-dd")}
               />
               {errors.from && (
                 <span className="error-message">{errors.from}</span>
@@ -328,25 +331,25 @@ const ExperienceSection = ({
                 onChange={handleChange}
                 disabled={formData.current}
                 className={errors.to ? "input-error" : ""}
-                min={formData.from} // Cannot be before 'from' date
-                max={format(new Date(), "yyyy-MM-dd")} // Cannot be in the future
+                min={formData.from}
+                max={format(new Date(), "yyyy-MM-dd")}
               />
               {errors.to && <span className="error-message">{errors.to}</span>}
             </div>
+
+            <div className="form-group checkbox-group">
+              <input
+                type="checkbox"
+                id="current"
+                name="current"
+                checked={formData.current}
+                onChange={handleChange}
+              />
+              <label htmlFor="current">Current Job</label>
+            </div>
           </div>
 
-          <div className="form-group checkbox">
-            <input
-              type="checkbox"
-              id="current"
-              name="current"
-              checked={formData.current}
-              onChange={handleChange}
-            />
-            <label htmlFor="current">Current Job</label>
-          </div>
-
-          <div className="form-group">
+          <div className="form-group full-width">
             <label htmlFor="description">Job Description</label>
             <textarea
               id="description"
@@ -357,7 +360,7 @@ const ExperienceSection = ({
             />
           </div>
 
-          <div className="form-actions">
+          <div className="button-container">
             <button
               type="button"
               onClick={() => {
@@ -365,7 +368,7 @@ const ExperienceSection = ({
                 setShowForm(false);
               }}
               className="cancel-btn"
-              disabled={parentSubmitting} // Disable while submitting
+              disabled={parentSubmitting}
             >
               Cancel
             </button>
@@ -373,6 +376,7 @@ const ExperienceSection = ({
               type="submit"
               disabled={parentSubmitting}
               className="submit-btn"
+              style={{ backgroundColor: primaryColor }}
             >
               {parentSubmitting ? (
                 <>
@@ -383,8 +387,7 @@ const ExperienceSection = ({
                 "Update Experience"
               ) : (
                 "Add Experience"
-              )}{" "}
-              {/* More explicit button text */}
+              )}
             </button>
           </div>
         </form>
@@ -394,14 +397,13 @@ const ExperienceSection = ({
         {experiences.length === 0 ? (
           <p className="no-data">No work experience added yet</p>
         ) : (
-          // Sort experiences by 'from' date descending
           experiences
             .sort((a, b) => new Date(b.from) - new Date(a.from))
             .map((exp) => (
               <div key={exp._id} className="experience-item">
-                <div className="experience-header">
-                  <h4>{exp.title}</h4>
-                  <div className="experience-actions">
+                <div className="item-header">
+                  <h4 className="item-title">{exp.title}</h4>
+                  <div className="item-actions">
                     <button
                       onClick={() => handleEdit(exp)}
                       className="edit-btn"
@@ -412,28 +414,26 @@ const ExperienceSection = ({
                     <button
                       onClick={() => handleDelete(exp._id)}
                       className="delete-btn"
-                      disabled={parentSubmitting} // Disable while submitting
+                      disabled={parentSubmitting}
                     >
                       Delete
                     </button>
                   </div>
                 </div>
-                <h5 className="company-info">
+                <h5 className="item-subtitle">
                   {exp.company}
                   {exp.location ? ` - ${exp.location}` : ""}
                 </h5>
-                <p className="date-range">
+                <p className="item-meta">
                   {exp.from ? format(new Date(exp.from), "MMM yyyy") : "N/A"} -{" "}
-                  {/* Formatted date */}
                   {exp.current
                     ? "Present"
                     : exp.to
                     ? format(new Date(exp.to), "MMM yyyy")
-                    : "N/A"}{" "}
-                  {/* Formatted date */}
+                    : "N/A"}
                 </p>
                 {exp.description && (
-                  <p className="description">{exp.description}</p>
+                  <p className="item-description">{exp.description}</p>
                 )}
               </div>
             ))
@@ -442,407 +442,391 @@ const ExperienceSection = ({
 
       <style jsx>{`
         .experience-section {
-          /* Padding handled by parent's tab-content */
+          font-family: "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+            "Open Sans", "Helvetica Neue", sans-serif;
         }
 
-        .section-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 2rem;
-          padding-bottom: 1rem;
-          border-bottom: 1px solid var(--border-color); /* Use border color variable */
-        }
-
-        .section-header h3 {
-          font-size: 1.4rem; /* Section title size */
+        .section-title {
+          font-size: 1.5rem;
           font-weight: 600;
-          color: var(--text-primary); /* Primary text color */
-          margin: 0;
+          margin-bottom: 1.5rem;
+          padding-bottom: 0.75rem;
+          border-bottom: 2px solid var(--border-color);
+          color: var(--text-primary);
         }
 
-        /* Add/Cancel Button Styling */
+        .section-header-controls {
+          display: flex;
+          justify-content: flex-end;
+          margin-bottom: 1.5rem;
+        }
+
         .add-btn {
-          padding: 0.5rem 1rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.8rem 1.5rem;
+          color: white;
+          border: none;
           border-radius: 6px;
-          font-size: 0.9rem;
+          font-size: 1rem;
           font-weight: 600;
           cursor: pointer;
-          transition: all 0.2s ease;
-          border: 1px solid transparent; /* Base transparent border */
+          transition: all 0.3s ease;
+          min-width: 120px;
+          box-shadow: var(--shadow-sm);
         }
 
-        .add-btn.add {
-          background-color: var(
-            --color-primary-very-light
-          ); /* Lightest primary background */
-          color: var(--color-primary); /* Primary color text */
-          border-color: var(--color-primary-light);
-        }
-
-        .add-btn.add:hover:not(:disabled) {
-          background-color: var(--color-primary-light);
-          color: white;
-          border-color: var(--color-primary);
-        }
-
-        .add-btn.cancel {
-          background-color: transparent; /* Transparent background */
-          color: var(--text-secondary); /* Secondary text color */
-          border-color: var(--border-color);
-        }
-
-        .add-btn.cancel:hover:not(:disabled) {
-          background-color: var(--border-color); /* Hover on border color */
-          color: var(--text-primary);
+        .add-btn:hover:not(:disabled) {
+          opacity: 0.9;
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-md);
         }
 
         .add-btn:disabled {
           opacity: 0.6;
           cursor: not-allowed;
+          box-shadow: none;
+          transform: none;
         }
 
-        /* Dark mode button adjustments */
-        .dark .add-btn.add {
-          background-color: rgba(
-            var(--color-primary, #f97316),
-            0.15
-          ); /* Semi-transparent primary */
-          color: var(--color-primary-light);
-          border-color: rgba(var(--color-primary, #f97316), 0.3);
-        }
-        .dark .add-btn.add:hover:not(:disabled) {
-          background-color: rgba(var(--color-primary, #f97316), 0.3);
-          color: var(--color-primary);
-          border-color: var(--color-primary);
-        }
-        .dark .add-btn.cancel {
+        .add-btn.cancel {
+          background-color: transparent;
           color: var(--text-secondary);
-          border-color: var(--border-color);
+          border: 1px solid var(--border-color);
         }
-        .dark .add-btn.cancel:hover:not(:disabled) {
+
+        .add-btn.cancel:hover:not(:disabled) {
           background-color: var(--border-color);
           color: var(--text-primary);
         }
 
-        /* Experience Form Styling (inherits input/label/group from ProfileForm's general styles) */
         .experience-form {
-          padding: 1.5rem; /* Padding around the form */
-          margin-bottom: 2rem; /* Space below form */
+          padding: 1.5rem;
+          margin-bottom: 2rem;
           border: 1px solid var(--border-color);
           border-radius: 8px;
-          background-color: var(
-            --bg-main
-          ); /* Use main background for forms within card */
-          box-shadow: var(--shadow-subtle);
+          background-color: var(--bg-card);
+          box-shadow: var(--shadow-sm);
         }
 
-        .dark .experience-form {
-          background-color: var(
-            --bg-card
-          ); /* Use card background for forms in dark mode */
-        }
-
-        .experience-form h4 {
+        .form-section-title {
           font-size: 1.2rem;
           font-weight: 600;
           margin-top: 0;
           margin-bottom: 1.5rem;
           color: var(--text-primary);
+          border-bottom: 1px solid var(--border-color);
+          padding-bottom: 0.5rem;
         }
 
-        .required {
-          color: #e53e3e; /* Red for required indicator */
-          margin-left: 4px;
+        .form-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1.5rem;
         }
 
-        .form-row {
-          display: flex;
-          gap: 1.5rem; /* Gap between items in a row */
-        }
-
-        .form-row .form-group {
-          flex: 1; /* Each group takes equal space */
-          margin-bottom: 1.5rem; /* Ensure bottom margin is consistent */
-        }
-
-        .form-group.checkbox {
-          display: flex;
-          align-items: center;
+        .form-group {
           margin-bottom: 1.5rem;
         }
 
-        .form-group.checkbox input[type="checkbox"] {
-          width: auto; /* Auto width for checkbox */
+        .form-group.checkbox-group {
+          grid-column: 1 / -1; /* Full width for checkbox */
+          display: flex;
+          align-items: center;
+        }
+
+        .form-group.checkbox-group input[type="checkbox"] {
+          width: auto;
           margin-right: 0.5rem;
-          box-shadow: none; /* Remove inner shadow */
-          border-color: var(--border-color);
-          /* Custom checkbox styling if needed */
         }
 
-        .form-group.checkbox input[type="checkbox"]:checked {
-          background-color: var(--color-primary);
-          border-color: var(--color-primary);
+        .form-group.full-width {
+          grid-column: 1 / -1;
         }
 
-        .form-group.checkbox label {
-          margin-bottom: 0; /* Remove bottom margin */
-          font-weight: 500;
+        label {
+          display: block;
+          margin-bottom: 0.5rem;
+          font-weight: 600;
+          color: var(--text-secondary);
+          font-size: 0.95rem;
+        }
+
+        input,
+        textarea {
+          width: 100%;
+          padding: 0.8rem 1rem;
+          border: 1px solid var(--border-color);
+          border-radius: 6px;
+          background-color: var(--bg-main);
           color: var(--text-primary);
           font-size: 1rem;
+          transition: all 0.3s ease;
+          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
-        .form-actions {
+        .dark input,
+        .dark textarea {
+          background-color: var(--bg-card);
+        }
+
+        input:focus,
+        textarea:focus {
+          outline: none;
+          border-color: var(--color-primary);
+          box-shadow: 0 0 0 3px var(--color-primary-very-light);
+        }
+
+        .input-error {
+          border-color: #e53e3e;
+          box-shadow: 0 0 0 3px rgba(229, 83, 62, 0.1);
+        }
+
+        .error-message {
+          display: block;
+          margin-top: 0.5rem;
+          color: #e53e3e;
+          font-size: 0.875rem;
+          font-weight: 500;
+        }
+
+        .button-container {
+          margin-top: 2rem;
           display: flex;
-          justify-content: flex-end; /* Align buttons to the right */
-          gap: 1rem; /* Gap between buttons */
-          margin-top: 2rem; /* Space above buttons */
+          gap: 1rem;
+          justify-content: flex-end;
         }
 
-        .form-actions .submit-btn {
-          /* Inherits most styles from the .submit-btn defined implicitly via ProfileForm CSS */
-          min-width: 120px; /* Smaller min-width for form buttons */
-        }
-
-        /* Cancel Button */
+        .submit-btn,
         .cancel-btn {
-          padding: 0.8rem 1.5rem;
-          background: transparent; /* Transparent background */
-          color: var(--text-secondary); /* Secondary text color */
-          border: 1px solid var(--border-color); /* Border color */
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.8rem 2rem;
           border-radius: 6px;
           font-size: 1rem;
-          font-weight: 500;
+          font-weight: 600;
           cursor: pointer;
           transition: all 0.3s ease;
+          min-width: 120px;
+          box-shadow: var(--shadow-md);
+          border: none;
+        }
+
+        .submit-btn {
+          color: white;
+          background-color: var(--color-primary);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+          opacity: 0.9;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 10px
+            ${theme === "dark" ? "rgba(0, 0, 0, 0.4)" : "rgba(0, 0, 0, 0.15)"};
+        }
+
+        .cancel-btn {
+          background-color: transparent;
+          color: var(--text-secondary);
+          border: 1px solid var(--border-color);
         }
 
         .cancel-btn:hover:not(:disabled) {
-          background-color: var(--border-color); /* Hover on border color */
-          color: var(--text-primary);
-        }
-
-        .cancel-btn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        /* Dark mode cancel button */
-        .dark .cancel-btn {
-          color: var(--text-secondary);
-          border-color: var(--border-color);
-        }
-        .dark .cancel-btn:hover:not(:disabled) {
           background-color: var(--border-color);
           color: var(--text-primary);
         }
 
-        /* Experience List Styling */
+        .submit-btn:disabled,
+        .cancel-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          box-shadow: none;
+          transform: none;
+        }
+
+        .spinner {
+          display: inline-block;
+          width: 18px;
+          height: 18px;
+          border: 3px solid rgba(255, 255, 255, 0.3);
+          border-radius: 50%;
+          border-top-color: white;
+          animation: spin 0.8s linear infinite;
+          margin-right: 10px;
+        }
+
+        .dark .spinner {
+          border-color: rgba(var(--text-primary), 0.3);
+          border-top-color: var(--text-primary);
+        }
+
         .experience-list {
           display: flex;
           flex-direction: column;
-          gap: 1.5rem; /* Gap between experience items */
+          gap: 1.5rem;
         }
 
         .experience-item {
           padding: 1.5rem;
           border: 1px solid var(--border-color);
           border-radius: 8px;
-          background-color: var(
-            --bg-main
-          ); /* Use main background for list items */
-          box-shadow: var(--shadow-subtle);
-          transition: all 0.2s ease;
+          background-color: var(--bg-card);
+          box-shadow: var(--shadow-sm);
+          display: grid;
+          grid-template-columns: 1fr auto; /* Title on left, actions on right */
+          grid-template-rows: auto auto auto auto;
+          gap: 0.5rem;
+          align-items: start;
         }
 
-        .dark .experience-item {
-          background-color: var(
-            --bg-card
-          ); /* Use card background for list items in dark mode */
-        }
-
-        .experience-item:hover {
-          box-shadow: var(--shadow-md); /* Slightly stronger shadow on hover */
-        }
-
-        .experience-header {
+        .item-header {
+          grid-column: 1 / -1;
           display: flex;
           justify-content: space-between;
           align-items: center;
           margin-bottom: 0.5rem;
         }
 
-        .experience-header h4 {
+        .item-title {
           font-size: 1.1rem;
           font-weight: 600;
           margin: 0;
-          color: var(--color-primary); /* Primary color for job title */
+          color: var(--color-primary);
         }
 
-        .experience-actions {
+        .item-actions {
           display: flex;
-          gap: 0.75rem; /* Gap between action buttons */
+          gap: 0.75rem;
         }
 
-        /* Edit/Delete Button Styling */
         .edit-btn,
         .delete-btn {
           background: none;
           border: none;
           cursor: pointer;
           font-size: 0.9rem;
-          padding: 0; /* Remove default button padding */
+          padding: 0;
           transition: color 0.2s ease;
           font-weight: 500;
+          color: var(--text-secondary);
         }
 
-        .edit-btn {
-          color: var(--text-secondary); /* Secondary text color for Edit */
-        }
         .edit-btn:hover:not(:disabled) {
-          color: var(--color-primary); /* Primary color on hover */
+          color: var(--color-primary);
         }
 
         .delete-btn {
-          color: #e53e3e; /* Red for Delete */
+          color: #e53e3e;
         }
+
         .delete-btn:hover:not(:disabled) {
-          color: #c53030; /* Darker red on hover */
+          color: #c53030;
         }
 
-        .edit-btn:disabled,
-        .delete-btn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .company-info {
+        .item-subtitle {
           font-size: 1rem;
           font-weight: 500;
-          margin: 0 0 0.5rem 0;
+          margin: 0;
           color: var(--text-primary);
         }
 
-        .date-range {
+        .item-meta {
           font-size: 0.9rem;
-          color: var(--text-secondary); /* Secondary text color */
-          margin: 0 0 1rem 0;
+          color: var(--text-secondary);
+          margin: 0;
         }
 
-        .description {
+        .item-description {
+          grid-column: 1 / -1;
           font-size: 0.95rem;
           line-height: 1.5;
           color: var(--text-primary);
-          margin: 0;
-          opacity: 0.9;
+          margin-top: 0.5rem;
         }
 
         .no-data {
           text-align: center;
-          color: var(--text-secondary); /* Secondary text color */
+          color: var(--text-secondary);
           font-style: italic;
           margin-top: 2rem;
         }
 
-        /* Re-define spinner styles locally if they are used in this component's buttons */
-        .submit-btn .spinner {
-          display: inline-block;
-          width: 16px;
-          height: 16px;
-          border: 2px solid rgba(255, 255, 255, 0.3);
-          border-radius: 50%;
-          border-top-color: white;
-          animation: spin 1s linear infinite;
-          margin-right: 8px;
-        }
-
-        .dark .submit-btn .spinner {
-          border: 2px solid rgba(var(--text-primary, #e5e7eb), 0.3);
-          border-top-color: var(--text-primary);
-        }
-
-        /* Responsive Adjustments */
         @media (max-width: 768px) {
-          .section-header {
-            flex-direction: column;
-            align-items: flex-start;
-            margin-bottom: 1.5rem;
+          .tab-content {
+            width: 340px;
           }
-
-          .section-header h3 {
-            margin-bottom: 1rem;
-          }
-
-          .form-row {
-            flex-direction: column; /* Stack date inputs */
+          .form-grid {
+            grid-template-columns: 1fr;
             gap: 1rem;
-          }
-
-          .form-row .form-group {
-            margin-bottom: 0.5rem; /* Adjust margin when stacked */
           }
 
           .experience-item {
-            padding: 1rem;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto auto auto auto;
           }
 
-          .experience-header {
+          .item-header {
             flex-direction: column;
             align-items: flex-start;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
           }
 
-          .experience-actions {
-            margin-top: 0.5rem; /* Space above action buttons */
-            gap: 1rem;
+          .item-actions {
+            margin-top: 0.5rem;
+          }
+
+          .section-header-controls {
+            margin-bottom: 1rem;
+          }
+
+          .add-btn {
+            width: 100%;
+          }
+
+          .button-container {
+            flex-direction: column;
+            gap: 0.5rem;
+          }
+
+          .submit-btn,
+          .cancel-btn {
+            width: 100%;
           }
         }
 
         @media (max-width: 480px) {
-          .section-header h3 {
-            font-size: 1.2rem;
+          .tab-content {
+            width: 100%;
           }
-          .add-btn {
-            font-size: 0.85rem;
-            padding: 0.4rem 0.8rem;
+          .section-title {
+            font-size: 1.3rem;
           }
-          .experience-form {
-            padding: 1rem;
-          }
-          .experience-form h4 {
+
+          .form-section-title {
             font-size: 1.1rem;
           }
+
           label {
             font-size: 0.9rem;
           }
+
           input,
           textarea {
-            font-size: 0.9rem;
-            padding: 0.6rem 0.8rem;
+            padding: 0.7rem 0.9rem;
+            font-size: 0.95rem;
           }
-          .form-actions {
-            flex-direction: column; /* Stack form action buttons */
-            gap: 0.5rem;
-          }
-          .cancel-btn,
-          .submit-btn {
-            width: 100%;
-            text-align: center;
-            justify-content: center;
-            padding: 0.6rem 1rem;
-            font-size: 0.9rem;
-          }
-          .experience-item {
-            padding: 0.8rem;
-          }
-          .experience-header h4 {
+
+          .item-title {
             font-size: 1rem;
           }
-          .company-info,
-          .date-range,
-          .description {
+
+          .item-subtitle,
+          .item-meta,
+          .item-description {
             font-size: 0.85rem;
           }
+
           .edit-btn,
           .delete-btn {
             font-size: 0.8rem;

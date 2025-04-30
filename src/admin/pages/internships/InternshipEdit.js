@@ -9,7 +9,10 @@ import {
   CheckboxField,
   DateField,
 } from "../../components/common/FormFields";
-import { fetchInternship, updateInternship } from "../../utils/api";
+import {
+  fetchAdminInternshipById,
+  updateInternshipAdmin,
+} from "../../utils/api";
 import { validateInternshipForm } from "../../utils/validation";
 
 const InternshipEdit = () => {
@@ -49,7 +52,7 @@ const InternshipEdit = () => {
     onSubmit: async (formValues) => {
       try {
         setSaving(true);
-        await updateInternship(id, formValues);
+        await updateInternshipAdmin(id, formValues);
         navigate(`/admin/internships/${id}`);
       } catch (error) {
         console.error("Failed to update internship", error);
@@ -62,7 +65,7 @@ const InternshipEdit = () => {
     const loadInternship = async () => {
       try {
         setLoading(true);
-        const data = await fetchInternship(id);
+        const data = await fetchAdminInternshipById(id);
         setValues({
           ...data,
           postedDate: data.postedDate.split("T")[0],

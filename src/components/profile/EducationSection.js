@@ -1,11 +1,8 @@
-// src/components/profile/EducationSection.jsx
 import React, { useState, useEffect } from "react";
 import { userService } from "../../services/userService";
 import { toast } from "react-toastify";
-import format from "date-fns/format"; // Using date-fns for date formatting
+import format from "date-fns/format";
 
-// Note: theme and color props are passed down from the parent,
-// but styling primarily relies on CSS variables set by the parent.
 const EducationSection = ({
   education = [],
   onUpdate,
@@ -14,6 +11,29 @@ const EducationSection = ({
   setSubmitting: setParentSubmitting,
   submitting: parentSubmitting,
 }) => {
+  // Define primary color based on the color prop, same as ProfileForm
+  const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
+
+  // Create CSS variables for consistent styling, matching ProfileForm
+  const cssVars = {
+    "--color-primary": primaryColor,
+    "--color-primary-light": `${primaryColor}dd`,
+    "--color-primary-very-light": `${primaryColor}22`,
+    "--bg-main": theme === "dark" ? "#0a0a0a" : "#f9fafb",
+    "--bg-card": theme === "dark" ? "#111" : "#fff",
+    "--text-primary": theme === "dark" ? "#fff" : "#333",
+    "--text-secondary": theme === "dark" ? "#aaa" : "#666",
+    "--border-color": theme === "dark" ? "#333" : "#e5e5e5",
+    "--shadow-sm":
+      theme === "dark"
+        ? "0 2px 4px rgba(0, 0, 0, 0.3)"
+        : "0 2px 4px rgba(0, 0, 0, 0.05)",
+    "--shadow-md":
+      theme === "dark"
+        ? "0 4px 6px rgba(0, 0, 0, 0.4)"
+        : "0 4px 6px rgba(0, 0, 0, 0.1)",
+  };
+
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
@@ -26,22 +46,19 @@ const EducationSection = ({
     description: "",
   });
   const [errors, setErrors] = useState({});
-  // Removed local submitting state, using parent's state
-  // const [submitting, setSubmitting] = useState(false);
 
   // Effect to handle scrolling when form is shown for editing
   useEffect(() => {
     if (showForm && editingId) {
-      // Use a small timeout to allow form to render before scrolling
       const timer = setTimeout(() => {
         const formElement = document.getElementById("education-form");
         if (formElement) {
           formElement.scrollIntoView({ behavior: "smooth", block: "center" });
         }
       }, 100);
-      return () => clearTimeout(timer); // Cleanup the timer
+      return () => clearTimeout(timer);
     }
-  }, [showForm, editingId]); // Rerun effect when form visibility or editingId changes
+  }, [showForm, editingId]);
 
   const resetForm = () => {
     setFormData({
@@ -78,7 +95,7 @@ const EducationSection = ({
       });
     }
 
-    // Clear error for this field
+    // Clear error for this field as user types, like in ProfileForm
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -95,11 +112,12 @@ const EducationSection = ({
         setErrors((prev) => ({ ...prev, to: null }));
       }
     }
-  }, [formData.current]); // Depend on formData.current
+  }, [formData.current]);
 
   const validateForm = () => {
     const newErrors = {};
 
+    // Required fields validation, with toast notifications like in ProfileForm
     if (!formData.school.trim()) {
       newErrors.school = "School/University is required";
       toast.error("School/University is required");
@@ -119,7 +137,7 @@ const EducationSection = ({
       newErrors.from = "From Date is required";
       toast.error("From Date is required");
     } else {
-      // Basic date format validation if needed (input type="date" handles most)
+      // Basic date format validation
       if (isNaN(new Date(formData.from))) {
         newErrors.from = "Invalid From Date";
         toast.error("Invalid From Date");
@@ -156,9 +174,9 @@ const EducationSection = ({
       return;
     }
 
-    setParentSubmitting(true); // Use parent's submitting state
+    setParentSubmitting(true);
     try {
-      // Prepare data - ensure dates are sent in a consistent format (e.g., ISO)
+      // Prepare data - ensure dates are sent in a consistent format
       const dataToSend = {
         ...formData,
         from: formData.from ? new Date(formData.from).toISOString() : null,
@@ -167,7 +185,7 @@ const EducationSection = ({
             ? new Date(formData.to).toISOString()
             : null,
       };
-      // Remove 'to' key if 'current' is true
+
       if (dataToSend.current) {
         delete dataToSend.to;
       }
@@ -183,12 +201,13 @@ const EducationSection = ({
       setParentSubmitting(false);
       resetForm();
       setShowForm(false);
-      onUpdate(); // Refresh parent component to refetch profile data
+      onUpdate(); // Refresh parent component
     } catch (error) {
       setParentSubmitting(false);
       toast.error("Failed to save education");
       console.error("Error saving education:", error);
-      // Optionally set form errors based on API response if available
+
+      // Set form errors based on API response if available
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       }
@@ -213,39 +232,38 @@ const EducationSection = ({
     });
     setEditingId(edu._id);
     setShowForm(true);
-    // Scroll to form handled by useEffect
   };
 
   const handleDelete = async (eduId) => {
     if (window.confirm("Are you sure you want to delete this education?")) {
-      setParentSubmitting(true); // Indicate busy state globally
+      setParentSubmitting(true);
       try {
         await userService.deleteEducation(eduId);
         toast.success("Education deleted successfully");
-        onUpdate(); // Refresh parent component
+        onUpdate();
       } catch (error) {
         toast.error("Failed to delete education");
         console.error("Error deleting education:", error);
       } finally {
-        setParentSubmitting(false); // End busy state
+        setParentSubmitting(false);
       }
     }
   };
 
   return (
-    <div className="education-section">
+    <div className="education-section" style={cssVars}>
+      <h2 className="section-title">Education</h2>
+
       <div className="section-header">
-        <h3>Education</h3>
         <button
           onClick={() => {
-            // Reset form and toggle visibility
             if (showForm) {
               resetForm();
             }
             setShowForm(!showForm);
           }}
-          className={`add-btn ${showForm ? "cancel" : "add"}`}
-          disabled={parentSubmitting} // Disable button while parent is submitting
+          className="action-btn"
+          disabled={parentSubmitting}
         >
           {showForm ? "Cancel" : "Add Education"}
         </button>
@@ -257,64 +275,63 @@ const EducationSection = ({
           className="education-form"
           onSubmit={handleSubmit}
         >
-          <h4>{editingId ? "Update Education" : "Add New Education"}</h4>
+          <h3>{editingId ? "Update Education" : "Add New Education"}</h3>
 
-          <div className="form-group">
-            <label htmlFor="school">
-              School/University<span className="required">*</span>
-            </label>
-            <input
-              type="text"
-              id="school"
-              name="school"
-              value={formData.school}
-              onChange={handleChange}
-              className={errors.school ? "input-error" : ""}
-            />
-            {errors.school && (
-              <span className="error-message">{errors.school}</span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="degree">
-              Degree<span className="required">*</span>
-            </label>
-            <input
-              type="text"
-              id="degree"
-              name="degree"
-              value={formData.degree}
-              onChange={handleChange}
-              className={errors.degree ? "input-error" : ""}
-            />
-            {errors.degree && (
-              <span className="error-message">{errors.degree}</span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="fieldOfStudy">
-              Field of Study<span className="required">*</span>
-            </label>
-            <input
-              type="text"
-              id="fieldOfStudy"
-              name="fieldOfStudy"
-              value={formData.fieldOfStudy}
-              onChange={handleChange}
-              className={errors.fieldOfStudy ? "input-error" : ""}
-            />
-            {errors.fieldOfStudy && (
-              <span className="error-message">{errors.fieldOfStudy}</span>
-            )}
-          </div>
-
-          <div className="form-row">
+          <div className="form-grid">
+            {/* School/University field */}
             <div className="form-group">
-              <label htmlFor="from">
-                From Date<span className="required">*</span>
-              </label>
+              <label htmlFor="school">School/University</label>
+              <input
+                type="text"
+                id="school"
+                name="school"
+                value={formData.school}
+                onChange={handleChange}
+                className={errors.school ? "input-error" : ""}
+                placeholder="Enter your school or university"
+              />
+              {errors.school && (
+                <span className="error-message">{errors.school}</span>
+              )}
+            </div>
+
+            {/* Degree field */}
+            <div className="form-group">
+              <label htmlFor="degree">Degree</label>
+              <input
+                type="text"
+                id="degree"
+                name="degree"
+                value={formData.degree}
+                onChange={handleChange}
+                className={errors.degree ? "input-error" : ""}
+                placeholder="Bachelor's, Master's, PhD, etc."
+              />
+              {errors.degree && (
+                <span className="error-message">{errors.degree}</span>
+              )}
+            </div>
+
+            {/* Field of Study */}
+            <div className="form-group">
+              <label htmlFor="fieldOfStudy">Field of Study</label>
+              <input
+                type="text"
+                id="fieldOfStudy"
+                name="fieldOfStudy"
+                value={formData.fieldOfStudy}
+                onChange={handleChange}
+                className={errors.fieldOfStudy ? "input-error" : ""}
+                placeholder="Computer Science, Business, etc."
+              />
+              {errors.fieldOfStudy && (
+                <span className="error-message">{errors.fieldOfStudy}</span>
+              )}
+            </div>
+
+            {/* From Date */}
+            <div className="form-group">
+              <label htmlFor="from">From Date</label>
               <input
                 type="date"
                 id="from"
@@ -322,13 +339,14 @@ const EducationSection = ({
                 value={formData.from}
                 onChange={handleChange}
                 className={errors.from ? "input-error" : ""}
-                max={formData.to || format(new Date(), "yyyy-MM-dd")} // Cannot be after 'to' date or today
+                max={formData.to || format(new Date(), "yyyy-MM-dd")}
               />
               {errors.from && (
                 <span className="error-message">{errors.from}</span>
               )}
             </div>
 
+            {/* To Date */}
             <div className="form-group">
               <label htmlFor="to">To Date</label>
               <input
@@ -339,24 +357,26 @@ const EducationSection = ({
                 onChange={handleChange}
                 disabled={formData.current}
                 className={errors.to ? "input-error" : ""}
-                min={formData.from} // Cannot be before 'from' date
-                max={format(new Date(), "yyyy-MM-dd")} // Cannot be in the future
+                min={formData.from}
+                max={format(new Date(), "yyyy-MM-dd")}
               />
               {errors.to && <span className="error-message">{errors.to}</span>}
             </div>
+
+            {/* Currently Studying checkbox */}
+            <div className="form-group checkbox-group">
+              <input
+                type="checkbox"
+                id="current"
+                name="current"
+                checked={formData.current}
+                onChange={handleChange}
+              />
+              <label htmlFor="current">Currently Studying</label>
+            </div>
           </div>
 
-          <div className="form-group checkbox">
-            <input
-              type="checkbox"
-              id="current"
-              name="current"
-              checked={formData.current}
-              onChange={handleChange}
-            />
-            <label htmlFor="current">Currently Studying</label>
-          </div>
-
+          {/* Description field (full width) */}
           <div className="form-group">
             <label htmlFor="description">Description</label>
             <textarea
@@ -365,37 +385,28 @@ const EducationSection = ({
               value={formData.description}
               onChange={handleChange}
               rows="4"
+              placeholder="Add details about your education, achievements, etc."
             />
           </div>
 
-          <div className="form-actions">
-            <button
-              type="button"
-              onClick={() => {
-                resetForm();
-                setShowForm(false);
-              }}
-              className="cancel-btn"
-              disabled={parentSubmitting} // Disable while submitting
-            >
-              Cancel
-            </button>
+          {/* Submit button */}
+          <div className="button-container">
             <button
               type="submit"
               disabled={parentSubmitting}
               className="submit-btn"
+              style={{ backgroundColor: primaryColor }}
             >
               {parentSubmitting ? (
                 <>
                   <span className="spinner"></span>
-                  Saving...
+                  {editingId ? "Updating..." : "Adding..."}
                 </>
               ) : editingId ? (
                 "Update Education"
               ) : (
                 "Add Education"
-              )}{" "}
-              {/* More explicit button text */}
+              )}
             </button>
           </div>
         </form>
@@ -403,16 +414,27 @@ const EducationSection = ({
 
       <div className="education-list">
         {education.length === 0 ? (
-          <p className="no-data">No education added yet</p>
+          <p className="no-data">
+            No education entries yet. Add your educational background.
+          </p>
         ) : (
-          // Sort education by 'from' date descending
           education
             .sort((a, b) => new Date(b.from) - new Date(a.from))
             .map((edu) => (
               <div key={edu._id} className="education-item">
                 <div className="education-header">
-                  {/* Display degree and field of study as main title */}
-                  <h4>{`${edu.degree} in ${edu.fieldOfStudy}`}</h4>
+                  <div className="education-title">
+                    <h4>{`${edu.degree} in ${edu.fieldOfStudy}`}</h4>
+                    <h5>{edu.school}</h5>
+                    <p className="date-range">
+                      {edu.from ? format(new Date(edu.from), "MMM yyyy") : ""} -{" "}
+                      {edu.current
+                        ? "Present"
+                        : edu.to
+                        ? format(new Date(edu.to), "MMM yyyy")
+                        : ""}
+                    </p>
+                  </div>
                   <div className="education-actions">
                     <button
                       onClick={() => handleEdit(edu)}
@@ -424,24 +446,13 @@ const EducationSection = ({
                     <button
                       onClick={() => handleDelete(edu._id)}
                       className="delete-btn"
-                      disabled={parentSubmitting} // Disable while submitting
+                      disabled={parentSubmitting}
                     >
                       Delete
                     </button>
                   </div>
                 </div>
-                {/* Display school below */}
-                <h5 className="school-info">{edu.school}</h5>
-                <p className="date-range">
-                  {edu.from ? format(new Date(edu.from), "MMM") : "N/A"} -{" "}
-                  {/* Formatted date */}
-                  {edu.current
-                    ? "Present"
-                    : edu.to
-                    ? format(new Date(edu.to), "MMM")
-                    : "N/A"}{" "}
-                  {/* Formatted date */}
-                </p>
+
                 {edu.description && (
                   <p className="description">{edu.description}</p>
                 )}
@@ -451,110 +462,61 @@ const EducationSection = ({
       </div>
 
       <style jsx>{`
-        /* Education Section Styling (inherits general styles from parent) */
         .education-section {
-          /* Padding handled by parent's tab-content */
+          font-family: "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+            "Open Sans", "Helvetica Neue", sans-serif;
+        }
+
+        .section-title {
+          font-size: 1.5rem;
+          font-weight: 600;
+          margin-bottom: 1.5rem;
+          padding-bottom: 0.75rem;
+          border-bottom: 2px solid var(--border-color);
+          color: var(--text-primary);
         }
 
         .section-header {
           display: flex;
-          justify-content: space-between;
+          justify-content: flex-end;
+          margin-bottom: 1.5rem;
+        }
+
+        .action-btn {
+          display: inline-flex;
           align-items: center;
-          margin-bottom: 2rem;
-          padding-bottom: 1rem;
-          border-bottom: 1px solid var(--border-color); /* Use border color variable */
-        }
-
-        .section-header h3 {
-          font-size: 1.4rem; /* Section title size */
-          font-weight: 600;
-          color: var(--text-primary); /* Primary text color */
-          margin: 0;
-        }
-
-        /* Add/Cancel Button Styling (Consistent with ExperienceSection) */
-        .add-btn {
-          padding: 0.5rem 1rem;
+          justify-content: center;
+          padding: 0.6rem 1.2rem;
+          color: var(--color-primary);
+          background-color: var(--color-primary-very-light);
+          border: 1px solid var(--color-primary-light);
           border-radius: 6px;
-          font-size: 0.9rem;
+          font-size: 0.95rem;
           font-weight: 600;
           cursor: pointer;
-          transition: all 0.2s ease;
-          border: 1px solid transparent; /* Base transparent border */
+          transition: all 0.3s ease;
         }
 
-        .add-btn.add {
-          background-color: var(
-            --color-primary-very-light
-          ); /* Lightest primary background */
-          color: var(--color-primary); /* Primary color text */
-          border-color: var(--color-primary-light);
-        }
-
-        .add-btn.add:hover:not(:disabled) {
+        .action-btn:hover:not(:disabled) {
           background-color: var(--color-primary-light);
           color: white;
-          border-color: var(--color-primary);
         }
 
-        .add-btn.cancel {
-          background-color: transparent; /* Transparent background */
-          color: var(--text-secondary); /* Secondary text color */
-          border-color: var(--border-color);
-        }
-
-        .add-btn.cancel:hover:not(:disabled) {
-          background-color: var(--border-color); /* Hover on border color */
-          color: var(--text-primary);
-        }
-
-        .add-btn:disabled {
+        .action-btn:disabled {
           opacity: 0.6;
           cursor: not-allowed;
         }
 
-        /* Dark mode button adjustments */
-        .dark .add-btn.add {
-          background-color: rgba(
-            var(--color-primary, #a855f7),
-            0.15
-          ); /* Semi-transparent primary */
-          color: var(--color-primary-light);
-          border-color: rgba(var(--color-primary, #a855f7), 0.3);
-        }
-        .dark .add-btn.add:hover:not(:disabled) {
-          background-color: rgba(var(--color-primary, #a855f7), 0.3);
-          color: var(--color-primary);
-          border-color: var(--color-primary);
-        }
-        .dark .add-btn.cancel {
-          color: var(--text-secondary);
-          border-color: var(--border-color);
-        }
-        .dark .add-btn.cancel:hover:not(:disabled) {
-          background-color: var(--border-color);
-          color: var(--text-primary);
-        }
-
-        /* Education Form Styling (inherits input/label/group from ProfileForm/ExperienceSection) */
         .education-form {
-          padding: 1.5rem; /* Padding around the form */
-          margin-bottom: 2rem; /* Space below form */
+          padding: 1.5rem;
+          margin-bottom: 2rem;
           border: 1px solid var(--border-color);
           border-radius: 8px;
-          background-color: var(
-            --bg-main
-          ); /* Use main background for forms within card */
-          box-shadow: var(--shadow-subtle);
+          background-color: var(--bg-card);
+          box-shadow: var(--shadow-sm);
         }
 
-        .dark .education-form {
-          background-color: var(
-            --bg-card
-          ); /* Use card background for forms in dark mode */
-        }
-
-        .education-form h4 {
+        .education-form h3 {
           font-size: 1.2rem;
           font-weight: 600;
           margin-top: 0;
@@ -562,59 +524,72 @@ const EducationSection = ({
           color: var(--text-primary);
         }
 
-        .required {
-          color: #e53e3e; /* Red for required indicator */
-          margin-left: 4px;
+        .form-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1.5rem;
         }
 
         .form-group {
-          margin-bottom: 1.5rem; /* Consistent margin */
+          margin-bottom: 1.5rem;
+        }
+
+        .checkbox-group {
+          display: flex;
+          align-items: center;
+          margin-top: 1.8rem;
+        }
+
+        .checkbox-group input {
+          width: auto;
+          margin-right: 0.5rem;
+        }
+
+        .checkbox-group label {
+          margin-bottom: 0;
         }
 
         label {
           display: block;
           margin-bottom: 0.5rem;
-          font-weight: 600; /* Slightly bolder label */
-          color: var(--text-secondary); /* Secondary text color for labels */
+          font-weight: 600;
+          color: var(--text-secondary);
           font-size: 0.95rem;
         }
 
         input,
         textarea {
           width: 100%;
-          padding: 0.8rem 1rem; /* Increased padding */
-          border: 1px solid var(--border-color); /* Use border color variable */
+          padding: 0.8rem 1rem;
+          border: 1px solid var(--border-color);
           border-radius: 6px;
-          background-color: var(
-            --bg-main
-          ); /* Use main background for inputs for contrast */
-          color: var(--text-primary); /* Primary text color */
+          background-color: var(--bg-main);
+          color: var(--text-primary);
           font-size: 1rem;
           transition: all 0.3s ease;
-          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05); /* Subtle inner shadow */
+          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
-        /* Dark mode input adjustment if needed, though variables should handle most */
         .dark input,
         .dark textarea {
-          background-color: var(
-            --bg-card
-          ); /* Use card background in dark mode for input */
+          background-color: var(--bg-card);
         }
 
         input:focus,
         textarea:focus {
           outline: none;
-          border-color: var(
-            --color-primary
-          ); /* Primary color border on focus */
-          box-shadow: 0 0 0 3px var(--color-primary-very-light); /* Light primary color shadow */
+          border-color: var(--color-primary);
+          box-shadow: 0 0 0 3px var(--color-primary-very-light);
         }
 
-        /* Error state styling */
+        input::placeholder,
+        textarea::placeholder {
+          color: ${theme === "dark" ? "#666" : "#aaa"};
+        }
+
         .input-error {
-          border-color: #e53e3e; /* Standard red for error */
-          box-shadow: 0 0 0 3px rgba(229, 83, 62, 0.1); /* Red shadow */
+          border-color: #e53e3e;
+          box-shadow: 0 0 0 3px rgba(229, 83, 62, 0.1);
         }
 
         .error-message {
@@ -625,297 +600,224 @@ const EducationSection = ({
           font-weight: 500;
         }
 
-        .form-row {
+        .button-container {
+          margin-top: 2rem;
           display: flex;
-          gap: 1.5rem; /* Gap between items in a row */
+          justify-content: flex-end;
         }
 
-        .form-row .form-group {
-          flex: 1; /* Each group takes equal space */
-          margin-bottom: 1.5rem; /* Ensure bottom margin is consistent */
-        }
-
-        .form-group.checkbox {
-          display: flex;
+        .submit-btn {
+          display: inline-flex;
           align-items: center;
-          margin-bottom: 1.5rem;
-        }
-
-        .form-group.checkbox input[type="checkbox"] {
-          width: auto; /* Auto width for checkbox */
-          margin-right: 0.5rem;
-          box-shadow: none; /* Remove inner shadow */
-          border-color: var(--border-color);
-          /* Custom checkbox styling if needed */
-        }
-
-        .form-group.checkbox input[type="checkbox"]:checked {
-          background-color: var(--color-primary);
-          border-color: var(--color-primary);
-        }
-
-        .form-group.checkbox label {
-          margin-bottom: 0; /* Remove bottom margin */
-          font-weight: 500;
-          color: var(--text-primary);
-          font-size: 1rem;
-        }
-
-        .form-actions {
-          display: flex;
-          justify-content: flex-end; /* Align buttons to the right */
-          gap: 1rem; /* Gap between buttons */
-          margin-top: 2rem; /* Space above buttons */
-        }
-
-        .form-actions .submit-btn {
-          /* Inherits most styles from the .submit-btn defined implicitly via ProfileForm CSS */
-          min-width: 120px; /* Smaller min-width for form buttons */
-        }
-
-        /* Cancel Button (Consistent with ExperienceSection) */
-        .cancel-btn {
-          padding: 0.8rem 1.5rem;
-          background: transparent; /* Transparent background */
-          color: var(--text-secondary); /* Secondary text color */
-          border: 1px solid var(--border-color); /* Border color */
+          justify-content: center;
+          padding: 0.8rem 2rem;
+          color: white;
+          border: none;
           border-radius: 6px;
           font-size: 1rem;
-          font-weight: 500;
+          font-weight: 600;
           cursor: pointer;
           transition: all 0.3s ease;
+          min-width: 180px;
+          box-shadow: var(--shadow-md);
         }
 
-        .cancel-btn:hover:not(:disabled) {
-          background-color: var(--border-color); /* Hover on border color */
-          color: var(--text-primary);
+        .submit-btn:hover:not(:disabled) {
+          opacity: 0.9;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 10px
+            ${theme === "dark" ? "rgba(0, 0, 0, 0.4)" : "rgba(0, 0, 0, 0.15)"};
         }
 
-        .cancel-btn:disabled {
+        .submit-btn:disabled {
           opacity: 0.6;
           cursor: not-allowed;
+          box-shadow: none;
+          transform: none;
         }
 
-        /* Dark mode cancel button */
-        .dark .cancel-btn {
-          color: var(--text-secondary);
-          border-color: var(--border-color);
-        }
-        .dark .cancel-btn:hover:not(:disabled) {
-          background-color: var(--border-color);
-          color: var(--text-primary);
+        .spinner {
+          display: inline-block;
+          width: 18px;
+          height: 18px;
+          border: 3px solid rgba(255, 255, 255, 0.3);
+          border-radius: 50%;
+          border-top-color: white;
+          animation: spin 0.8s linear infinite;
+          margin-right: 10px;
         }
 
-        /* Education List Styling */
         .education-list {
           display: flex;
           flex-direction: column;
-          gap: 1.5rem; /* Gap between education items */
+          gap: 1.5rem;
         }
 
         .education-item {
           padding: 1.5rem;
           border: 1px solid var(--border-color);
           border-radius: 8px;
-          background-color: var(
-            --bg-main
-          ); /* Use main background for list items */
-          box-shadow: var(--shadow-subtle);
-          transition: all 0.2s ease;
-        }
-
-        .dark .education-item {
-          background-color: var(
-            --bg-card
-          ); /* Use card background for list items in dark mode */
+          background-color: var(--bg-card);
+          box-shadow: var(--shadow-sm);
+          transition: all 0.3s ease;
         }
 
         .education-item:hover {
-          box-shadow: var(--shadow-md); /* Slightly stronger shadow on hover */
+          box-shadow: var(--shadow-md);
         }
 
         .education-header {
           display: flex;
           justify-content: space-between;
-          align-items: center;
-          margin-bottom: 0.5rem;
+          align-items: flex-start;
+          margin-bottom: 1rem;
         }
 
-        .education-header h4 {
+        .education-title h4 {
           font-size: 1.1rem;
           font-weight: 600;
-          margin: 0;
-          color: var(--color-primary); /* Primary color for school/degree */
+          margin: 0 0 0.4rem 0;
+          color: var(--color-primary);
         }
 
-        .education-actions {
-          display: flex;
-          gap: 0.75rem; /* Gap between action buttons */
-        }
-
-        /* Edit/Delete Button Styling (Consistent with ExperienceSection) */
-        .edit-btn,
-        .delete-btn {
-          background: none;
-          border: none;
-          cursor: pointer;
-          font-size: 0.9rem;
-          padding: 0; /* Remove default button padding */
-          transition: color 0.2s ease;
-          font-weight: 500;
-        }
-
-        .edit-btn {
-          color: var(--text-secondary); /* Secondary text color for Edit */
-        }
-        .edit-btn:hover:not(:disabled) {
-          color: var(--color-primary); /* Primary color on hover */
-        }
-
-        .delete-btn {
-          color: #e53e3e; /* Red for Delete */
-        }
-        .delete-btn:hover:not(:disabled) {
-          color: #c53030; /* Darker red on hover */
-        }
-
-        .edit-btn:disabled,
-        .delete-btn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .school-info {
-          /* Class name changed for clarity */
+        .education-title h5 {
           font-size: 1rem;
           font-weight: 500;
-          margin: 0 0 0.5rem 0;
+          margin: 0 0 0.4rem 0;
           color: var(--text-primary);
         }
 
         .date-range {
           font-size: 0.9rem;
-          color: var(--text-secondary); /* Secondary text color */
-          margin: 0 0 1rem 0;
+          color: var(--text-secondary);
+          margin: 0;
         }
 
         .description {
           font-size: 0.95rem;
           line-height: 1.5;
           color: var(--text-primary);
-          margin: 0;
-          opacity: 0.9;
+          margin: 0.5rem 0 0 0;
+        }
+
+        .education-actions {
+          display: flex;
+          gap: 1rem;
+        }
+
+        .edit-btn,
+        .delete-btn {
+          background: none;
+          border: none;
+          padding: 0.3rem 0.6rem;
+          font-size: 0.9rem;
+          font-weight: 500;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .edit-btn {
+          color: var(--color-primary);
+        }
+
+        .edit-btn:hover:not(:disabled) {
+          background-color: var(--color-primary-very-light);
+        }
+
+        .delete-btn {
+          color: #e53e3e;
+        }
+
+        .delete-btn:hover:not(:disabled) {
+          background-color: rgba(229, 62, 62, 0.1);
+        }
+
+        .edit-btn:disabled,
+        .delete-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
         }
 
         .no-data {
           text-align: center;
-          color: var(--text-secondary); /* Secondary text color */
+          color: var(--text-secondary);
           font-style: italic;
-          margin-top: 2rem;
+          padding: 2rem 0;
+          border: 1px dashed var(--border-color);
+          border-radius: 8px;
         }
 
-        /* Re-define spinner styles locally if they are used in this component's buttons */
-        .submit-btn .spinner {
-          display: inline-block;
-          width: 16px;
-          height: 16px;
-          border: 2px solid rgba(255, 255, 255, 0.3);
-          border-radius: 50%;
-          border-top-color: white;
-          animation: spin 1s linear infinite;
-          margin-right: 8px;
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
         }
 
-        .dark .submit-btn .spinner {
-          border: 2px solid rgba(var(--text-primary, #e5e7eb), 0.3);
-          border-top-color: var(--text-primary);
-        }
-
-        /* Responsive Adjustments (Consistent with ExperienceSection) */
         @media (max-width: 768px) {
-          .section-header {
-            flex-direction: column;
-            align-items: flex-start;
-            margin-bottom: 1.5rem;
-          }
-
-          .section-header h3 {
-            margin-bottom: 1rem;
-          }
-
-          .form-row {
-            flex-direction: column; /* Stack date inputs */
+          .form-grid {
+            grid-template-columns: 1fr;
             gap: 1rem;
           }
 
-          .form-row .form-group {
-            margin-bottom: 0.5rem; /* Adjust margin when stacked */
-          }
-
-          .education-item {
-            padding: 1rem;
+          .section-title {
+            font-size: 1.4rem;
           }
 
           .education-header {
             flex-direction: column;
-            align-items: flex-start;
-            margin-bottom: 0.5rem;
           }
 
           .education-actions {
-            margin-top: 0.5rem; /* Space above action buttons */
-            gap: 1rem;
+            margin-top: 1rem;
           }
         }
 
         @media (max-width: 480px) {
-          .section-header h3 {
-            font-size: 1.2rem;
+          .section-title {
+            font-size: 1.3rem;
           }
-          .add-btn {
-            font-size: 0.85rem;
-            padding: 0.4rem 0.8rem;
-          }
+
           .education-form {
             padding: 1rem;
           }
-          .education-form h4 {
-            font-size: 1.1rem;
-          }
+
           label {
             font-size: 0.9rem;
           }
+
           input,
           textarea {
-            font-size: 0.9rem;
-            padding: 0.6rem 0.8rem;
+            padding: 0.7rem 0.9rem;
+            font-size: 0.95rem;
           }
-          .form-actions {
-            flex-direction: column; /* Stack form action buttons */
-            gap: 0.5rem;
+
+          .error-message {
+            font-size: 0.8rem;
           }
-          .cancel-btn,
+
           .submit-btn {
+            padding: 0.7rem 1.5rem;
+            font-size: 0.95rem;
+            min-width: auto;
             width: 100%;
-            text-align: center;
-            justify-content: center;
-            padding: 0.6rem 1rem;
-            font-size: 0.9rem;
           }
+
           .education-item {
-            padding: 0.8rem;
+            padding: 1rem;
           }
-          .education-header h4 {
+
+          .education-title h4 {
             font-size: 1rem;
           }
-          .school-info,
+
+          .education-title h5 {
+            font-size: 0.9rem;
+          }
+
           .date-range,
           .description {
             font-size: 0.85rem;
-          }
-          .edit-btn,
-          .delete-btn {
-            font-size: 0.8rem;
           }
         }
       `}</style>
