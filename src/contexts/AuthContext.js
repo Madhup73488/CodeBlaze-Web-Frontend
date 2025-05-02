@@ -101,18 +101,12 @@ export const AuthProvider = ({ children }) => {
       const isAdmin =
         user && (user.role === "admin" || user.role === "superadmin");
 
-      if (isAuthenticated && isAdmin) {
-        if (!location.pathname.startsWith("/admin")) {
-          navigate("/admin/dashboard", { replace: true });
-        }
-      } else if (isAuthenticated && !isAdmin) {
-        if (location.pathname.startsWith("/admin")) {
-          navigate("/", { replace: true });
-        }
-      } else {
-        if (location.pathname.startsWith("/admin")) {
-          navigate("/", { replace: true });
-        }
+      // Only redirect non-admins away from admin routes
+      if (
+        location.pathname.startsWith("/admin") &&
+        (!isAuthenticated || !isAdmin)
+      ) {
+        navigate("/", { replace: true });
       }
     }
   }, [isAuthenticated, user, loading, navigate, location.pathname]);
@@ -280,7 +274,8 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={contextValue}>
-      {!loading ? children : <div>Loading authentication status...</div>}
+      {children}
+      {/* {!loading ? children : <div>Loading authentication status...</div>} */}
     </AuthContext.Provider>
   );
 };

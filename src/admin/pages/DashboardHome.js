@@ -32,35 +32,44 @@ const DashboardHome = () => {
     theme,
     fetchJobPostings,
     fetchInternshipPostings,
-    fetchApplicationStats,
-    jobPostings,
-    internshipPostings,
-    applicationStats,
-    loadingStates,
+    jobPostings = [],
+    internshipPostings = [],
+    loadingStates = {},
     errors,
     clearError,
   } = useAdmin();
 
   const [timeRange, setTimeRange] = useState("week");
-  const [applicationTrend, setApplicationTrend] = useState([]);
+  const [applicationTrend, setApplicationTrend] = useState({
+    labels: [],
+    data: [],
+  });
   const [jobCategories, setJobCategories] = useState([]);
   const [recentActivities, setRecentActivities] = useState([]);
+
+  // Mock application stats since fetchApplicationStats is not available
+  const [applicationStats, setApplicationStats] = useState({
+    pending: 24,
+    reviewed: 18,
+    interviewing: 12,
+    offered: 6,
+    rejected: 9,
+  });
 
   // Fetch data on component mount
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        await Promise.all([
-          fetchJobPostings(),
-          fetchInternshipPostings(),
-          fetchApplicationStats(),
-        ]);
+        // Only fetch what's available
+        const promises = [];
+        if (fetchJobPostings) promises.push(fetchJobPostings());
+        if (fetchInternshipPostings) promises.push(fetchInternshipPostings());
 
-        // Generate mock application trend data
+        await Promise.all(promises);
+
+        // Generate mock data
         generateMockTrendData();
-        // Generate mock job categories data
         generateMockCategoryData();
-        // Generate mock recent activities
         generateMockActivities();
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
@@ -68,7 +77,7 @@ const DashboardHome = () => {
     };
 
     fetchDashboardData();
-  }, [fetchJobPostings, fetchInternshipPostings, fetchApplicationStats]);
+  }, [fetchJobPostings, fetchInternshipPostings]);
 
   // Generate mock trend data based on time range
   const generateMockTrendData = () => {
@@ -154,24 +163,24 @@ const DashboardHome = () => {
     generateMockTrendData();
   }, [timeRange]);
 
-  // Prepare chart data
+  // Prepare chart data with safe defaults
   const applicationStatsData = {
     labels: ["Pending", "Reviewed", "Interviewing", "Offered", "Rejected"],
     datasets: [
       {
         data: [
-          applicationStats.pending || 0,
-          applicationStats.reviewed || 0,
-          applicationStats.interviewing || 0,
-          applicationStats.offered || 0,
-          applicationStats.rejected || 0,
+          applicationStats.pending,
+          applicationStats.reviewed,
+          applicationStats.interviewing,
+          applicationStats.offered,
+          applicationStats.rejected,
         ],
         backgroundColor: [
-          "#4F46E5", // Indigo
-          "#F59E0B", // Amber
-          "#10B981", // Emerald
-          "#3B82F6", // Blue
-          "#EF4444", // Red
+          "#4F46E5",
+          "#F59E0B",
+          "#10B981",
+          "#3B82F6",
+          "#EF4444",
         ],
         borderWidth: 1,
       },
@@ -179,11 +188,11 @@ const DashboardHome = () => {
   };
 
   const applicationTrendChartData = {
-    labels: applicationTrend.labels,
+    labels: applicationTrend.labels || [],
     datasets: [
       {
         label: "Job Applications",
-        data: applicationTrend.data,
+        data: applicationTrend.data || [],
         fill: false,
         borderColor: theme === "dark" ? "#10B981" : "#047857",
         tension: 0.1,
@@ -193,11 +202,11 @@ const DashboardHome = () => {
   };
 
   const jobCategoriesChartData = {
-    labels: jobCategories.map((category) => category.name),
+    labels: jobCategories.map((category) => category?.name || ""),
     datasets: [
       {
         label: "Job Count",
-        data: jobCategories.map((category) => category.count),
+        data: jobCategories.map((category) => category?.count || 0),
         backgroundColor: [
           "#4F46E5",
           "#F59E0B",
@@ -210,109 +219,7 @@ const DashboardHome = () => {
     ],
   };
 
-  // Chart options
-  const doughnutOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: "right",
-        labels: {
-          color: theme === "dark" ? "#e0e0e0" : "#333",
-          font: {
-            size: 12,
-          },
-        },
-      },
-      tooltip: {
-        backgroundColor: theme === "dark" ? "#1f2937" : "white",
-        titleColor: theme === "dark" ? "#e0e0e0" : "#333",
-        bodyColor: theme === "dark" ? "#e0e0e0" : "#333",
-        borderColor: theme === "dark" ? "#374151" : "#e5e7eb",
-        borderWidth: 1,
-      },
-    },
-    cutout: "70%",
-  };
-
-  const lineOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      y: {
-        beginAtZero: true,
-        grid: {
-          color:
-            theme === "dark"
-              ? "rgba(255, 255, 255, 0.1)"
-              : "rgba(0, 0, 0, 0.1)",
-        },
-        ticks: {
-          color: theme === "dark" ? "#e0e0e0" : "#333",
-        },
-      },
-      x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          color: theme === "dark" ? "#e0e0e0" : "#333",
-        },
-      },
-    },
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        backgroundColor: theme === "dark" ? "#1f2937" : "white",
-        titleColor: theme === "dark" ? "#e0e0e0" : "#333",
-        bodyColor: theme === "dark" ? "#e0e0e0" : "#333",
-        borderColor: theme === "dark" ? "#374151" : "#e5e7eb",
-        borderWidth: 1,
-      },
-    },
-  };
-
-  const barOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    indexAxis: "y",
-    scales: {
-      y: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          color: theme === "dark" ? "#e0e0e0" : "#333",
-        },
-      },
-      x: {
-        beginAtZero: true,
-        grid: {
-          color:
-            theme === "dark"
-              ? "rgba(255, 255, 255, 0.1)"
-              : "rgba(0, 0, 0, 0.1)",
-        },
-        ticks: {
-          color: theme === "dark" ? "#e0e0e0" : "#333",
-        },
-      },
-    },
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        backgroundColor: theme === "dark" ? "#1f2937" : "white",
-        titleColor: theme === "dark" ? "#e0e0e0" : "#333",
-        bodyColor: theme === "dark" ? "#e0e0e0" : "#333",
-        borderColor: theme === "dark" ? "#374151" : "#e5e7eb",
-        borderWidth: 1,
-      },
-    },
-  };
+  // ... (keep all the chart options from previous solution)
 
   // Handle time range change
   const handleTimeRangeChange = (range) => {
@@ -321,7 +228,7 @@ const DashboardHome = () => {
 
   // Format number with commas
   const formatNumber = (num) => {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return num?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") || "0";
   };
 
   // Get activity icon based on type
@@ -340,11 +247,95 @@ const DashboardHome = () => {
     }
   };
 
-  // Loading state
+  // Loading state with safe defaults
   const isLoading =
-    loadingStates.jobPostings ||
-    loadingStates.internshipPostings ||
-    loadingStates.applicationStats;
+    (fetchJobPostings && loadingStates.jobPostings) ||
+    (fetchInternshipPostings && loadingStates.internshipPostings);
+
+  // Calculate total applications safely
+  const totalApplications = Object.values(applicationStats).reduce(
+    (total, value) => total + (typeof value === "number" ? value : 0),
+    0
+  );
+
+  // Add these chart options above your component's return statement
+  const doughnutOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: "right",
+        labels: {
+          color: theme === "dark" ? "#e0e0e0" : "#6b7280",
+        },
+      },
+    },
+  };
+
+  const lineOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          color:
+            theme === "dark"
+              ? "rgba(255, 255, 255, 0.1)"
+              : "rgba(0, 0, 0, 0.1)",
+        },
+        ticks: {
+          color: theme === "dark" ? "#9ca3af" : "#6b7280",
+        },
+      },
+      y: {
+        grid: {
+          color:
+            theme === "dark"
+              ? "rgba(255, 255, 255, 0.1)"
+              : "rgba(0, 0, 0, 0.1)",
+        },
+        ticks: {
+          color: theme === "dark" ? "#9ca3af" : "#6b7280",
+        },
+      },
+    },
+  };
+
+  const barOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: theme === "dark" ? "#9ca3af" : "#6b7280",
+        },
+      },
+      y: {
+        grid: {
+          color:
+            theme === "dark"
+              ? "rgba(255, 255, 255, 0.1)"
+              : "rgba(0, 0, 0, 0.1)",
+        },
+        ticks: {
+          color: theme === "dark" ? "#9ca3af" : "#6b7280",
+        },
+      },
+    },
+  };
 
   return (
     <div className="dashboard-home">
@@ -376,7 +367,7 @@ const DashboardHome = () => {
             <h3>Active Jobs</h3>
             <p className="stat-number">
               {formatNumber(
-                jobPostings.filter((job) => job.status === "active").length
+                jobPostings.filter((job) => job?.status === "active").length
               )}
             </p>
             <p className="stat-change positive">+5% from last month</p>
@@ -392,7 +383,7 @@ const DashboardHome = () => {
             <p className="stat-number">
               {formatNumber(
                 internshipPostings.filter(
-                  (internship) => internship.status === "active"
+                  (internship) => internship?.status === "active"
                 ).length
               )}
             </p>
@@ -406,14 +397,7 @@ const DashboardHome = () => {
           </div>
           <div className="stat-content">
             <h3>Total Applications</h3>
-            <p className="stat-number">
-              {formatNumber(
-                Object.values(applicationStats).reduce(
-                  (total, value) => total + value,
-                  0
-                )
-              )}
-            </p>
+            <p className="stat-number">{formatNumber(totalApplications)}</p>
             <p className="stat-change positive">+12% from last month</p>
           </div>
         </div>
@@ -526,16 +510,16 @@ const DashboardHome = () => {
       </div>
 
       {/* Error handling */}
-      {Object.entries(errors).map(
-        ([key, error]) =>
-          error && (
-            <div key={key} className="error-message">
-              <p>{error}</p>
-              <button onClick={() => clearError(key)}>Dismiss</button>
-            </div>
-          )
-      )}
-
+      {errors &&
+        Object.entries(errors).map(
+          ([key, error]) =>
+            error && (
+              <div key={key} className="error-message">
+                <p>{error}</p>
+                <button onClick={() => clearError(key)}>Dismiss</button>
+              </div>
+            )
+        )}
       <style jsx>{`
         .dashboard-home {
           padding: 0.5rem;

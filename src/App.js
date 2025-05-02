@@ -27,7 +27,7 @@ import Webinars from "./components/ForStudents/Webinars";
 import SkillsAndRoles from "./components/ForStudents/SkillsAndRoles";
 import JobSeekers from "./components/JobSeekers/JobSeekers";
 
-// Admin components and pages
+// Admin components
 import AdminLayout from "./admin/components/layout/AdminLayout";
 import DashboardHome from "./admin/pages/DashboardHome";
 import AdminSettings from "./admin/pages/AdminSettings";
@@ -50,17 +50,15 @@ import InternshipDetail from "./admin/pages/internships/InternshipDetail";
 import JobApplications from "./admin/pages/applications/JobApplications";
 import InternshipApplications from "./admin/pages/applications/InternshipApplications";
 
-// Import AuthProvider, useAuth, and AuthModal
+// Auth components
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import AuthModal from "./components/Auth/AuthModal";
 
-// Import Profile Components
+// Profile components
 import ProfileDashboard from "./components/profile/ProfileDashboard";
 import PublicProfile from "./components/profile/PublicProfile";
 
-// Component to handle routing and layout based on auth state and location
 const AppContent = () => {
-  // Use auth context to get authentication state and user data
   const { isAuthenticated, user, loading, authFlowState, setAuthFlowState } =
     useAuth();
   const [theme, setTheme] = useState("dark");
@@ -68,24 +66,14 @@ const AppContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // State to control the AuthModal's open/close state from AppContent
-  // This state will be passed down to components that need to open the modal
-  // Correct implementation of wrapped setter for debugging
-  const [isAuthModalOpen, setIsAuthModalOpenState] = useState(false);
-  const setIsAuthModalOpen = (value) => {
-    console.log(
-      "--- AppContent Log: Called setIsAuthModalOpen with:",
-      value,
-      "---"
-    ); // Log the value being set
-    setIsAuthModalOpenState(value); // Call the original setter function
-  };
-
-  // Check if the current path is an admin route
+  console.log("AppContent Render - Current State:", {
+    isAuthenticated,
+    user,
+    loading,
+    pathname: location.pathname,
+  });
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const isAdminRoute = location.pathname.startsWith("/admin");
-
-  // Check if the current path is a profile route
-  const isProfileRoute = location.pathname.startsWith("/profile");
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -95,78 +83,60 @@ const AppContent = () => {
     setColor(color === "purple" ? "orange" : "purple");
   };
 
-  // --- Effect for Admin Redirection and Protected Routes ---
+  // Effect for Admin Redirection and Protected Routes
   useEffect(() => {
+    console.log("useEffect - checking auth state:", {
+      isAuthenticated,
+      user,
+      loading,
+      pathname: location.pathname,
+    });
     if (!loading) {
+      console.log("useEffect - Loading finished:", {
+        isAuthenticated,
+        user,
+        pathname: location.pathname,
+        userRole: user?.role, // Log user role explicitly
+      });
       const isAdmin =
         user && (user.role === "admin" || user.role === "superadmin");
+      const currentPath = location.pathname;
 
-      if (isAuthenticated && isAdmin) {
-        if (!location.pathname.startsWith("/admin")) {
+      if (currentPath.startsWith("/admin")) {
+        // More specific check for admin paths
+        console.log("useEffect - On Admin Path:", { isAuthenticated, isAdmin }); // <-- Add this log
+        if (isAuthenticated && !isAdmin) {
           console.log(
-            "Authenticated admin detected, redirecting to /admin/dashboard"
-          );
-          navigate("/admin/dashboard", { replace: true });
-        }
-      } else if (isAuthenticated && !isAdmin) {
-        if (location.pathname.startsWith("/admin")) {
-          console.log(
-            "Authenticated non-admin user on admin route, redirecting to /"
-          );
+            "useEffect - Redirecting authenticated non-admin:",
+            user?.role
+          ); // <-- Add this log
           navigate("/", { replace: true });
-        }
-      } else {
-        if (location.pathname.startsWith("/admin")) {
-          console.log("Unauthenticated user on admin route, redirecting to /");
+        } else if (!isAuthenticated) {
+          console.log("useEffect - Redirecting unauthenticated user"); // <-- Add this log
           navigate("/", { replace: true });
+        } else {
+          console.log("useEffect - User is admin, allowing access"); // <-- Add this log
         }
       }
-
-      // Check if user tries to access profile routes without authentication
-      if (
-        !isAuthenticated &&
-        location.pathname.startsWith("/profile/dashboard")
-      ) {
-        console.log("Unauthenticated user on profile route, redirecting to /");
-        navigate("/", { replace: true });
-      }
+      // ... (other useEffect logic if any)
+    } else {
+      console.log("useEffect - Still Loading Auth State..."); // <-- Add this log
     }
   }, [isAuthenticated, user, loading, navigate, location.pathname]);
 
   // Effect to open the AuthModal automatically if authFlowState is 'reset_password_form'
   useEffect(() => {
     if (authFlowState === "reset_password_form") {
-      console.log(
-        "--- AppContent Log: authFlowState is reset_password_form, setting isAuthModalOpen to true ---"
-      );
       setIsAuthModalOpen(true);
     }
   }, [authFlowState]);
 
-  // Function to open the AuthModal to a specific tab/flow state
-  const openAuthModal = (
-    initialFlowState = "initial",
-    initialTab = "login"
-  ) => {
-    console.log("--- AppContent Log: Called openAuthModal ---");
+  const openAuthModal = (initialFlowState = "initial") => {
     setAuthFlowState(initialFlowState);
-    console.log("--- AppContent Log: Setting isAuthModalOpen to true ---");
     setIsAuthModalOpen(true);
   };
 
-  // Effect to log when isAuthModalOpen state changes
-  useEffect(() => {
-    console.log(
-      "--- AppContent Log: isAuthModalOpen state changed to:",
-      isAuthModalOpen,
-      "---"
-    );
-  }, [isAuthModalOpen]);
-
-  // Function to close the AuthModal
   const closeAuthModal = () => {
-    console.log("--- AppContent Log: Called closeAuthModal ---");
-    console.log("--- AppContent Log: Setting isAuthModalOpen to false ---");
     setIsAuthModalOpen(false);
     if (authFlowState !== "reset_password_form") {
       setAuthFlowState("initial");
@@ -178,11 +148,6 @@ const AppContent = () => {
       navigate("/", { replace: true });
     }
   };
-
-  // Show a loading indicator while the initial auth status is being checked
-  if (loading) {
-    return <div>Checking authentication status...</div>;
-  }
 
   return (
     <div
@@ -284,10 +249,12 @@ const AppContent = () => {
           element={<PublicProfile theme={theme} color={color} />}
         />
 
+        {/* Admin Routes - Fixed structure */}
         <Route
-          path="/admin/*"
+          path="/admin"
           element={
-            isAuthenticated ? (
+            isAuthenticated &&
+            (user?.role === "admin" || user?.role === "superadmin") ? (
               <AdminProvider>
                 <AdminLayout />
               </AdminProvider>
@@ -296,7 +263,8 @@ const AppContent = () => {
             )
           }
         >
-          <Route index element={<DashboardHome />} />
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<DashboardHome />} />
           <Route path="settings" element={<AdminSettings />} />
 
           <Route path="jobs">
@@ -319,8 +287,11 @@ const AppContent = () => {
             <Route index element={<Navigate to="jobs" replace />} />
           </Route>
 
+          
+
           <Route path="*" element={<AdminNotFound />} />
         </Route>
+
         <Route path="*" element={<NotFound theme={theme} color={color} />} />
       </Routes>
 

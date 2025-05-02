@@ -1,19 +1,10 @@
+// Updated AuthModal.js
 import { useState, useEffect } from "react";
-import {
-  X,
-  Eye,
-  EyeOff,
-  Mail,
-  Lock,
-  User,
-  ArrowRight,
-  ExternalLink,
-  ShieldCheck,
-  RotateCcw,
-  CheckCircle,
-  AlertCircle,
-} from "lucide-react";
+import { X } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
+import AuthBranding from "./AuthBranding";
+import AuthContent from "./AuthContent";
+import Loader from "./Loader"; // Make sure Loader is imported if used directly in AuthModal
 
 function AuthModal({ isOpen, onClose, theme, color }) {
   const {
@@ -39,6 +30,7 @@ function AuthModal({ isOpen, onClose, theme, color }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [otpInputs, setOtpInputs] = useState(["", "", "", "", "", ""]);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false); // State to track mobile view
   const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
 
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
@@ -55,11 +47,21 @@ function AuthModal({ isOpen, onClose, theme, color }) {
     confirmNewPassword: "",
   });
 
-  const Loader = () => (
-    <div className="button-loader">
-      <div className="loader-spinner"></div>
-    </div>
-  );
+  // Check if mobile view on component mount and window resize
+  useEffect(() => {
+    const checkMobileView = () => {
+      setIsMobileView(window.innerWidth <= 768); // Adjust breakpoint as needed
+    };
+
+    // Check on initial load
+    checkMobileView();
+
+    // Add resize listener
+    window.addEventListener("resize", checkMobileView);
+
+    // Clean up
+    return () => window.removeEventListener("resize", checkMobileView);
+  }, []); // Empty dependency array means this effect runs only once on mount and cleans up on unmount
 
   const handleLoginChange = (e) => {
     const { name, value } = e.target;
@@ -120,12 +122,13 @@ function AuthModal({ isOpen, onClose, theme, color }) {
     e.stopPropagation();
     setIsButtonLoading(true);
     setTimeout(async () => {
+      // Using setTimeout for demo loading effect
       const result = await loginUser(loginForm.email, loginForm.password);
       if (result.success) {
         onClose();
       }
       setIsButtonLoading(false); // Set local loading state back to false
-    }, 2000);
+    }, 2000); // Simulate network delay
   };
 
   const handleRequestOTP = async (e) => {
@@ -133,13 +136,16 @@ function AuthModal({ isOpen, onClose, theme, color }) {
     e.stopPropagation();
     setIsButtonLoading(true);
     setTimeout(async () => {
+      // Using setTimeout for demo loading effect
       if (registerForm.password !== registerForm.confirmPassword) {
-        setError("Passwords do not match");
+        setError({ type: "error", message: "Passwords do not match" });
+        setIsButtonLoading(false);
         return;
       }
 
       if (!registerForm.name || !registerForm.email || !registerForm.password) {
-        setError("All fields are required");
+        setError({ type: "error", message: "All fields are required" });
+        setIsButtonLoading(false);
         return;
       }
 
@@ -148,12 +154,12 @@ function AuthModal({ isOpen, onClose, theme, color }) {
         console.log(
           "AuthModal: registerUser returned success. Context should handle state change."
         );
-        setOtpInputs(["", "", "", "", "", ""]);
+        setOtpInputs(["", "", "", "", "", ""]); // Clear OTP inputs on success
       } else {
         console.error("AuthModal: registerUser returned failure.");
       }
       setIsButtonLoading(false); // Set local loading state back to false
-    }, 2000);
+    }, 2000); // Simulate network delay
   };
 
   const handleVerifyOTPSubmit = async (e) => {
@@ -161,26 +167,32 @@ function AuthModal({ isOpen, onClose, theme, color }) {
     e.stopPropagation();
     const enteredOtp = otpInputs.join("");
     if (enteredOtp.length !== 6) {
-      setError("Please enter the complete 6-digit OTP");
+      setError({
+        type: "error",
+        message: "Please enter the complete 6-digit OTP",
+      });
       return;
     }
 
+    // setIsButtonLoading(true); // Uncomment if you want loading state here
     const result = await verifyUserOTP(userEmailForOTP, enteredOtp);
     if (result.success) {
-      setOtpInputs(["", "", "", "", "", ""]);
+      setOtpInputs(["", "", "", "", "", ""]); // Clear OTP inputs on success
       onClose();
     } else {
       console.error("AuthModal: verifyUserOTP returned failure.");
     }
+    // setIsButtonLoading(false); // Uncomment if you want loading state here
   };
 
   const handleResendOTP = async () => {
+    // setIsButtonLoading(true); // Uncomment if you want loading state here
     try {
       const result = await resendUserOTP(userEmailForOTP);
       if (result.success) {
         // Use a success state for the message
         setError({ type: "success", message: "OTP resent successfully." });
-        setOtpInputs(["", "", "", "", "", ""]);
+        setOtpInputs(["", "", "", "", "", ""]); // Clear OTP inputs on resend
       } else {
         setError({
           type: "error",
@@ -193,6 +205,7 @@ function AuthModal({ isOpen, onClose, theme, color }) {
         message: "Failed to resend OTP. Please try again.",
       });
     }
+    // setIsButtonLoading(false); // Uncomment if you want loading state here
   };
 
   const handleForgotPasswordSubmit = async (e) => {
@@ -200,12 +213,13 @@ function AuthModal({ isOpen, onClose, theme, color }) {
     e.stopPropagation();
     setIsButtonLoading(true);
     setTimeout(async () => {
+      // Using setTimeout for demo loading effect
       const result = await requestForgotPassword(forgotPasswordForm.email);
       if (result.success) {
         setForgotPasswordForm({ email: "" });
       }
       setIsButtonLoading(false); // Set local loading state back to false
-    }, 2000);
+    }, 2000); // Simulate network delay
   };
 
   const handleResetPasswordSubmit = async (e) => {
@@ -213,10 +227,12 @@ function AuthModal({ isOpen, onClose, theme, color }) {
     e.stopPropagation();
     setIsButtonLoading(true);
     setTimeout(async () => {
+      // Using setTimeout for demo loading effect
       if (
         resetPasswordForm.newPassword !== resetPasswordForm.confirmNewPassword
       ) {
-        setError("New passwords do not match");
+        setError({ type: "error", message: "New passwords do not match" });
+        setIsButtonLoading(false);
         return;
       }
       const result = await resetUserPassword(
@@ -225,37 +241,40 @@ function AuthModal({ isOpen, onClose, theme, color }) {
       );
       if (result.success) {
         setResetPasswordForm({ newPassword: "", confirmNewPassword: "" });
-        onClose();
+        onClose(); // Close modal on successful password reset
       }
       setIsButtonLoading(false); // Set local loading state back to false
-    }, 2000);
+    }, 2000); // Simulate network delay
   };
 
   const handleForgotPasswordClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setAuthFlowState("forgot_password_form");
-    setLoginForm({ email: "", password: "" });
-    setError(null);
+    setLoginForm({ email: "", password: "" }); // Clear login form when switching
+    setError(null); // Clear any previous errors
   };
 
   const handleBackToLogin = () => {
     setAuthFlowState("initial");
     setActiveTab("login");
+    // Reset all forms and state
     setOtpInputs(["", "", "", "", "", ""]);
     setForgotPasswordForm({ email: "" });
     setResetPasswordForm({ newPassword: "", confirmNewPassword: "" });
+    setLoginForm({ email: "", password: "" }); // Ensure login form is also reset
     setError(null);
   };
 
   const toggleAdminMode = () => {
     setIsAdmin(!isAdmin);
-    setLoginForm({ email: "", password: "" });
-    setError(null);
+    setLoginForm({ email: "", password: "" }); // Clear login form on mode toggle
+    setError(null); // Clear errors
   };
 
   useEffect(() => {
     if (!isOpen) {
+      // Reset all state when modal closes
       setActiveTab("login");
       setShowPassword(false);
       setShowConfirmPassword(false);
@@ -273,777 +292,104 @@ function AuthModal({ isOpen, onClose, theme, color }) {
       setResetPasswordForm({ newPassword: "", confirmNewPassword: "" });
       setError(null);
 
+      // Reset authFlowState unless it's in a state that might persist outside the modal (like reset_password_form)
       if (
         authFlowState !== "reset_password_form" &&
-        authFlowState !== "otp_sent"
+        authFlowState !== "otp_sent" // Keep otp_sent state if modal closes during OTP flow? Or should it reset? Assuming reset for now.
       ) {
         setAuthFlowState("initial");
       }
+      // Special handling for reset_password_form: if the modal closes, the state should probably reset unless the link is clicked again.
+      // If reset_password_form is meant to open the modal directly via a token URL, this reset might need adjustment.
+      // For now, let's assume closing the modal from *any* state resets it.
+      setAuthFlowState("initial");
     } else {
+      // When modal opens, potentially adjust state based on authFlowState
       if (authFlowState === "reset_password_form") {
         setResetPasswordForm({ newPassword: "", confirmNewPassword: "" });
-        setOtpInputs(["", "", "", "", "", ""]);
+        // No need to clear otpInputs here, as they are unrelated to reset_password
       }
       if (authFlowState === "otp_sent") {
-        setOtpInputs(["", "", "", "", "", ""]);
+        // Keep otpInputs potentially filled, or clear if a fresh start is desired
+        // setOtpInputs(["", "", "", "", "", ""]); // Decide whether to clear or keep previous input
       }
     }
-  }, [isOpen, authFlowState, setAuthFlowState, setError]);
+    // Clean up function for effects
+    return () => {
+      // Any cleanup needed when modal is unmounted or state changes trigger re-run
+    };
+  }, [isOpen, setAuthFlowState, setError]); // Dependencies for the effect
 
-  if (!isOpen && authFlowState !== "reset_password_form") return null;
+  // If the modal is not open and we are not specifically in the reset password flow (which might open the modal
+  // independently via a link), don't render anything.
+  // Adjust this logic if the reset_password_form state is only ever reached *within* an already open modal.
+  // Assuming `reset_password_form` and potentially `otp_sent` *could* be initial states when the modal opens.
+  if (
+    !isOpen &&
+    authFlowState !== "reset_password_form" &&
+    authFlowState !== "otp_sent"
+  ) {
+    return null;
+  }
 
-  const renderContent = () => {
-    if (loading) {
-      return <div>Loading...</div>;
-    }
-
-    if (authFlowState === "otp_sent") {
-      return (
-        <>
-          <div className="auth-welcome">
-            <h2 className="auth-title">Verify Your Email</h2>
-            <p className="auth-subtitle">
-              An OTP has been sent to <strong>{userEmailForOTP}</strong>. Please
-              enter it below.
-            </p>
-            {error && (
-              <p
-                className={`${
-                  error.type === "success" ? "success-message" : "error-message"
-                }`}
-              >
-                {error.type === "success" ? (
-                  <CheckCircle size={16} />
-                ) : (
-                  <AlertCircle size={16} />
-                )}
-                {error.message}
-              </p>
-            )}
-          </div>
-          <form onSubmit={handleVerifyOTPSubmit} className="auth-form">
-            <div className="form-group">
-              <label htmlFor="otp" className="form-label">
-                OTP Code
-              </label>
-              <div className="otp-input-group">
-                {otpInputs.map((digit, index) => (
-                  <input
-                    key={index}
-                    id={`otp-input-${index}`}
-                    type="text"
-                    maxLength={1}
-                    className="otp-input"
-                    value={digit}
-                    onChange={(e) =>
-                      handleOtpInputChange(index, e.target.value)
-                    }
-                    onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                    required
-                  />
-                ))}
-              </div>
-            </div>
-            <button
-              type="submit"
-              className="auth-button"
-              style={{ backgroundColor: primaryColor }}
-              disabled={loading}
-            >
-              {isButtonLoading ? (
-                <Loader />
-              ) : (
-                <>
-                  Verify <CheckCircle size={18} />
-                </>
-              )}
-            </button>
-          </form>
-          <div className="auth-switch">
-            Didn't receive the OTP?{" "}
-            <button
-              className="switch-button"
-              onClick={handleResendOTP}
-              style={{ color: primaryColor }}
-              disabled={loading}
-            >
-              {isButtonLoading ? <Loader /> : "Resend OTP"}{" "}
-              <RotateCcw size={16} />
-            </button>
-          </div>
-          <div className="auth-switch">
-            <button
-              className="switch-button"
-              onClick={handleBackToLogin}
-              style={{ color: primaryColor }}
-            >
-              Back to Login
-            </button>
-          </div>
-        </>
-      );
-    }
-
-    if (authFlowState === "forgot_password_form") {
-      return (
-        <>
-          <div className="auth-welcome">
-            <h2 className="auth-title">Forgot Password?</h2>
-            <p className="auth-subtitle">
-              Enter your email address to receive a password reset link.
-            </p>
-            {error && (
-              <p className="error-message">
-                <AlertCircle size={16} /> {error}
-              </p>
-            )}
-          </div>
-          <form onSubmit={handleForgotPasswordSubmit} className="auth-form">
-            <div className="form-group">
-              <label htmlFor="forgot-email" className="form-label">
-                Email
-              </label>
-              <div className="input-wrapper">
-                <Mail size={18} className="input-icon" />
-                <input
-                  type="email"
-                  id="forgot-email"
-                  name="email"
-                  className="form-input"
-                  placeholder="your@email.com"
-                  value={forgotPasswordForm.email}
-                  onChange={handleForgotPasswordChange}
-                  required
-                />
-              </div>
-            </div>
-            <button
-              type="submit"
-              className="auth-button"
-              style={{ backgroundColor: primaryColor }}
-              disabled={loading}
-            >
-              {isButtonLoading ? (
-                <Loader />
-              ) : (
-                <>
-                  Send Reset Link <Mail size={18} />
-                </>
-              )}
-            </button>
-          </form>
-          <div className="auth-switch">
-            <button
-              className="switch-button"
-              onClick={handleBackToLogin}
-              style={{ color: primaryColor }}
-            >
-              Back to Login
-            </button>
-          </div>
-        </>
-      );
-    }
-
-    if (authFlowState === "forgot_password_requested") {
-      return (
-        <>
-          <div className="auth-welcome">
-            <h2 className="auth-title">
-              <CheckCircle size={30} color="#28a745" /> Email Sent!
-            </h2>
-            <p className="auth-subtitle">
-              If an account with that email exists, we've sent a password reset
-              link.
-            </p>
-            <p className="auth-subtitle">
-              Please check your inbox (and spam folder).
-            </p>
-          </div>
-          <div className="auth-switch">
-            <button
-              className="switch-button"
-              onClick={handleBackToLogin}
-              style={{ color: primaryColor }}
-            >
-              Back to Login
-            </button>
-          </div>
-        </>
-      );
-    }
-
-    if (authFlowState === "reset_password_form" && resetPasswordToken) {
-      return (
-        <>
-          <div className="auth-welcome">
-            <h2 className="auth-title">Reset Password</h2>
-            <p className="auth-subtitle">Enter your new password.</p>
-            {error && (
-              <p className="error-message">
-                <AlertCircle size={16} /> {error}
-              </p>
-            )}
-          </div>
-          <form onSubmit={handleResetPasswordSubmit} className="auth-form">
-            <div className="form-group">
-              <label htmlFor="new-password" className="form-label">
-                New Password
-              </label>
-              <div className="input-wrapper">
-                <Lock size={18} className="input-icon" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="new-password"
-                  name="newPassword"
-                  className="form-input"
-                  placeholder="Enter new password"
-                  value={resetPasswordForm.newPassword}
-                  onChange={handleResetPasswordChange}
-                  required
-                  minLength={6}
-                />
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="confirm-new-password" className="form-label">
-                Confirm New Password
-              </label>
-              <div className="input-wrapper">
-                <Lock size={18} className="input-icon" />
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  id="confirm-new-password"
-                  name="confirmNewPassword"
-                  className="form-input"
-                  placeholder="Confirm new password"
-                  value={resetPasswordForm.confirmNewPassword}
-                  onChange={handleResetPasswordChange}
-                  required
-                  minLength={6}
-                />
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff size={18} />
-                  ) : (
-                    <Eye size={18} />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="auth-button"
-              style={{ backgroundColor: primaryColor }}
-              disabled={loading}
-            >
-              {isButtonLoading ? (
-                <Loader />
-              ) : (
-                <>
-                  Reset Password <ArrowRight size={18} />
-                </>
-              )}
-            </button>
-          </form>
-          <div className="auth-switch">
-            <button
-              className="switch-button"
-              onClick={handleBackToLogin}
-              style={{ color: primaryColor }}
-            >
-              Back to Login
-            </button>
-          </div>
-        </>
-      );
-    }
-
-    return (
-      <>
-        {activeTab === "login" ? (
-          <>
-            <div className="auth-welcome">
-              <h2 className="auth-title">
-                {isAdmin ? (
-                  <span className="admin-title">
-                    <ShieldCheck size={24} />
-                    Admin Login
-                  </span>
-                ) : (
-                  "Welcome back!"
-                )}
-              </h2>
-              <p className="auth-subtitle">
-                {isAdmin
-                  ? "Login to access admin controls"
-                  : "Log in to access your learning journey"}
-              </p>
-            </div>
-
-            {error && (
-              <p className="error-message">
-                <AlertCircle size={16} /> {error}
-              </p>
-            )}
-
-            <form onSubmit={handleLoginSubmit} className="auth-form">
-              <div className="form-group">
-                <label htmlFor="email" className="form-label">
-                  Email
-                </label>
-                <div className="input-wrapper">
-                  <Mail size={18} className="input-icon" />
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    className="form-input"
-                    placeholder={
-                      isAdmin ? "admin@codeblaze.com" : "your@email.com"
-                    }
-                    value={loginForm.email}
-                    onChange={handleLoginChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <div className="password-label-group">
-                  <label htmlFor="password" className="form-label">
-                    Password
-                  </label>
-                  <button
-                    type="button"
-                    className="forgot-password switch-button"
-                    onClick={handleForgotPasswordClick}
-                    style={{ color: primaryColor }}
-                  >
-                    Forgot password?
-                  </button>
-                </div>
-                <div className="input-wrapper">
-                  <Lock size={18} className="input-icon" />
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    id="password"
-                    name="password"
-                    className="form-input"
-                    placeholder="Enter your password"
-                    value={loginForm.password}
-                    onChange={handleLoginChange}
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="password-toggle"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                className={`auth-button ${isAdmin ? "admin-button" : ""}`}
-                style={{
-                  backgroundColor: isAdmin ? "#dc2626" : primaryColor,
-                }}
-                disabled={loading}
-              >
-                {isButtonLoading ? (
-                  <Loader />
-                ) : isAdmin ? (
-                  "Admin Login"
-                ) : (
-                  <>
-                    "Login "
-                    <ArrowRight size={18} />
-                  </>
-                )}{" "}
-              </button>
-            </form>
-
-            {!isAdmin && (
-              <div className="social-login">
-                <div className="divider">
-                  <span>Or continue with</span>
-                </div>
-                <div className="social-buttons">
-                  <button className="social-button google">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.3v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.08z" />
-                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                    </svg>
-                    Google
-                  </button>
-                  <button className="social-button github">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
-                    </svg>
-                    GitHub
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <div className="admin-switch">
-              <button
-                className="admin-toggle switch-button"
-                onClick={toggleAdminMode}
-                style={{ color: primaryColor }}
-              >
-                {isAdmin ? "Switch to User Login" : "Admin Login"}
-              </button>
-            </div>
-
-            {!isAdmin && (
-              <p className="auth-switch">
-                New to CodeBlaze?{" "}
-                <button
-                  className="switch-button"
-                  onClick={() => {
-                    setActiveTab("register");
-                    setError(null);
-                  }}
-                  style={{ color: primaryColor }}
-                >
-                  Create an account
-                </button>
-              </p>
-            )}
-          </>
-        ) : (
-          <>
-            <div className="auth-welcome">
-              <h2 className="auth-title">Create Account</h2>
-              <p className="auth-subtitle">
-                Join CodeBlaze and start your learning journey
-              </p>
-            </div>
-
-            {error && (
-              <p className="error-message">
-                <AlertCircle size={16} /> {error}
-              </p>
-            )}
-
-            <form onSubmit={handleRequestOTP} className="auth-form">
-              <div className="form-group">
-                <label htmlFor="register-name" className="form-label">
-                  Full Name
-                </label>
-                <div className="input-wrapper">
-                  <User size={18} className="input-icon" />
-                  <input
-                    type="text"
-                    id="register-name"
-                    name="name"
-                    className="form-input"
-                    placeholder="Enter your full name"
-                    value={registerForm.name}
-                    onChange={handleRegisterChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="register-email" className="form-label">
-                  Email
-                </label>
-                <div className="input-wrapper">
-                  <Mail size={18} className="input-icon" />
-                  <input
-                    type="email"
-                    id="register-email"
-                    name="email"
-                    className="form-input"
-                    placeholder="your@email.com"
-                    value={registerForm.email}
-                    onChange={handleRegisterChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="register-password" className="form-label">
-                  Password
-                </label>
-                <div className="input-wrapper">
-                  <Lock size={18} className="input-icon" />
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    id="register-password"
-                    name="password"
-                    className="form-input"
-                    placeholder="Create a password"
-                    value={registerForm.password}
-                    onChange={handleRegisterChange}
-                    required
-                    minLength={6}
-                  />
-                  <button
-                    type="button"
-                    className="password-toggle"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label
-                  htmlFor="register-confirm-password"
-                  className="form-label"
-                >
-                  Confirm Password
-                </label>
-                <div className="input-wrapper">
-                  <Lock size={18} className="input-icon" />
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    id="register-confirm-password"
-                    name="confirmPassword"
-                    className="form-input"
-                    placeholder="Confirm your password"
-                    value={registerForm.confirmPassword}
-                    onChange={handleRegisterChange}
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="password-toggle"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff size={18} />
-                    ) : (
-                      <Eye size={18} />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                className="auth-button"
-                style={{ backgroundColor: primaryColor }}
-                disabled={loading}
-              >
-                {isButtonLoading ? (
-                  <loader />
-                ) : (
-                  <>
-                    Create Account
-                    <ArrowRight size={18} />
-                  </>
-                )}
-              </button>
-            </form>
-
-            <div className="social-login">
-              <div className="divider">
-                <span>Or continue with</span>
-              </div>
-              <div className="social-buttons">
-                <button className="social-button google">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.3v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.08z" />
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                  </svg>
-                  Google
-                </button>
-                <button className="social-button github">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
-                  </svg>
-                  GitHub
-                </button>
-              </div>
-            </div>
-
-            <p className="auth-switch">
-              Already have an account?{" "}
-              <button
-                className="switch-button"
-                onClick={() => {
-                  setActiveTab("login");
-                  setError(null);
-                }}
-                style={{ color: primaryColor }}
-              >
-                Log in
-              </button>
-            </p>
-          </>
-        )}
-      </>
-    );
-  };
+  // Ensure modal is hidden if isOpen is false AND authFlowState is not one that requires the modal to be open
+  if (!isOpen && !["reset_password_form", "otp_sent"].includes(authFlowState)) {
+    return null;
+  }
 
   return (
-    <div className={`auth-modal-overlay ${theme}`}>
-      <div className="auth-modal">
+    <div
+      className={`auth-modal-overlay ${theme} ${
+        isMobileView ? "mobile-view" : ""
+      }`}
+    >
+      <div className={`auth-modal ${isMobileView ? "mobile-modal" : ""}`}>
         <button className="close-button" onClick={onClose}>
           <X size={24} />
         </button>
         <div className="auth-container">
-          <div className="auth-branding">
-            <div className="brand-content">
-              <div className="brand-logo">
-                <svg
-                  width="80"
-                  height="80"
-                  viewBox="0 0 80 80"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M40 0L73.9 20V60L40 80L6.1 60V20L40 0Z"
-                    fill={primaryColor}
-                  />
-                  <path
-                    d="M25 50L15 40L25 30M55 30L65 40L55 50M45 25L35 55"
-                    stroke="white"
-                    strokeWidth="4"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-              <h1 className="brand-name">CodeBlaze</h1>
-              <p className="brand-tagline">
-                Master coding through interactive challenges and projects
-              </p>
-              <div className="brand-features">
-                <div className="feature">
-                  <CheckCircle size={20} />
-                  <span>Interactive coding exercises</span>
-                </div>
-                <div className="feature">
-                  <CheckCircle size={20} />
-                  <span>Personalized learning paths</span>
-                </div>
-                <div className="feature">
-                  <CheckCircle size={20} />
-                  <span>Certification upon completion</span>
-                </div>
-              </div>
-            </div>
-            <div className="brand-footer">
-              <p>
-                By continuing, you agree to our{" "}
-                <a href="#" className="external-link">
-                  Terms of Service <ExternalLink size={12} />
-                </a>{" "}
-                and{" "}
-                <a href="#" className="external-link">
-                  Privacy Policy <ExternalLink size={12} />
-                </a>
-              </p>
-            </div>
-          </div>
-
-          <div className="auth-content">
-            {authFlowState === "initial" && (
-              <div className="auth-tabs">
-                <button
-                  className={`tab ${activeTab === "login" ? "active" : ""}`}
-                  onClick={() => {
-                    setActiveTab("login");
-                    setError(null);
-                  }}
-                  style={{
-                    borderColor:
-                      activeTab === "login" ? primaryColor : "transparent",
-                    color: activeTab === "login" ? primaryColor : "",
-                  }}
-                >
-                  Login
-                </button>
-                <button
-                  className={`tab ${activeTab === "register" ? "active" : ""}`}
-                  onClick={() => {
-                    setActiveTab("register");
-                    setError(null);
-                  }}
-                  style={{
-                    borderColor:
-                      activeTab === "register" ? primaryColor : "transparent",
-                    color: activeTab === "register" ? primaryColor : "",
-                  }}
-                >
-                  Register
-                </button>
-              </div>
-            )}
-
-            {renderContent()}
-          </div>
+          {/* Hide branding on mobile view */}
+          {!isMobileView && <AuthBranding primaryColor={primaryColor} />}
+          <AuthContent
+            authFlowState={authFlowState}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            primaryColor={primaryColor}
+            error={error}
+            setError={setError}
+            loginForm={loginForm}
+            handleLoginChange={handleLoginChange}
+            handleLoginSubmit={handleLoginSubmit}
+            registerForm={registerForm}
+            handleRegisterChange={handleRegisterChange}
+            handleRequestOTP={handleRequestOTP}
+            otpInputs={otpInputs}
+            handleOtpInputChange={handleOtpInputChange}
+            handleOtpKeyDown={handleOtpKeyDown}
+            handleVerifyOTPSubmit={handleVerifyOTPSubmit}
+            handleResendOTP={handleResendOTP}
+            forgotPasswordForm={forgotPasswordForm}
+            handleForgotPasswordChange={handleForgotPasswordChange}
+            handleForgotPasswordSubmit={handleForgotPasswordSubmit}
+            resetPasswordForm={resetPasswordForm}
+            handleResetPasswordChange={handleResetPasswordChange}
+            handleResetPasswordSubmit={handleResetPasswordSubmit}
+            handleForgotPasswordClick={handleForgotPasswordClick}
+            handleBackToLogin={handleBackToLogin}
+            userEmailForOTP={userEmailForOTP}
+            isAdmin={isAdmin}
+            toggleAdminMode={toggleAdminMode}
+            loading={loading}
+            isButtonLoading={isButtonLoading}
+            showPassword={showPassword}
+            setShowPassword={setShowPassword}
+            showConfirmPassword={showConfirmPassword}
+            setShowConfirmPassword={setShowConfirmPassword}
+          />
         </div>
       </div>
+
+      {/* Keep the styles in AuthModal.js or move them to a separate CSS file */}
       <style jsx>{`
         .auth-modal-overlay {
           position: fixed;
@@ -1080,15 +426,50 @@ function AuthModal({ isOpen, onClose, theme, color }) {
           border-radius: 16px;
           box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.25),
             0 18px 36px -18px rgba(0, 0, 0, 0.3);
-          overflow: auto; /* Change from overflow: hidden to allow scrolling */
+          overflow: hidden; /* Changed back to hidden for slide-up effect containment */
           animation: modalSlideUp 0.4s ease-out;
           transform-origin: bottom;
+          display: flex; /* Use flex to manage internal layout, especially for mobile */
+          flex-direction: column; /* Stack children vertically */
         }
 
         @keyframes modalSlideUp {
           from {
             opacity: 0;
             transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        /* Mobile view specific styles */
+        .auth-modal-overlay.mobile-view {
+          align-items: flex-end; /* Align to bottom for slide-up effect */
+          padding: 0; /* Remove padding on overlay */
+          background-color: rgba(
+            0,
+            0,
+            0,
+            0.5
+          ); /* Slightly less opaque backdrop */
+          backdrop-filter: blur(10px); /* Stronger blur on mobile */
+        }
+
+        .auth-modal.mobile-modal {
+          max-width: 100%; /* Take full width */
+          border-radius: 20px 20px 0 0; /* Rounded top corners, flat bottom */
+          max-height: 90vh; /* Use 90% of viewport height */
+          animation: mobileSlideUp 0.4s ease-out; /* Slide up from bottom */
+          overflow-y: auto; /* Allow scrolling inside the modal */
+          flex-grow: 1; /* Allow content area to grow */
+        }
+
+        @keyframes mobileSlideUp {
+          from {
+            opacity: 0;
+            transform: translateY(100%);
           }
           to {
             opacity: 1;
@@ -1122,6 +503,29 @@ function AuthModal({ isOpen, onClose, theme, color }) {
           justify-content: center;
         }
 
+        /* Make the close button more accessible on mobile */
+        .mobile-modal .close-button {
+          top: 12px;
+          right: 12px;
+          width: 36px;
+          height: 36px;
+          background-color: rgba(
+            0,
+            0,
+            0,
+            0.1
+          ); /* Darker background on dark mode mobile */
+        }
+
+        .dark.mobile-view .mobile-modal .close-button {
+          background-color: rgba(
+            255,
+            255,
+            255,
+            0.1
+          ); /* Lighter background on dark mode mobile */
+        }
+
         .close-button:hover {
           color: #111;
           background-color: rgba(255, 255, 255, 0.2);
@@ -1141,7 +545,16 @@ function AuthModal({ isOpen, onClose, theme, color }) {
         .auth-container {
           display: flex;
           height: auto;
-          min-height: 600px;
+          min-height: 600px; /* Maintain min-height for desktop */
+          flex-grow: 1; /* Allow container to grow in flex parent */
+        }
+
+        /* Adjust container for mobile modal - no min-height, fill space */
+        .mobile-modal .auth-container {
+          min-height: auto;
+          flex-direction: column; /* Stack branding and content if branding was visible */
+          flex-grow: 1; /* Allow content area to grow */
+          overflow-y: auto; /* Ensure scrolling works within container if needed */
         }
 
         .auth-branding {
@@ -1154,7 +567,11 @@ function AuthModal({ isOpen, onClose, theme, color }) {
           position: relative;
           overflow: hidden;
           color: white;
+          flex-shrink: 0; /* Prevent branding from shrinking on desktop */
         }
+
+        /* Hide branding on mobile - this is already handled by conditional rendering */
+        /* .mobile-modal .auth-branding { display: none; } */
 
         .dark .auth-branding {
           background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
@@ -1266,10 +683,17 @@ function AuthModal({ isOpen, onClose, theme, color }) {
         }
 
         .auth-content {
-          width: 60%;
+          width: 60%; /* Maintain width for desktop */
           padding: 3rem;
           display: flex;
           flex-direction: column;
+          flex-grow: 1; /* Allow content to grow in flex container */
+        }
+
+        /* Adjust auth content for mobile modal */
+        .mobile-modal .auth-content {
+          width: 100%; /* Take full width on mobile */
+          padding: 2rem 1.5rem;
         }
 
         .auth-tabs {
@@ -1316,7 +740,7 @@ function AuthModal({ isOpen, onClose, theme, color }) {
         }
 
         .tab.active:after {
-          // content: "";
+          /* content: ""; Removed the dot under active tab as per original code */
           position: absolute;
           bottom: -3px;
           left: 50%;
@@ -1466,13 +890,13 @@ function AuthModal({ isOpen, onClose, theme, color }) {
           outline: none;
           border-color: #4f46e5;
           box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
-          background-color: #fff;
+          background-color: #fff; /* Ensure background stays white on focus */
         }
 
         .dark .form-input:focus {
           border-color: #818cf8;
           box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.15);
-          background-color: #1f2937;
+          background-color: #1f2937; /* Ensure background stays dark on focus */
         }
 
         .form-input:focus + .input-icon {
@@ -1580,15 +1004,6 @@ function AuthModal({ isOpen, onClose, theme, color }) {
           width: 100%;
         }
 
-        .auth-button svg {
-          margin-left: 12px;
-          transition: transform 0.3s ease;
-        }
-
-        .auth-button:hover svg {
-          transform: translateX(5px);
-        }
-
         .auth-button:hover {
           background-color: #4338ca;
           transform: translateY(-2px);
@@ -1604,6 +1019,7 @@ function AuthModal({ isOpen, onClose, theme, color }) {
           background-color: #9ca3af;
           cursor: not-allowed;
           box-shadow: none;
+          opacity: 0.6; /* Add opacity for disabled state */
         }
 
         .admin-button {
@@ -1647,7 +1063,7 @@ function AuthModal({ isOpen, onClose, theme, color }) {
 
         .dark .divider span {
           color: #9ca3af;
-          background-color: #111827;
+          background-color: #111827; /* Match modal background */
         }
 
         .social-buttons {
@@ -1773,6 +1189,7 @@ function AuthModal({ isOpen, onClose, theme, color }) {
           margin-bottom: 1.75rem;
           animation: shake 0.5s ease-in-out;
           border-left: 4px solid #ef4444;
+          word-break: break-word; /* Prevent overflow on small screens */
         }
 
         @keyframes shake {
@@ -1817,6 +1234,7 @@ function AuthModal({ isOpen, onClose, theme, color }) {
           margin-bottom: 1.75rem;
           animation: slideDown 0.5s ease-out;
           border-left: 4px solid #10b981;
+          word-break: break-word; /* Prevent overflow on small screens */
         }
 
         @keyframes slideDown {
@@ -1841,7 +1259,8 @@ function AuthModal({ isOpen, onClose, theme, color }) {
           flex-shrink: 0;
         }
 
-        @media (max-width: 768px) {
+        /* Original Media Query - kept for completeness but mobile styles override */
+        /* @media (max-width: 768px) {
           .auth-container {
             flex-direction: column;
           }
@@ -1850,7 +1269,7 @@ function AuthModal({ isOpen, onClose, theme, color }) {
             width: 100%;
             padding: 2rem 1.5rem;
             order: 2;
-            display: none;
+            display: none; Hide branding on smaller screens
           }
 
           .auth-content {
@@ -1875,7 +1294,7 @@ function AuthModal({ isOpen, onClose, theme, color }) {
           .auth-subtitle {
             font-size: 1rem;
           }
-        }
+        } */
 
         .theme-light {
           color-scheme: light;
@@ -1885,7 +1304,7 @@ function AuthModal({ isOpen, onClose, theme, color }) {
           color-scheme: dark;
         }
 
-        // Add this CSS to your styles:
+        /* Loader styles */
         .button-loader {
           display: flex;
           justify-content: center;
