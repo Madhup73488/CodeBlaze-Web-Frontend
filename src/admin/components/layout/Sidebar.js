@@ -1,10 +1,26 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+// Import useAdmin hook to access context states and functions
+import { useAdmin } from "../../contexts/AdminContext";
 
-function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
+function Sidebar({
+  // Receive props from AdminLayout that might originate from AdminContext or be local to AL
+  isOpen, // Mobile menu open state (likely local to AdminLayout)
+  onClose, // Mobile menu close handler (likely local to AdminLayout)
+  // Access collapsed, isMobile, theme, hasPermission, currentUser from AdminContext
+}) {
   const location = useLocation();
+  // Use state and functions from AdminContext
+  const {
+    collapsed, // From AdminContext
+    isMobile, // From AdminContext (or updated by AdminLayout)
+    theme, // From AdminContext
+    hasPermission, // Function from AdminContext to check user permissions
+    currentUser, // User data from AdminContext (which gets it from AuthContext)
+  } = useAdmin();
 
   // Navigation items with icons and permissions
+  // Permissions listed here define what capabilities are needed to see the link
   const navigation = [
     {
       title: "Dashboard",
@@ -24,7 +40,7 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
         </svg>
       ),
       path: "/admin",
-      permission: "dashboard.view",
+      permission: "dashboard.view", // Define the permission needed
     },
     {
       title: "Jobs",
@@ -43,18 +59,19 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
         </svg>
       ),
       path: "/admin/jobs",
-      permission: "jobs.view",
+      permission: "jobs.view", // Permission to view jobs section
       submenu: [
         {
           title: "All Jobs",
           path: "/admin/jobs",
-          permission: "jobs.view",
+          permission: "jobs.view", // Permission to view job list
         },
         {
           title: "Add New Job",
           path: "/admin/jobs/create",
-          permission: "jobs.create",
+          permission: "jobs.create", // Permission to create jobs
         },
+        // Add edit/detail links if needed, with appropriate permissions
       ],
     },
     {
@@ -73,18 +90,19 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
         </svg>
       ),
       path: "/admin/internships",
-      permission: "internships.view",
+      permission: "internships.view", // Permission to view internships section
       submenu: [
         {
           title: "All Internships",
           path: "/admin/internships",
-          permission: "internships.view",
+          permission: "internships.view", // Permission to view internship list
         },
         {
           title: "Add New Internship",
           path: "/admin/internships/create",
-          permission: "internships.create",
+          permission: "internships.create", // Permission to create internships
         },
+        // Add edit/detail links if needed, with appropriate permissions
       ],
     },
     {
@@ -106,17 +124,17 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
         </svg>
       ),
       path: "/admin/applications",
-      permission: "applications.view",
+      permission: "applications.view", // Permission to view applications section
       submenu: [
         {
           title: "Job Applications",
           path: "/admin/applications/jobs",
-          permission: "applications.view",
+          permission: "applications.view", // Permission to view job applications
         },
         {
           title: "Internship Applications",
           path: "/admin/applications/internships",
-          permission: "applications.view",
+          permission: "applications.view", // Permission to view internship applications
         },
       ],
     },
@@ -138,7 +156,7 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
         </svg>
       ),
       path: "/admin/users",
-      permission: "users.view",
+      permission: "users.view", // Permission to view users
     },
     {
       title: "Companies",
@@ -156,7 +174,7 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
         </svg>
       ),
       path: "/admin/companies",
-      permission: "companies.view",
+      permission: "companies.view", // Permission to view companies
     },
     {
       title: "Reports",
@@ -173,7 +191,7 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
         </svg>
       ),
       path: "/admin/reports",
-      permission: "reports.view",
+      permission: "reports.view", // Permission to view reports
     },
     {
       title: "Settings",
@@ -191,7 +209,7 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
         </svg>
       ),
       path: "/admin/settings",
-      permission: "settings.view",
+      permission: "settings.view", // Permission to view settings
     },
   ];
 
@@ -203,13 +221,7 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
     return path !== "/admin" && location.pathname.startsWith(path);
   };
 
-  // Check if user has permission (simplified check)
-  const hasPermission = (permission) => {
-    // In a real app, this would check against user roles/permissions
-    return true;
-  };
-
-  // Toggle submenu
+  // Toggle submenu (local UI state)
   const [openSubmenus, setOpenSubmenus] = React.useState({});
   const toggleSubmenu = (path) => {
     setOpenSubmenus({
@@ -226,7 +238,11 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
         } ${isMobile ? "mobile" : ""} ${isOpen ? "open" : ""}`}
       >
         <div className="sidebar-header">
-          <Link to="/admin" className="logo">
+          <Link
+            to="/admin"
+            className="logo"
+            onClick={isMobile ? onClose : undefined}
+          >
             {collapsed && !isMobile ? (
               <span className="logo-short">JS</span>
             ) : (
@@ -238,17 +254,7 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
           </Link>
           {isMobile && (
             <button className="close-sidebar" onClick={onClose}>
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
+              <CloseIcon />
             </button>
           )}
         </div>
@@ -256,99 +262,138 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
         <div className="sidebar-content">
           <nav className="sidebar-nav">
             <ul>
-              {navigation.map(
-                (item) =>
-                  hasPermission(item.permission) && (
-                    <li key={item.path}>
-                      {item.submenu ? (
-                        <>
-                          <button
-                            className={`nav-item ${
-                              isActive(item.path) ? "active" : ""
-                            }`}
-                            onClick={() => toggleSubmenu(item.path)}
-                          >
-                            <div className="nav-icon">{item.icon}</div>
-                            {!collapsed && (
-                              <>
-                                <span className="nav-text">{item.title}</span>
-                                <span
-                                  className={`submenu-arrow ${
-                                    openSubmenus[item.path] ? "open" : ""
-                                  }`}
-                                >
-                                  <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  >
-                                    <polyline points="6 9 12 15 18 9"></polyline>
-                                  </svg>
-                                </span>
-                              </>
-                            )}
-                          </button>
-                          {(!collapsed || isMobile) && (
-                            <ul
-                              className={`submenu ${
+              {navigation.map((item) => (
+                <li key={item.path}>
+                  {item.submenu ? (
+                    <>
+                      <button
+                        className={`nav-item ${
+                          isActive(item.path) ? "active" : ""
+                        }`}
+                        onClick={() => toggleSubmenu(item.path)}
+                      >
+                        <div className="nav-icon">{item.icon}</div>
+                        {!collapsed && !isMobile && (
+                          <>
+                            <span className="nav-text">{item.title}</span>
+                            <span
+                              className={`submenu-arrow ${
                                 openSubmenus[item.path] ? "open" : ""
                               }`}
                             >
-                              {item.submenu.map(
-                                (subitem) =>
-                                  hasPermission(subitem.permission) && (
-                                    <li key={subitem.path}>
-                                      <Link
-                                        to={subitem.path}
-                                        className={`submenu-item ${
-                                          location.pathname === subitem.path
-                                            ? "active"
-                                            : ""
-                                        }`}
-                                      >
-                                        {subitem.title}
-                                      </Link>
-                                    </li>
-                                  )
-                              )}
-                            </ul>
-                          )}
-                        </>
-                      ) : (
-                        <Link
-                          to={item.path}
-                          className={`nav-item ${
-                            isActive(item.path) ? "active" : ""
-                          }`}
-                        >
-                          <div className="nav-icon">{item.icon}</div>
-                          {!collapsed && (
-                            <span className="nav-text">{item.title}</span>
-                          )}
-                        </Link>
+                              <ArrowIcon />
+                            </span>
+                          </>
+                        )}
+                        {isMobile && (
+                          <span className="nav-text">{item.title}</span>
+                        )}
+                      </button>
+                      {((!collapsed && !isMobile) || isMobile) &&
+                        openSubmenus[item.path] && (
+                          <ul className="submenu open">
+                            {item.submenu.map((subitem) => (
+                              <li key={subitem.path}>
+                                <Link
+                                  to={subitem.path}
+                                  className={`submenu-item ${
+                                    location.pathname === subitem.path
+                                      ? "active"
+                                      : ""
+                                  }`}
+                                  onClick={isMobile ? onClose : undefined}
+                                >
+                                  {subitem.title}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                    </>
+                  ) : (
+                    <Link
+                      to={item.path}
+                      className={`nav-item ${
+                        isActive(item.path) ? "active" : ""
+                      }`}
+                      onClick={isMobile ? onClose : undefined}
+                    >
+                      <div className="nav-icon">{item.icon}</div>
+                      {!collapsed && !isMobile && (
+                        <span className="nav-text">{item.title}</span>
                       )}
-                    </li>
-                  )
-              )}
+                      {isMobile && (
+                        <span className="nav-text">{item.title}</span>
+                      )}
+                    </Link>
+                  )}
+                </li>
+              ))}
             </ul>
           </nav>
         </div>
 
         <div className="sidebar-footer">
-          <div className="admin-info">
-            {!collapsed && (
-              <div className="admin-details">
-                <p className="admin-name">Admin User</p>
-                <p className="admin-role">Super Admin</p>
+          {/* Only show admin info if not collapsed and not mobile */}
+          {!collapsed && !isMobile && currentUser && (
+            <div className="admin-info">
+              <div className="admin-avatar">
+                {/* Use currentUser initials or avatar */}
+                {
+                  currentUser?.name
+                    ? currentUser.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()
+                        .slice(0, 2)
+                    : currentUser?.email
+                    ? currentUser.email.charAt(0).toUpperCase()
+                    : "AU" // Default
+                }
               </div>
-            )}
-            <div className="admin-avatar">
-              <span>AU</span>
+              <div className="admin-details">
+                {/* Use currentUser name and role */}
+                <p className="admin-name">
+                  {currentUser?.name || "Admin User"}
+                </p>
+                <p className="admin-role">
+                  {currentUser?.role
+                    ? currentUser.role.charAt(0).toUpperCase() +
+                      currentUser.role.slice(1)
+                    : "Admin"}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
+          {/* Show only avatar if collapsed or is mobile */}
+          {((collapsed && !isMobile) || isMobile) && currentUser && (
+            <div className="admin-info" style={{ justifyContent: "center" }}>
+              {" "}
+              {/* Center avatar */}
+              <div className="admin-avatar">
+                {/* Use currentUser initials or avatar */}
+                {
+                  currentUser?.name
+                    ? currentUser.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()
+                        .slice(0, 2)
+                    : currentUser?.email
+                    ? currentUser.email.charAt(0).toUpperCase()
+                    : "AU" // Default
+                }
+              </div>
+            </div>
+          )}
+          {/* Handle case where currentUser is null (shouldn't happen if App.js protects routes) */}
+          {!currentUser && (
+            <div className="admin-info" style={{ justifyContent: "center" }}>
+              <div className="admin-avatar">?</div>
+            </div>
+          )}
         </div>
       </aside>
 
@@ -362,11 +407,19 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
           display: flex;
           flex-direction: column;
           transition: all 0.3s ease;
-          position: fixed;
+          position: fixed; /* Keep sidebar fixed */
           top: 0;
           left: 0;
           bottom: 0;
           z-index: 100;
+          /* Hide scrollbar but allow scrolling */
+          -ms-overflow-style: none; /* Internet Explorer 10+ */
+          scrollbar-width: none; /* Firefox */
+        }
+
+        .admin-sidebar::-webkit-scrollbar {
+          /* WebKit */
+          display: none;
         }
 
         .admin-sidebar.collapsed {
@@ -375,7 +428,7 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
 
         .admin-sidebar.mobile {
           transform: translateX(-100%);
-          width: 250px;
+          width: 250px; /* Full width on mobile when open */
         }
 
         .admin-sidebar.mobile.open {
@@ -389,6 +442,10 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
           align-items: center;
           justify-content: space-between;
           border-bottom: 1px solid ${theme === "dark" ? "#333" : "#e6e6e6"};
+          /* Hide logo text when collapsed */
+          ${collapsed && !isMobile
+            ? `.logo .logo-text, .logo .logo-accent { display: none; }`
+            : ""}
         }
 
         .logo {
@@ -429,6 +486,13 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
           flex: 1;
           overflow-y: auto;
           padding: 1rem 0;
+          /* Hide scrollbar but allow scrolling */
+          -ms-overflow-style: none; /* Internet Explorer 10+ */
+          scrollbar-width: none; /* Firefox */
+        }
+        .sidebar-content::-webkit-scrollbar {
+          /* WebKit */
+          display: none;
         }
 
         .sidebar-nav ul {
@@ -450,6 +514,10 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
           border: none;
           background: none;
           font-size: 1rem;
+          /* Adjust padding when collapsed */
+          ${collapsed && !isMobile
+            ? `padding: 0.75rem; justify-content: center;`
+            : ""}
         }
 
         .nav-item:hover {
@@ -469,7 +537,9 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
           display: flex;
           align-items: center;
           justify-content: center;
-          margin-right: ${collapsed ? "0" : "0.75rem"};
+          margin-right: ${collapsed && !isMobile
+            ? "0"
+            : "0.75rem"}; /* Adjust margin */
         }
 
         .nav-icon svg {
@@ -479,12 +549,16 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
 
         .nav-text {
           flex: 1;
+          /* Hide text when collapsed */
+          ${collapsed && !isMobile ? `display: none;` : ""}
         }
 
         .submenu-arrow {
           display: flex;
           align-items: center;
           transition: transform 0.2s ease;
+          /* Hide arrow when collapsed */
+          ${collapsed && !isMobile ? `display: none;` : ""}
         }
 
         .submenu-arrow svg {
@@ -500,11 +574,15 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
           max-height: 0;
           overflow: hidden;
           transition: max-height 0.3s ease;
-          padding-left: 1rem;
+          padding-left: 1rem; /* Maintain padding */
+          /* Adjust padding when collapsed */
+          ${collapsed && !isMobile
+            ? `padding-left: 0; text-align: center;`
+            : ""}
         }
 
         .submenu.open {
-          max-height: 500px;
+          max-height: 500px; /* Sufficiently large value */
         }
 
         .submenu-item {
@@ -514,6 +592,8 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
           text-decoration: none;
           font-size: 0.9rem;
           transition: all 0.2s ease;
+          /* Adjust padding when collapsed */
+          ${collapsed && !isMobile ? `padding: 0.5rem 0;` : ""}
         }
 
         .submenu-item:hover {
@@ -527,16 +607,22 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
         .sidebar-footer {
           padding: 1rem 1.5rem;
           border-top: 1px solid ${theme === "dark" ? "#333" : "#e6e6e6"};
+          /* Center footer content when collapsed */
+          ${collapsed && !isMobile ? `text-align: center;` : ""}
         }
 
         .admin-info {
           display: flex;
           align-items: center;
-          justify-content: ${collapsed ? "center" : "flex-start"};
+          justify-content: ${collapsed && !isMobile ? "center" : "flex-start"};
+          /* Center on mobile regardless of collapsed state */
+          ${isMobile ? `justify-content: center;` : ""}
         }
 
         .admin-details {
           margin-right: 0.75rem;
+          /* Hide details when collapsed or on mobile */
+          ${(collapsed && !isMobile) || isMobile ? `display: none;` : ""}
         }
 
         .admin-name {
@@ -555,17 +641,32 @@ function Sidebar({ collapsed, isMobile, isOpen, onClose, theme }) {
           width: 36px;
           height: 36px;
           border-radius: 50%;
-          background-color: #3b82f6;
+          background-color: #3b82f6; /* Consider dynamic color based on user? */
           color: white;
           display: flex;
           align-items: center;
           justify-content: center;
           font-weight: 600;
           font-size: 0.8rem;
+          /* Adjust margin when collapsed or on mobile */
+          ${(collapsed && !isMobile) || isMobile ? `margin-right: 0;` : ""}
         }
       `}</style>
     </>
   );
 }
+
+const CloseIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="18" y1="6" x2="6" y2="18"></line>
+    <line x1="6" y1="6" x2="18" y2="18"></line>
+  </svg>
+);
+
+const ArrowIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="6 9 12 15 18 9"></polyline>
+  </svg>
+);
 
 export default Sidebar;

@@ -17,9 +17,12 @@ function Navbar({ theme, color, toggleTheme, toggleColor, openAuthModal }) {
   const navRef = useRef(null);
   const dropdownContentRef = useRef(null);
 
+  // Check if user is admin
+  const isAdmin = user && (user.role === "admin" || user.role === "superadmin");
+
   useEffect(() => {
-    console.log("Auth state in Navbar:", { isAuthenticated, user });
-  }, [isAuthenticated, user]);
+    console.log("Auth state in Navbar:", { isAuthenticated, user, isAdmin });
+  }, [isAuthenticated, user, isAdmin]);
 
   const closeAllMenus = () => {
     setIsMenuOpen(false);
@@ -467,6 +470,7 @@ function Navbar({ theme, color, toggleTheme, toggleColor, openAuthModal }) {
                         {user?.name || user?.displayName || "User"}
                       </p>
                       <p className="profile-email">{user?.email || ""}</p>
+                      {isAdmin && <p className="profile-role">Admin</p>}
                     </div>
                     <div className="profile-dropdown-menu">
                       <div
@@ -482,11 +486,25 @@ function Navbar({ theme, color, toggleTheme, toggleColor, openAuthModal }) {
                         className="profile-menu-item"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleNavigation("/profile/dashboard");
+                          // If user is admin, go to admin dashboard, otherwise profile dashboard
+                          handleNavigation(
+                            isAdmin ? "/admin/dashboard" : "/profile/dashboard"
+                          );
                         }}
                       >
                         Dashboard
                       </div>
+                      {isAdmin && (
+                        <div
+                          className="profile-menu-item"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleNavigation("/admin/settings");
+                          }}
+                        >
+                          Admin Settings
+                        </div>
+                      )}
                       <div
                         className="profile-menu-item"
                         onClick={(e) => {

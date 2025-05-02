@@ -1,16 +1,23 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
+// Import useAdmin hook to access currentUser, notifications, and handlers
+import { useAdmin } from "../../contexts/AdminContext";
+// No direct useAuth needed if logout is passed as prop from AdminLayout
 
 function Header({
-  toggleSidebar,
-  toggleTheme,
-  theme,
-  notifications,
-  markAsRead,
-  onLogout,
-  isMobile,
-  sidebarCollapsed,
+  // Receive props from AdminLayout, which now get them from AdminContext/AuthContext
+  toggleSidebar, // This handler comes from AdminLayout -> AdminContext
+  toggleTheme, // This handler comes from AdminLayout -> AdminContext
+  theme, // This state comes from AdminLayout -> AdminContext
+  notifications, // This state comes from AdminLayout -> AdminContext
+  markAsRead, // This handler comes from AdminLayout -> AdminContext
+  onLogout, // This handler comes from AdminLayout -> AuthContext (via AdminLayout)
+  isMobile, // This state comes from AdminLayout -> AdminContext (or local in AL)
+  sidebarCollapsed, // This state comes from AdminLayout -> AdminContext
 }) {
+  // Use state from AdminContext
+  const { currentUser } = useAdmin();
+
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const notificationRef = useRef(null);
@@ -36,14 +43,32 @@ function Header({
     };
   }, []);
 
-  // Count unread notifications
+  // Count unread notifications (use notifications state from AdminContext)
   const unreadCount = notifications.filter(
     (notification) => !notification.read
   ).length;
 
+  // Handler for marking a single notification as read (uses prop from AdminLayout -> AdminContext)
+  const handleMarkAsRead = (id) => {
+    markAsRead(id);
+    // Optionally close notifications dropdown after clicking one
+    // setNotificationsOpen(false);
+  };
+
+  // Handler for marking all notifications as read (Assuming AdminContext has a function for this)
+  // You might need to add a `markAllNotificationsAsRead` function to your AdminContext if needed
+  const handleMarkAllAsRead = () => {
+    // Call a function from AdminContext to mark all as read
+    // For now, we'll simulate it or dispatch an action if you add it to context
+    console.log("Mark all notifications as read");
+    // Example if you add a handler in AdminContext:
+    // markAllNotificationsAsRead();
+  };
+
   return (
     <header className="admin-header">
       <div className="header-left">
+        {/* Use the toggleSidebar prop */}
         <button className="toggle-sidebar" onClick={toggleSidebar}>
           <svg
             viewBox="0 0 24 24"
@@ -61,11 +86,13 @@ function Header({
 
         <div className="breadcrumb">
           <Link to="/admin">Dashboard</Link>
-          {/* Dynamic breadcrumb logic can be added here */}
+          {/* Dynamic breadcrumb logic can be added here based on location.pathname */}
+          {/* Example: location.pathname.split('/').filter(Boolean).slice(1).map(...) */}
         </div>
       </div>
 
       <div className="header-right">
+        {/* Use the toggleTheme prop and theme state */}
         <button className="theme-toggle" onClick={toggleTheme}>
           {theme === "light" ? (
             <svg
@@ -125,12 +152,19 @@ function Header({
             <div className="dropdown-content notifications">
               <div className="dropdown-header">
                 <h3>Notifications</h3>
-                {notifications.length > 0 && (
-                  <button className="mark-all-read">Mark all as read</button>
+                {/* Conditionally show "Mark all as read" if there are notifications */}
+                {notifications.length > 0 && unreadCount > 0 && (
+                  <button
+                    className="mark-all-read"
+                    onClick={handleMarkAllAsRead}
+                  >
+                    Mark all as read
+                  </button>
                 )}
               </div>
 
               <div className="notifications-list">
+                {/* Use notifications state from AdminContext */}
                 {notifications.length > 0 ? (
                   notifications.map((notification) => (
                     <div
@@ -138,9 +172,10 @@ function Header({
                       className={`notification-item ${
                         notification.read ? "" : "unread"
                       }`}
-                      onClick={() => markAsRead(notification.id)}
+                      onClick={() => handleMarkAsRead(notification.id)}
                     >
                       <div className="notification-icon">
+                        {/* You might want more sophisticated icon logic based on notification type */}
                         {notification.title.includes("Application") ? (
                           <svg
                             viewBox="0 0 24 24"
@@ -216,6 +251,7 @@ function Header({
 
               {notifications.length > 0 && (
                 <div className="dropdown-footer">
+                  {/* Update link if notifications page path changes */}
                   <Link to="/admin/notifications">View all notifications</Link>
                 </div>
               )}
@@ -229,7 +265,17 @@ function Header({
             onClick={() => setProfileOpen(!profileOpen)}
           >
             <div className="profile-avatar">
-              <span>AU</span>
+              {/* Use currentUser initials or avatar */}
+              {currentUser?.name
+                ? currentUser.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()
+                    .slice(0, 2)
+                : currentUser?.email
+                ? currentUser.email.charAt(0).toUpperCase()
+                : "AU"}
             </div>
           </button>
 
@@ -237,15 +283,34 @@ function Header({
             <div className="dropdown-content profile">
               <div className="profile-info">
                 <div className="profile-avatar large">
-                  <span>AU</span>
+                  {/* Use currentUser initials or avatar */}
+                  {currentUser?.name
+                    ? currentUser.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()
+                        .slice(0, 2)
+                    : currentUser?.email
+                    ? currentUser.email.charAt(0).toUpperCase()
+                    : "AU"}
                 </div>
                 <div className="profile-details">
-                  <h4>Admin User</h4>
-                  <p>admin@jobseekers.com</p>
+                  {/* Use currentUser name and email */}
+                  <h4>{currentUser?.name || "Admin User"}</h4>
+                  <p>{currentUser?.email || ""}</p>
+                  {/* Display role if available */}
+                  {currentUser?.role && (
+                    <p className="profile-role">
+                      {currentUser.role.charAt(0).toUpperCase() +
+                        currentUser.role.slice(1)}
+                    </p>
+                  )}
                 </div>
               </div>
 
               <div className="profile-menu">
+                {/* Update links based on your admin routes */}
                 <Link to="/admin/profile" className="profile-menu-item">
                   <svg
                     viewBox="0 0 24 24"
@@ -274,6 +339,7 @@ function Header({
                   </svg>
                   Settings
                 </Link>
+                {/* Use the onLogout prop */}
                 <button className="profile-menu-item logout" onClick={onLogout}>
                   <svg
                     viewBox="0 0 24 24"
@@ -548,6 +614,11 @@ function Header({
           width: 60px;
           height: 60px;
           font-size: 1.2rem;
+        }
+        .profile-role {
+          font-size: 0.75rem;
+          color: ${theme === "dark" ? "#60a5fa" : "#3b82f6"};
+          margin-top: 0.25rem;
         }
 
         .profile-info {
