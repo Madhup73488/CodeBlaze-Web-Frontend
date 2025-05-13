@@ -1,7 +1,6 @@
 import React from "react";
 import { Form } from "react-router-dom";
 
-// Input field component
 export const InputField = ({
   id,
   label,
@@ -18,8 +17,41 @@ export const InputField = ({
   helperText,
   icon,
   theme = "light",
+  onBlur,
+  onFocus,
+  companyInput = false, // New prop to handle company-specific input
   ...rest
 }) => {
+  // Function to handle company input transformations
+  const handleCompanyInputChange = (e) => {
+    const { value } = e.target;
+
+    // If it's a company input, we'll add some special handling
+    if (companyInput) {
+      // Remove leading protocols and www
+      const cleanValue = value
+        .toLowerCase()
+        .replace(/^https?:\/\//, "")
+        .replace(/^www\./, "");
+
+      // Call the original onChange with the potentially modified value
+      if (onChange) {
+        // Create a new event-like object to maintain interface compatibility
+        const modifiedEvent = {
+          ...e,
+          target: {
+            ...e.target,
+            value: cleanValue,
+          },
+        };
+        onChange(modifiedEvent);
+      }
+    } else {
+      // For non-company inputs, just call onChange normally
+      onChange && onChange(e);
+    }
+  };
+
   return (
     <div className={`form-field ${className}`}>
       {label && (
@@ -34,12 +66,14 @@ export const InputField = ({
           type={type}
           name={name || id}
           value={value}
-          onChange={onChange}
+          onChange={companyInput ? handleCompanyInputChange : onChange}
           placeholder={placeholder}
           disabled={disabled}
           readOnly={readOnly}
           className={`form-input ${error ? "has-error" : ""}`}
           required={required}
+          onBlur={onBlur}
+          onFocus={onFocus}
           {...rest}
         />
       </div>

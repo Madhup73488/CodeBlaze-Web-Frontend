@@ -135,7 +135,7 @@ export const fetchAdminJobById = async (id) => {
 };
 
 export const createJobAdmin = async (jobData) => {
-  return apiRequest("/api/admin/jobs", "POST", jobData);
+  return apiRequest("/api/admin/jobs/create", "POST", jobData);
 };
 
 export const updateJobAdmin = async (id, jobData) => {
@@ -171,7 +171,7 @@ export const fetchAdminInternshipById = async (id) => {
 };
 
 export const createInternshipAdmin = async (internshipData) => {
-  return apiRequest("/api/admin/internships", "POST", internshipData);
+  return apiRequest("/api/admin/internships/create", "POST", internshipData);
 };
 
 export const updateInternshipAdmin = async (id, internshipData) => {

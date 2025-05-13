@@ -1,41 +1,123 @@
 import React from "react";
 
 function JobCard({
-  job,
+  job, // Now receives the original job object from the API
   theme,
   primaryColor,
   savedJobs,
   appliedJobs,
   toggleSaveJob,
   toggleApplyJob,
-  getCompanyLogo,
-  formatDate,
+  getCompanyLogo, // This function is still defined and passed from JobSeekers
+  formatDate, // This function is still defined and passed from JobSeekers
 }) {
+  // Function to format the salary display string - Moved from JobSeekers
+  const formatSalary = (salary) => {
+    if (
+      !salary ||
+      (salary.min === undefined &&
+        salary.max === undefined &&
+        !salary.isNegotiable)
+    ) {
+      return "Salary not specified";
+    }
+
+    if (salary.isNegotiable) {
+      return "Salary: Negotiable";
+    }
+
+    const hasMin = salary.min !== undefined && salary.min !== null;
+    const hasMax = salary.max !== undefined && salary.max !== null;
+    const currency = salary.currency || ""; // Use default or empty if currency is missing
+
+    // Basic check if min/max are numeric before formatting
+    const isMinNumeric = typeof salary.min === "number";
+    const isMaxNumeric = typeof salary.max === "number";
+
+    if (hasMin && isMinNumeric && hasMax && isMaxNumeric) {
+      // Format in lakhs for INR, otherwise standard currency format
+      if (currency === "INR") {
+        const minInLakhs = (salary.min / 100000).toFixed(1);
+        const maxInLakhs = (salary.max / 100000).toFixed(1);
+        return `Salary: ₹${minInLakhs}L - ₹${maxInLakhs}L`;
+      } else {
+        const formatter = new Intl.NumberFormat("en-US", {
+          // You can adjust locale
+          style: "currency",
+          currency: currency || "USD", // Default to USD if currency is empty
+          maximumFractionDigits: 0, // Adjust as needed
+          minimumFractionDigits: 0,
+        });
+        // Safely format numbers
+        const formattedMin = isMinNumeric ? formatter.format(salary.min) : "";
+        const formattedMax = isMaxNumeric ? formatter.format(salary.max) : "";
+        return `Salary: ${formattedMin} - ${formattedMax}`;
+      }
+    } else if (hasMin && isMinNumeric) {
+      const formatter = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: currency || "USD",
+        maximumFractionDigits: 0,
+        minimumFractionDigits: 0,
+      });
+      return `Salary: From ${formatter.format(salary.min)}`;
+    } else if (hasMax && isMaxNumeric) {
+      const formatter = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: currency || "USD",
+        maximumFractionDigits: 0,
+        minimumFractionDigits: 0,
+      });
+      return `Salary: Up to ${formatter.format(salary.max)}`;
+    } else {
+      // Fallback if salary object exists but min/max are not numeric
+      if (salary.isNegotiable) return "Salary: Negotiable"; // Double-check negotiable
+      return "Salary not specified";
+    }
+  };
+
   return (
     <div className="job-card">
       <div className="job-header">
-        <div className="company-logo-container">{getCompanyLogo(job)}</div>
+        {/* Use the getCompanyLogo function passed from parent */}
+        <div className="company-logo-container">
+          {/* Pass the job object to getCompanyLogo */}
+          {getCompanyLogo(job)}
+        </div>
         <div className="job-title-info">
-          <h3 className="job-title">{job.job_title}</h3>
-          <div className="company-name">{job.employer_name}</div>
+          {/* Use job.title from the original API object */}
+          <h3 className="job-title">
+            {job?.title || "Title not specified"}
+          </h3>{" "}
+          {/* Use optional chaining */}
+          {/* Use job.company from the original API object */}
+          <div className="company-name">
+            {job?.company || "Company not specified"}
+          </div>{" "}
+          {/* Use optional chaining */}
         </div>
         <div className="job-actions">
+          {/* Use job._id or job.id for the identifier */}
           <button
             className={`save-job-button ${
-              savedJobs.includes(job.job_id) ? "saved" : ""
+              savedJobs.includes(job?._id || job?.id) ? "saved" : ""
             }`}
-            onClick={() => toggleSaveJob(job.job_id)}
+            onClick={() => toggleSaveJob(job?._id || job?.id)}
             title={
-              savedJobs.includes(job.job_id)
+              savedJobs.includes(job?._id || job?.id)
                 ? "Remove from saved jobs"
                 : "Save job"
             }
           >
             <svg
               viewBox="0 0 24 24"
-              fill={savedJobs.includes(job.job_id) ? primaryColor : "none"}
+              fill={
+                savedJobs.includes(job?._id || job?.id) ? primaryColor : "none"
+              }
               stroke={
-                savedJobs.includes(job.job_id) ? primaryColor : "currentColor"
+                savedJobs.includes(job?._id || job?.id)
+                  ? primaryColor
+                  : "currentColor"
               }
               strokeWidth="2"
               strokeLinecap="round"
@@ -46,6 +128,7 @@ function JobCard({
           </button>
         </div>
       </div>
+
       <div className="job-details">
         <div className="detail-item">
           <svg
@@ -60,9 +143,9 @@ function JobCard({
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
             <circle cx="12" cy="10" r="3"></circle>
           </svg>
-          <span>{`${job.job_city ? job.job_city + ", " : ""}${
-            job.job_state ? job.job_state : ""
-          }${job.job_country ? ", " + job.job_country : ""}`}</span>
+          {/* Use job.location from the original API object */}
+          <span>{job?.location || "Location not specified"}</span>{" "}
+          {/* Use optional chaining */}
         </div>
         <div className="detail-item">
           <svg
@@ -77,7 +160,12 @@ function JobCard({
             <circle cx="12" cy="12" r="10"></circle>
             <polyline points="12 6 12 12 16 14"></polyline>
           </svg>
-          <span>Posted {formatDate(job.job_posted_at_datetime_utc)}</span>
+          {/* Use job.createdAt from the original API object and the passed formatDate function */}
+          <span>
+            Posted{" "}
+            {job?.createdAt ? formatDate(job.createdAt) : "Date not specified"}
+          </span>{" "}
+          {/* Use optional chaining */}
         </div>
         <div className="detail-item">
           <svg
@@ -92,9 +180,12 @@ function JobCard({
             <path d="M12 1v22"></path>
             <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
           </svg>
-          <span>{job.job_salary_description || "Salary not specified"}</span>
+          {/* Use the formatSalary function defined in this component */}
+          <span>{formatSalary(job?.salary)}</span> {/* Use optional chaining */}
         </div>
-        <div className="detail-item">
+        {/* The experience level field is not in your provided JSON.
+            Unless your API includes 'experienceLevel', this will likely always show 'Experience not specified'. */}
+        {/* <div className="detail-item">
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -108,8 +199,11 @@ function JobCard({
             <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
             <line x1="12" y1="22.08" x2="12" y2="12"></line>
           </svg>
-          <span>{job.job_experience_level || "Experience not specified"}</span>
-        </div>
+
+          <span>{job?.experienceLevel || "Experience not specified"}</span>{" "}
+
+        </div> */}
+
         <div className="detail-item">
           <svg
             viewBox="0 0 24 24"
@@ -123,7 +217,9 @@ function JobCard({
             <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
           </svg>
-          <span>{job.job_employment_type || "Type not specified"}</span>
+          {/* Use job.employmentType from the original API object */}
+          <span>{job?.employmentType || "Type not specified"}</span>{" "}
+          {/* Use optional chaining */}
         </div>
         <div className="detail-item">
           <svg
@@ -140,43 +236,54 @@ function JobCard({
             <path d="M2 2l7.586 7.586"></path>
             <circle cx="11" cy="11" r="2"></circle>
           </svg>
+          {/* Use job.workType from the original API object */}
+          {/* Map workType values to display strings */}
           <span>
-            {job.job_is_remote
+            {job?.workType === "remote"
               ? "Remote"
-              : job.job_hybrid
+              : job?.workType === "hybrid"
               ? "Hybrid"
-              : "On-site"}
-          </span>
+              : job?.workType === "onsite"
+              ? "On-site"
+              : "Work type not specified"}
+          </span>{" "}
+          {/* Use optional chaining */}
         </div>
       </div>
+
       <div className="job-footer">
         <div className="job-metadata">
+          {/* Use job.createdAt from the original API object and the passed formatDate function */}
           <span className="job-posted">
-            Posted on {formatDate(job.job_posted_at_datetime_utc)}
-          </span>
+            Posted on{" "}
+            {job?.createdAt ? formatDate(job.createdAt) : "Date not specified"}
+          </span>{" "}
+          {/* Use optional chaining */}
         </div>
         <div className="action-buttons">
+          {/* Use job._id or job.id for the identifier */}
           <button
             className={`save-button ${
-              savedJobs.includes(job.job_id) ? "saved" : ""
+              savedJobs.includes(job?._id || job?.id) ? "saved" : ""
             }`}
-            onClick={() => toggleSaveJob(job.job_id)}
+            onClick={() => toggleSaveJob(job?._id || job?.id)}
           >
-            {savedJobs.includes(job.job_id) ? "Saved" : "Save"}
+            {savedJobs.includes(job?._id || job?.id) ? "Saved" : "Save"}
           </button>
+          {/* Use job.applicationUrl from the original API object */}
           <a
-            href={job.job_apply_link}
+            href={job?.applicationUrl} // Use optional chaining
             target="_blank"
             rel="noopener noreferrer"
             className={`apply-button ${
-              appliedJobs.includes(job.job_id) ? "applied" : ""
+              appliedJobs.includes(job?._id || job?.id) ? "applied" : ""
             }`}
             style={{
-              backgroundColor: appliedJobs.includes(job.job_id)
+              backgroundColor: appliedJobs.includes(job?._id || job?.id)
                 ? "#22c55e"
                 : primaryColor,
             }}
-            onClick={() => toggleApplyJob(job.job_id)}
+            onClick={() => toggleApplyJob(job?._id || job?.id)}
           >
             Apply
           </a>
@@ -185,7 +292,7 @@ function JobCard({
 
       <style jsx>{`
         .job-card {
-          background: ${theme === "dark" ? "#111" : "#fff"};
+          background: ${theme === "dark" ? "#1a1a1a" : "#fff"};
           border-radius: 12px;
           box-shadow: 0 4px 12px
             rgba(0, 0, 0, ${theme === "dark" ? "0.3" : "0.1"});
@@ -193,11 +300,13 @@ function JobCard({
           display: flex;
           flex-direction: column;
           transition: transform 0.3s ease, box-shadow 0.3s ease;
-          padding: 1.5rem;
+          padding: 1.25rem;
+          height: 100%;
+          border: 1px solid ${theme === "dark" ? "#2d2d2d" : "#e5e5e5"};
         }
 
         .job-card:hover {
-          transform: translateY(-5px);
+          transform: translateY(-4px);
           box-shadow: 0 8px 16px
             rgba(0, 0, 0, ${theme === "dark" ? "0.4" : "0.15"});
         }
@@ -205,7 +314,7 @@ function JobCard({
         .job-header {
           display: flex;
           align-items: center;
-          margin-bottom: 1rem;
+          margin-bottom: 0.8rem;
           position: relative;
         }
 
@@ -217,11 +326,13 @@ function JobCard({
           align-items: center;
           justify-content: center;
           overflow: hidden;
-          margin-right: 0.8rem;
+          margin-right: 0.75rem;
           flex-shrink: 0;
+          background: ${theme === "dark" ? "#2d2d2d" : "#f5f5f5"};
+          border: 1px solid ${theme === "dark" ? "#3d3d3d" : "#e0e0e0"};
         }
 
-        .company-logo-img {
+        .company-logo {
           width: 100%;
           height: 100%;
           object-fit: contain;
@@ -230,52 +341,74 @@ function JobCard({
         .company-logo-placeholder {
           width: 100%;
           height: 100%;
-          display: flex;
+          display: flex; /* Changed from none */
           align-items: center;
           justify-content: center;
-          font-size: 1.2rem;
+          font-size: 1rem;
           font-weight: bold;
-          color: white;
+          color: ${theme === "dark" ? "#aaa" : "#555"};
+        }
+        /* Style for the parent container when image fails */
+        .company-logo-container.placeholder-fallback .company-logo {
+          display: none; /* Hide the broken image */
+        }
+        .company-logo-container.placeholder-fallback .company-logo-placeholder {
+          display: flex; /* Show the placeholder */
+        }
+        /* Initial state where placeholder is shown if no URL */
+        .company-logo-container:not(.placeholder-fallback) .company-logo {
+          display: block; /* Show image if URL exists and no error */
+        }
+        .company-logo-container:not(.placeholder-fallback)
+          .company-logo-placeholder {
+          display: none; /* Hide placeholder if URL exists and no error */
         }
 
         .job-title-info {
           flex: 1;
           min-width: 0;
+          padding-right: 40px;
         }
 
         .job-title {
-          font-size: 1.2rem;
+          font-size: 1.1rem;
           font-weight: 600;
           margin: 0 0 0.2rem;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
           color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+          width: 100%;
         }
 
         .company-name {
-          font-size: 0.95rem;
-          opacity: 0.8;
+          font-size: 0.85rem;
+          opacity: 0.85;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
-          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+          color: ${theme === "dark" ? "#ccc" : "#333"};
         }
 
         .job-actions {
           position: absolute;
           top: 0;
           right: 0;
+          z-index: 1;
         }
 
         .save-job-button {
           background: none;
           border: none;
           cursor: pointer;
-          padding: 0.5rem;
+          padding: 0.4rem;
           display: flex;
           align-items: center;
           justify-content: center;
+          transition: transform 0.2s ease;
+        }
+        .save-job-button:hover {
+          transform: scale(1.1);
         }
 
         .save-job-button svg {
@@ -287,20 +420,21 @@ function JobCard({
         .job-details {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.8rem;
-          margin-bottom: 1.2rem;
-          padding-bottom: 1.2rem;
-          border-bottom: 1px solid ${theme === "dark" ? "#2d2d2d" : "#e5e5e5"};
+          gap: 0.6rem;
+          margin-bottom: 1rem;
+          padding-bottom: 1rem;
         }
 
         .detail-item {
           display: flex;
           align-items: center;
-          font-size: 0.9rem;
-          padding: 0.2rem 0.6rem;
-          background: ${theme === "dark" ? "#1a1a1a" : "#f5f5f5"};
-          border-radius: 16px;
-          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+          font-size: 0.8rem;
+          padding: 0.3rem 0.6rem;
+          background: ${theme === "dark" ? "#2d2d2d" : "#f5f5f5"};
+          border-radius: 20px;
+          color: ${theme === "dark" ? "#eee" : "#0a0a0a"};
+          box-shadow: 0 1px 3px
+            rgba(0, 0, 0, ${theme === "dark" ? "0.2" : "0.05"});
         }
 
         .detail-icon {
@@ -308,6 +442,7 @@ function JobCard({
           height: 14px;
           margin-right: 0.4rem;
           opacity: 0.8;
+          stroke: ${theme === "dark" ? "#bbb" : "#555"};
         }
 
         .job-footer {
@@ -315,14 +450,14 @@ function JobCard({
           align-items: center;
           justify-content: space-between;
           margin-top: auto;
-          padding-top: 1rem;
+          padding-top: 0.8rem;
           border-top: 1px solid ${theme === "dark" ? "#2d2d2d" : "#e5e5e5"};
         }
 
         .job-metadata {
-          font-size: 0.85rem;
-          opacity: 0.7;
-          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+          font-size: 0.75rem;
+          opacity: 0.9;
+          color: ${theme === "dark" ? "#bbb" : "#555"};
         }
 
         .action-buttons {
@@ -331,14 +466,15 @@ function JobCard({
         }
 
         .save-button {
-          padding: 0.6rem 1rem;
-          border-radius: 5px;
-          border: 1px solid ${theme === "dark" ? "#555" : "#ddd"};
+          padding: 0.5rem 0.8rem;
+          border-radius: 6px;
+          border: 1.5px solid ${theme === "dark" ? "#555" : "#ddd"};
           background: transparent;
-          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+          color: ${theme === "dark" ? "#eee" : "#333"};
           font-weight: 500;
           cursor: pointer;
           transition: all 0.3s ease;
+          font-size: 0.8rem;
         }
 
         .save-button:hover {
@@ -349,26 +485,31 @@ function JobCard({
         .save-button.saved {
           border-color: ${primaryColor};
           color: ${primaryColor};
-          background-color: ${primaryColor}10;
+          background-color: ${primaryColor}15;
         }
 
         .apply-button {
-          padding: 0.6rem 1rem;
-          border-radius: 5px;
+          padding: 0.5rem 0.8rem;
+          border-radius: 6px;
           border: none;
           color: white;
           font-weight: 500;
           cursor: pointer;
-          transition: opacity 0.3s ease;
+          transition: all 0.3s ease;
           white-space: nowrap;
           text-decoration: none;
           display: inline-flex;
           align-items: center;
           justify-content: center;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          font-size: 0.8rem;
+          background-color: ${primaryColor};
         }
 
         .apply-button:hover {
           opacity: 0.9;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
 
         .apply-button.applied {
@@ -376,19 +517,66 @@ function JobCard({
         }
 
         @media (max-width: 767px) {
-          .job-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.8rem;
-          }
-
-          .job-actions {
-            position: static;
-            margin-top: 0.8rem;
+          .job-card {
+            padding: 1rem;
+            border-radius: 10px;
           }
 
           .company-logo-container {
-            margin-right: 0;
+            width: 36px;
+            height: 36px;
+            margin-right: 0.7rem;
+          }
+
+          .job-title {
+            font-size: 1rem;
+          }
+          .job-title-info {
+            padding-right: 30px;
+          }
+          .company-name {
+            font-size: 0.8rem;
+          }
+
+          .save-job-button svg {
+            width: 18px;
+            height: 18px;
+          }
+
+          .job-details {
+            gap: 0.5rem;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.8rem;
+          }
+
+          .detail-item {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+          }
+
+          .detail-icon {
+            width: 12px;
+            height: 12px;
+            margin-right: 0.3rem;
+          }
+
+          .job-footer {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.8rem;
+            padding-top: 0.7rem;
+          }
+
+          .action-buttons {
+            width: 100%;
+          }
+
+          .save-button,
+          .apply-button {
+            flex: 1;
+            text-align: center;
+            padding: 0.5rem;
+            font-size: 0.75rem;
           }
         }
       `}</style>

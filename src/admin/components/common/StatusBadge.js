@@ -125,9 +125,9 @@ const StatusBadge = ({
         .status-badge {
           display: inline-flex;
           align-items: center;
-          background-color: ${config.bg};
-          color: ${config.text};
-          border: 1px solid ${config.border};
+          background-color: #13fa13;
+          color: #000000;
+          border: 1px solid #53ff5b;
           border-radius: 9999px;
           padding: ${sizeStyles.padding};
           font-weight: 500;
