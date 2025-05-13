@@ -136,7 +136,7 @@ function DataTable({
     <div className="data-table-container">
       {/* Table actions */}
       <div className="table-actions">
-        {searchable && (
+        {/* {searchable && (
           <div className="search-container">
             <svg
               viewBox="0 0 24 24"
@@ -158,7 +158,7 @@ function DataTable({
               className="search-input"
             />
           </div>
-        )}
+        )} */}
 
         {pagination && (
           <div className="items-per-page">
@@ -220,7 +220,7 @@ function DataTable({
                   )}
                 </th>
               ))}
-              {actions && <th className="actions-column">Actions</th>}
+              {/* {actions && <th className="actions-column">Actions</th>} */}
             </tr>
           </thead>
           <tbody>

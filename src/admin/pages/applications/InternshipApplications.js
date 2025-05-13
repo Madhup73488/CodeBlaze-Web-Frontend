@@ -1,295 +1,561 @@
-// src/admin/pages/applications/InternshipApplications.js
-
-import React, { useState, useEffect } from 'react';
-// Import API functions - path is correct
-import { fetchAdminInternshipApplications, updateApplicationStatus } from '../../utils/api';
-// FIX: Correct paths for common components back to ../../
-import DataTable from '../../components/common/DataTable';
-import StatusBadge from '../../components/common/StatusBadge';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
-import ErrorMessage from '../../components/common/ErrorMessage';
-// FIX: Correct path for layout component back to ../../
-import AdminLayout from '../../components/layout/AdminLayout';
-
+import React, { useState, useEffect } from "react";
+import {
+  FiEye,
+  FiCheckCircle,
+  FiXCircle,
+  FiClock,
+  FiRefreshCw,
+} from "react-icons/fi";
+import {
+  fetchAdminInternshipApplications,
+  updateApplicationStatus,
+} from "../../utils/api";
+import DataTable from "../../components/common/DataTable";
+import StatusBadge from "../../components/common/StatusBadge";
+import LoadingSpinner from "../../components/common/LoadingSpinner";
+import ErrorMessage from "../../components/common/ErrorMessage";
+import AdminLayout from "../../components/layout/AdminLayout";
+import { useAdmin } from "../../contexts/AdminContext";
 
 const InternshipApplications = () => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
-    status: 'all',
-    search: '', // Renamed from searchTerm to match typical API params
-    // program: 'all' // Backend API controller didn't show filter by program, adjust if needed
+    status: "all",
+    search: "",
   });
-   const [pagination, setPagination] = useState({
-       total: 0,
-       page: 1,
-       limit: 10,
-       pages: 1,
-   });
-   const [updatingStatus, setUpdatingStatus] = useState({}); // State to track status update loading per application
-
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    limit: 10,
+    pages: 1,
+  });
+  const [updatingStatus, setUpdatingStatus] = useState({});
+  const { theme } = useAdmin();
 
   // Function to load applications based on current filters and pagination
-  const loadApplications = async (currentPage = pagination.page, currentFilters = filters) => {
+  const loadApplications = async (
+    currentPage = pagination.page,
+    currentFilters = filters
+  ) => {
     try {
       setLoading(true);
-      setError(null); // Clear previous errors
+      setError(null);
       const params = {
-          ...currentFilters,
-          page: currentPage,
-          limit: pagination.limit, // Use current limit from state
+        ...currentFilters,
+        page: currentPage,
+        limit: pagination.limit,
       };
-      const response = await fetchAdminInternshipApplications(params); // Correct function name
-      setApplications(response.data); // Backend returns data in response.data
-      setPagination(response.pagination); // Backend returns pagination in response.pagination
-
+      const response = await fetchAdminInternshipApplications(params);
+      setApplications(response.data);
+      setPagination(response.pagination);
     } catch (error) {
-      console.error('Failed to fetch internship applications:', error);
-      setError(error.message || 'Failed to load internship applications.'); // Set error message
-      setApplications([]); // Clear applications on error
-      setPagination({ total: 0, page: 1, limit: 10, pages: 1 }); // Reset pagination
+      console.error("Failed to fetch internship applications:", error);
+      setError(error.message || "Failed to load internship applications.");
+      setApplications([]);
+      setPagination({ total: 0, page: 1, limit: 10, pages: 1 });
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-      // Load applications when filters or pagination limit changes
-      // We pass 1 for page here because changing filters should reset to the first page
-      loadApplications(1, filters);
-  }, [filters, pagination.limit]); // Depend on filters and pagination.limit
+    loadApplications(1, filters);
+  }, [filters, pagination.limit]);
 
+  const handlePageChange = (newPage) => {
+    if (
+      newPage >= 1 &&
+      newPage <= pagination.pages &&
+      newPage !== pagination.page
+    ) {
+      loadApplications(newPage);
+    }
+  };
 
-  // Effect to load applications when the page number changes (e.g., from pagination controls)
-   const handlePageChange = (newPage) => {
-       if (newPage >= 1 && newPage <= pagination.pages && newPage !== pagination.page) {
-           loadApplications(newPage); // Pass the new page number
-       }
-   };
+  const getStatusActionButtons = (row) => {
+    const buttons = [];
+    const isUpdating = updatingStatus[row._id];
 
+    // View button - always available
+    buttons.push(
+      <button
+        key="view"
+        className="action-button view-button"
+        onClick={() => handleView(row._id)}
+        disabled={isUpdating}
+      >
+        <FiEye className="button-icon" />
+        <span className="button-text">View</span>
+      </button>
+    );
+
+    // Approve button
+    if (
+      row.status !== "approved" &&
+      row.status !== "rejected" &&
+      row.status !== "hired"
+    ) {
+      buttons.push(
+        <button
+          key="approve"
+          className="action-button approve-button"
+          onClick={() => handleStatusChange(row._id, "approved")}
+          disabled={isUpdating}
+        >
+          <FiCheckCircle className="button-icon" />
+          <span className="button-text">
+            {isUpdating ? "Updating..." : "Approve"}
+          </span>
+        </button>
+      );
+    }
+
+    // Reject button
+    if (row.status !== "rejected" && row.status !== "hired") {
+      buttons.push(
+        <button
+          key="reject"
+          className="action-button reject-button"
+          onClick={() => handleStatusChange(row._id, "rejected")}
+          disabled={isUpdating}
+        >
+          <FiXCircle className="button-icon" />
+          <span className="button-text">
+            {isUpdating ? "Updating..." : "Reject"}
+          </span>
+        </button>
+      );
+    }
+
+    // Review button for pending applications
+    if (row.status === "pending") {
+      buttons.push(
+        <button
+          key="review"
+          className="action-button review-button"
+          onClick={() => handleStatusChange(row._id, "reviewing")}
+          disabled={isUpdating}
+        >
+          <FiClock className="button-icon" />
+          <span className="button-text">
+            {isUpdating ? "Updating..." : "Review"}
+          </span>
+        </button>
+      );
+    }
+
+    // Reset to pending button
+    if (
+      row.status === "approved" ||
+      row.status === "rejected" ||
+      row.status === "hired"
+    ) {
+      buttons.push(
+        <button
+          key="reset"
+          className="action-button reset-button"
+          onClick={() => handleStatusChange(row._id, "pending")}
+          disabled={isUpdating}
+        >
+          <FiRefreshCw className="button-icon" />
+          <span className="button-text">
+            {isUpdating ? "Updating..." : "Reset"}
+          </span>
+        </button>
+      );
+    }
+
+    return buttons;
+  };
 
   const columns = [
-    // Accessors might need adjustment based on actual backend data structure
-    { id: '_id', header: 'ID', accessor: '_id' }, // Use _id from MongoDB
-    { id: 'applicantName', header: 'Student Name', accessor: (row) => row.user?.name || 'N/A' }, // Assuming user is populated
-    // { id: 'university', header: 'University', accessor: (row) => row.user?.university || 'N/A' }, // Assuming university is on user model
-    { id: 'program', header: 'Internship Program', accessor: (row) => row.internship?.title || 'N/A' }, // Assuming internship is populated
+    { id: "_id", header: "ID", accessor: "_id" },
     {
-        id: 'submissionDate',
-        header: 'Applied On',
-        accessor: (row) => new Date(row.createdAt).toLocaleDateString() // Backend uses createdAt
+      id: "applicantName",
+      header: "Student Name",
+      accessor: (row) => row.user?.name || "N/A",
     },
     {
-      id: 'status',
-      header: 'Status',
-      accessor: (row) => <StatusBadge status={row.status} />
+      id: "program",
+      header: "Internship Program",
+      accessor: (row) => row.internship?.title || "N/A",
     },
     {
-      id: 'actions',
-      header: 'Actions',
+      id: "submissionDate",
+      header: "Applied On",
+      accessor: (row) => new Date(row.createdAt).toLocaleDateString(),
+    },
+    {
+      id: "status",
+      header: "Status",
+      accessor: (row) => <StatusBadge status={row.status} />,
+    },
+    {
+      id: "actions",
+      header: "Actions",
       accessor: (row) => (
-        <div className="flex gap-2">
-          <button
-            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={() => handleView(row._id)} // Use _id
-            disabled={updatingStatus[row._id]} // Disable if status is updating
-          >
-            View
-          </button>
-           {/* Add more status change buttons if backend supports more states */}
-           {/* Render buttons based on valid status transitions from the backend's list */}
-           {/* Backend statuses: "pending", "reviewing", "shortlisted", "interviewed", "offered", "hired", "rejected" */}
-
-            {row.status !== 'approved' && row.status !== 'rejected' && row.status !== 'hired' && (
-                 <button
-                    className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    onClick={() => handleStatusChange(row._id, 'approved')} // Example transition
-                    disabled={updatingStatus[row._id]}
-                  >
-                     {updatingStatus[row._id] ? 'Updating...' : 'Approve'}
-                  </button>
-            )}
-
-            {row.status !== 'rejected' && row.status !== 'hired' && (
-                 <button
-                    className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    onClick={() => handleStatusChange(row._id, 'rejected')} // Example transition
-                    disabled={updatingStatus[row._id]}
-                 >
-                     {updatingStatus[row._id] ? 'Updating...' : 'Reject'}
-                 </button>
-            )}
-
-             {/* Example: Button to set status to Reviewing */}
-             {row.status === 'pending' && (
-                 <button
-                    className="px-3 py-1 text-sm bg-yellow-600 text-white rounded hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    onClick={() => handleStatusChange(row._id, 'reviewing')}
-                    disabled={updatingStatus[row._id]}
-                 >
-                     {updatingStatus[row._id] ? 'Updating...' : 'Review'}
-                 </button>
-             )}
-              {/* Add buttons for other transitions (shortlisted, interviewed, offered, hired) based on your desired workflow */}
-
-             {/* Example: Button to set back to pending */}
-             {(row.status === 'approved' || row.status === 'rejected' || row.status === 'hired') && (
-                 <button
-                     className="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                     onClick={() => handleStatusChange(row._id, 'pending')} // Use _id
-                      disabled={updatingStatus[row._id]} // Disable if status is updating
-                 >
-                     {updatingStatus[row._id] ? 'Updating...' : 'Set Pending'}
-                 </button>
-             )}
-        </div>
-      )
-    }
+        <div className="actions-container">{getStatusActionButtons(row)}</div>
+      ),
+    },
   ];
 
   const handleView = (id) => {
-    // Navigate to detailed view or open modal
-    console.log('View internship application:', id);
+    console.log("View internship application:", id);
     // Example: navigate(`/admin/applications/internships/${id}`);
   };
 
   const handleStatusChange = async (id, newStatus) => {
-    console.log('Attempting to update status for application:', id, 'to', newStatus);
-    setUpdatingStatus(prev => ({ ...prev, [id]: true })); // Set loading state for this application
+    console.log("Updating status:", id, "to", newStatus);
+    setUpdatingStatus((prev) => ({ ...prev, [id]: true }));
     try {
-      const response = await updateApplicationStatus(id, newStatus); // Use the API function
-      console.log('Status update successful:', response.data); // Backend returns updated data in response.data
-      // Update the application in the local state
-      setApplications(applications.map(app =>
-        app._id === id ? response.data : app // Backend returns updated data in response.data
-      ));
-      // Optionally, show a success notification
+      const response = await updateApplicationStatus(id, newStatus);
+      console.log("Status update successful:", response.data);
+      setApplications(
+        applications.map((app) => (app._id === id ? response.data : app))
+      );
     } catch (error) {
-      console.error('Failed to update application status:', error);
-      // Optionally, show an error notification
-      alert(`Failed to update status: ${error.message}`); // Basic alert
+      console.error("Failed to update application status:", error);
+      alert(`Failed to update status: ${error.message}`);
     } finally {
-       setUpdatingStatus(prev => ({ ...prev, [id]: false })); // Clear loading state for this application
+      setUpdatingStatus((prev) => ({ ...prev, [id]: false }));
     }
   };
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters(prevFilters => ({
+    setFilters((prevFilters) => ({
       ...prevFilters,
-      [name]: value
+      [name]: value,
     }));
-    // Note: useEffect with [filters] will handle calling loadApplications(1, newFilters)
   };
 
   const handleSearchChange = (e) => {
-       const { value } = e.target;
-       setFilters(prevFilters => ({
-           ...prevFilters,
-           search: value, // Update the search term
-       }));
-        // Note: useEffect with [filters] will handle calling loadApplications(1, newFilters)
-   };
+    const { value } = e.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      search: value,
+    }));
+  };
 
+  const handleDataTablePageChange = (page) => {
+    handlePageChange(page);
+  };
 
-   // DataTable expects a function for pagination changes
-   const handleDataTablePageChange = (page) => {
-       handlePageChange(page); // Call our internal page change handler
-   };
-
-   // DataTable expects a function for limit changes
-    const handleDataTableLimitChange = (newLimit) => {
-         setPagination(prev => ({ ...prev, limit: newLimit, page: 1 })); // Reset to page 1 when limit changes
-         // The useEffect will trigger a data reload with the new limit
-    };
-
+  const handleDataTableLimitChange = (newLimit) => {
+    setPagination((prev) => ({ ...prev, limit: newLimit, page: 1 }));
+  };
 
   return (
-    <AdminLayout>
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Internship Applications</h1>
-          <div className="flex gap-4">
-            {/* Filter by Program - Enable if backend supports */}
-            {/* <div>
-              <select
-                name="program"
-                value={filters.program}
-                onChange={handleFilterChange}
-                className="border rounded px-3 py-2"
-              >
-                <option value="all">All Programs</option>
-                 {/* Add dynamic options based on available programs */}
-                {/* <option value="summer">Summer Internship</option>
-                <option value="semester">Semester Internship</option>
-                <option value="year">Year-long Internship</option>
-              </select>
-            </div> */}
-            <div>
-              {/* Filter by Status */}
-              <select
-                name="status"
-                value={filters.status}
-                onChange={handleFilterChange}
-                className="border rounded px-3 py-2"
-              >
-                <option value="all">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="reviewing">Reviewing</option> {/* Match backend statuses */}
-                <option value="shortlisted">Shortlisted</option>
-                <option value="interviewed">Interviewed</option>
-                <option value="offered">Offered</option>
-                <option value="hired">Hired</option>
-                <option value="rejected">Rejected</option>
-              </select>
-            </div>
-            <div>
-              {/* Search Input */}
+    <div className={`applications-container ${theme}`}>
+      <div className="page-header">
+        <h1>Internship Applications</h1>
+        <div className="filter-controls">
+          <div className="filter-item">
+            <select
+              name="status"
+              value={filters.status}
+              onChange={handleFilterChange}
+              className="filter-select"
+            >
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="reviewing">Reviewing</option>
+              <option value="shortlisted">Shortlisted</option>
+              <option value="interviewed">Interviewed</option>
+              <option value="offered">Offered</option>
+              <option value="hired">Hired</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+          <div className="filter-item">
+            <div className="search-container">
               <input
                 type="text"
-                name="search" // Match the filter state key
+                name="search"
                 placeholder="Search applications..."
                 value={filters.search}
-                onChange={handleSearchChange} // Use specific search handler
-                className="border rounded px-3 py-2"
+                onChange={handleSearchChange}
+                className="search-input"
               />
+              <span className="search-icon">🔍</span>
             </div>
           </div>
         </div>
-
-        {error && <ErrorMessage message={error} />} {/* Display error message */}
-
-        {/* Show loading spinner if initial data is loading */}
-        {loading && <LoadingSpinner />}
-
-        {/* Render DataTable or empty state only after initial loading is done */}
-        {!loading && (
-             applications.length > 0 ? (
-                <DataTable
-                   columns={columns}
-                   data={applications}
-                   // loading={loading} // Can pass loading here if DataTable shows an overlay
-                   pagination={true} // Enable pagination UI
-                   totalItems={pagination.total} // Total items from backend
-                   itemsPerPage={pagination.limit} // Items per page from backend
-                   currentPage={pagination.page} // Current page from state
-                   totalPages={pagination.pages} // Total pages from backend
-                   onPageChange={handleDataTablePageChange} // Handler for page changes
-                   onLimitChange={handleDataTableLimitChange} // Handler for items per page changes
-                   // Add sorting props if your DataTable and backend support it
-                   // onSortChange={handleSortChange}
-                   // sortColumn={sortConfig.column}
-                   // sortDirection={sortConfig.direction}
-                 />
-             ) : (
-                 !error && <p className="text-center text-gray-500">No internship applications found.</p>
-             )
-        )}
-
-
       </div>
-    </AdminLayout>
+
+      {error && <ErrorMessage message={error} />}
+
+      <div className="table-container">
+        {loading ? (
+          <div className="loading-container">
+            <LoadingSpinner />
+          </div>
+        ) : applications.length > 0 ? (
+          <DataTable
+            columns={columns}
+            data={applications}
+            pagination={true}
+            totalItems={pagination.total}
+            itemsPerPage={pagination.limit}
+            currentPage={pagination.page}
+            totalPages={pagination.pages}
+            onPageChange={handleDataTablePageChange}
+            onLimitChange={handleDataTableLimitChange}
+            theme={theme}
+          />
+        ) : (
+          !error && (
+            <div className="empty-state">
+              <p>No internship applications found.</p>
+            </div>
+          )
+        )}
+      </div>
+
+      <style jsx>{`
+        .applications-container {
+          padding: 1.75rem;
+          transition: all 0.3s ease;
+        }
+
+        .applications-container.light {
+          background-color: #f9fafb;
+          color: #111827;
+        }
+
+        .applications-container.dark {
+          background-color: #111827;
+          color: #f3f4f6;
+        }
+
+        .page-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
+
+        .page-header h1 {
+          font-size: 1.625rem;
+          font-weight: 600;
+          margin: 0;
+          color: ${theme === "dark" ? "#f9fafb" : "#111827"};
+        }
+
+        .filter-controls {
+          display: flex;
+          gap: 1rem;
+          flex-wrap: wrap;
+        }
+
+        .filter-item {
+          min-width: 180px;
+        }
+
+        .filter-select {
+          width: 100%;
+          padding: 0.5rem 0.75rem;
+          border-radius: 0.375rem;
+          border: 1px solid ${theme === "dark" ? "#4b5563" : "#d1d5db"};
+          background-color: ${theme === "dark" ? "#1f2937" : "#ffffff"};
+          color: ${theme === "dark" ? "#e5e7eb" : "#111827"};
+          font-size: 0.875rem;
+          outline: none;
+          transition: all 0.2s ease;
+        }
+
+        .filter-select:focus {
+          border-color: #4f46e5;
+          box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+
+        .search-container {
+          position: relative;
+          width: 100%;
+        }
+
+        .search-input {
+          width: 100%;
+          padding: 0.5rem 0.75rem;
+          padding-right: 2.5rem;
+          border-radius: 0.375rem;
+          border: 1px solid ${theme === "dark" ? "#4b5563" : "#d1d5db"};
+          background-color: ${theme === "dark" ? "#1f2937" : "#ffffff"};
+          color: ${theme === "dark" ? "#e5e7eb" : "#111827"};
+          font-size: 0.875rem;
+          outline: none;
+          transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+          border-color: #4f46e5;
+          box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+
+        .search-icon {
+          position: absolute;
+          right: 0.75rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: ${theme === "dark" ? "#9ca3af" : "#6b7280"};
+          pointer-events: none;
+        }
+
+        .table-container {
+          background-color: ${theme === "dark" ? "#1f2937" : "#ffffff"};
+          border-radius: 0.5rem;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, ${theme === "dark" ? "0.2" : "0.1"}),
+            0 2px 4px -1px rgba(0, 0, 0, ${theme === "dark" ? "0.15" : "0.06"});
+          overflow: hidden;
+          border: 1px solid ${theme === "dark" ? "#374151" : "#e5e7eb"};
+        }
+
+        .loading-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 3rem 0;
+        }
+
+        .empty-state {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 3rem 0;
+          color: ${theme === "dark" ? "#9ca3af" : "#6b7280"};
+          font-size: 0.875rem;
+        }
+
+        .actions-container {
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+        }
+
+        .action-button {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.25rem;
+          padding: 0.375rem 0.625rem;
+          border-radius: 0.25rem;
+          font-size: 0.75rem;
+          font-weight: 500;
+          border: none;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          white-space: nowrap;
+        }
+
+        .action-button:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .button-icon {
+          width: 0.875rem;
+          height: 0.875rem;
+        }
+
+        .button-text {
+          display: inline-block;
+        }
+
+        /* Button styles with dark mode consideration */
+        .view-button {
+          background-color: ${theme === "dark" ? "#1d4ed8" : "#3b82f6"};
+          color: white;
+        }
+
+        .view-button:not(:disabled):hover {
+          background-color: ${theme === "dark" ? "#1e40af" : "#2563eb"};
+        }
+
+        .approve-button {
+          background-color: ${theme === "dark" ? "#15803d" : "#22c55e"};
+          color: white;
+        }
+
+        .approve-button:not(:disabled):hover {
+          background-color: ${theme === "dark" ? "#166534" : "#16a34a"};
+        }
+
+        .reject-button {
+          background-color: ${theme === "dark" ? "#b91c1c" : "#ef4444"};
+          color: white;
+        }
+
+        .reject-button:not(:disabled):hover {
+          background-color: ${theme === "dark" ? "#991b1b" : "#dc2626"};
+        }
+
+        .review-button {
+          background-color: ${theme === "dark" ? "#b45309" : "#f59e0b"};
+          color: white;
+        }
+
+        .review-button:not(:disabled):hover {
+          background-color: ${theme === "dark" ? "#92400e" : "#d97706"};
+        }
+
+        .reset-button {
+          background-color: ${theme === "dark" ? "#374151" : "#6b7280"};
+          color: white;
+        }
+
+        .reset-button:not(:disabled):hover {
+          background-color: ${theme === "dark" ? "#1f2937" : "#4b5563"};
+        }
+
+        @media (max-width: 768px) {
+          .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+
+          .filter-controls {
+            width: 100%;
+          }
+
+          .filter-item {
+            flex: 1;
+            min-width: 120px;
+          }
+
+          .button-text {
+            display: none;
+          }
+
+          .action-button {
+            padding: 0.375rem;
+          }
+
+          .button-icon {
+            margin-right: 0;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .applications-container {
+            padding: 1rem;
+          }
+
+          .actions-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.25rem;
+          }
+
+          .action-button {
+            width: 100%;
+            justify-content: center;
+          }
+        }
+      `}</style>
+    </div>
   );
 };
 

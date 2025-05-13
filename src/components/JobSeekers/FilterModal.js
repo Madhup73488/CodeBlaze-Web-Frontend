@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 
 const FiltersModal = ({
   theme,
-  filters,
+  filters = {}, // Default value to prevent undefined
   handleFilterChange,
-  filterOptions,
+  filterOptions = {}, // Default value to prevent undefined
   isOpen,
   onClose,
-  categories,
+  categories = [], // Default value to prevent undefined
   activeCategory,
   setActiveCategory,
   primaryColor,
@@ -37,6 +37,16 @@ const FiltersModal = ({
   // Don't render anything if the modal is fully closed
   if (animationState === "closed" && !isOpen) return null;
 
+  // Initialize filter options if they're undefined
+  const safeFilterOptions = {
+    salaryRange: filterOptions.salaryRange || [],
+    experienceLevel: filterOptions.experienceLevel || [],
+    jobType: filterOptions.jobType || [],
+    location: filterOptions.location || [],
+    remote: filterOptions.remote || [],
+    isPaid: filterOptions.isPaid || [],
+  };
+
   return (
     <div className={`modal-overlay ${animationState}`}>
       <div className={`modal-container ${animationState}`}>
@@ -63,6 +73,7 @@ const FiltersModal = ({
             <h3>Categories</h3>
             <div className="categories-container">
               {categories &&
+                categories.length > 0 &&
                 categories.map((category) => (
                   <button
                     key={category.id}
@@ -83,86 +94,82 @@ const FiltersModal = ({
           </div>
 
           <div className="filter-section">
-            <h3>Country</h3>
-            <div className="filter-options">
-              {filterOptions.country.map((option) => (
-                <label key={option.value} className="filter-option">
-                  <input
-                    type="radio"
-                    name="country"
-                    value={option.value}
-                    checked={filters.country === option.value}
-                    onChange={() => handleFilterChange("country", option.value)}
-                  />
-                  <span>{option.label}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div className="filter-section">
             <h3>Salary Range</h3>
             <div className="filter-options">
-              {filterOptions.salaryRange.map((option) => (
-                <label key={option.value} className="filter-option">
-                  <input
-                    type="radio"
-                    name="salaryRange"
-                    value={option.value}
-                    checked={filters.salaryRange === option.value}
-                    onChange={() =>
-                      handleFilterChange("salaryRange", option.value)
-                    }
-                  />
-                  <span>{option.label}</span>
-                </label>
-              ))}
+              {safeFilterOptions.salaryRange.length > 0 ? (
+                safeFilterOptions.salaryRange.map((option) => (
+                  <label key={option.value} className="filter-option">
+                    <input
+                      type="radio"
+                      name="salaryRange"
+                      value={option.value}
+                      checked={filters.salaryRange === option.value}
+                      onChange={() =>
+                        handleFilterChange("salaryRange", option.value)
+                      }
+                    />
+                    <span>{option.label}</span>
+                  </label>
+                ))
+              ) : (
+                <p className="text-sm">No salary range options available</p>
+              )}
             </div>
           </div>
 
           <div className="filter-section">
             <h3>Experience Level</h3>
             <div className="filter-options">
-              {filterOptions.experienceLevel.map((option) => (
-                <label key={option.value} className="filter-option">
-                  <input
-                    type="radio"
-                    name="experienceLevel"
-                    value={option.value}
-                    checked={filters.experienceLevel === option.value}
-                    onChange={() =>
-                      handleFilterChange("experienceLevel", option.value)
-                    }
-                  />
-                  <span>{option.label}</span>
-                </label>
-              ))}
+              {safeFilterOptions.experienceLevel.length > 0 ? (
+                safeFilterOptions.experienceLevel.map((option) => (
+                  <label key={option.value} className="filter-option">
+                    <input
+                      type="radio"
+                      name="experienceLevel"
+                      value={option.value}
+                      checked={filters.experienceLevel === option.value}
+                      onChange={() =>
+                        handleFilterChange("experienceLevel", option.value)
+                      }
+                    />
+                    <span>{option.label}</span>
+                  </label>
+                ))
+              ) : (
+                <p className="text-sm">No experience level options available</p>
+              )}
             </div>
           </div>
 
           <div className="filter-section">
             <h3>Job Type</h3>
             <div className="filter-options">
-              {filterOptions.jobType.map((option) => (
-                <label key={option.value} className="filter-option">
-                  <input
-                    type="radio"
-                    name="jobType"
-                    value={option.value}
-                    checked={filters.jobType === option.value}
-                    onChange={() => handleFilterChange("jobType", option.value)}
-                  />
-                  <span>{option.label}</span>
-                </label>
-              ))}
+              {safeFilterOptions.jobType.length > 0 ? (
+                safeFilterOptions.jobType.map((option) => (
+                  <label key={option.value} className="filter-option">
+                    <input
+                      type="radio"
+                      name="jobType"
+                      value={option.value}
+                      checked={filters.jobType === option.value}
+                      onChange={() =>
+                        handleFilterChange("jobType", option.value)
+                      }
+                    />
+                    <span>{option.label}</span>
+                  </label>
+                ))
+              ) : (
+                <p className="text-sm">No job type options available</p>
+              )}
             </div>
           </div>
 
           <div className="filter-section">
             <h3>Location</h3>
             <div className="filter-options">
-              {filters.country === "us" || filters.country === "in" ? (
-                filterOptions.location.map((option) => (
+              {safeFilterOptions.location.length > 0 ? (
+                safeFilterOptions.location.map((option) => (
                   <label key={option.value} className="filter-option">
                     <input
                       type="radio"
@@ -177,9 +184,7 @@ const FiltersModal = ({
                   </label>
                 ))
               ) : (
-                <p className="text-sm">
-                  Select US or India to filter by location.
-                </p>
+                <p className="text-sm">No location options available</p>
               )}
             </div>
           </div>
@@ -187,18 +192,48 @@ const FiltersModal = ({
           <div className="filter-section">
             <h3>Work Type</h3>
             <div className="filter-options">
-              {filterOptions.remote.map((option) => (
-                <label key={option.value} className="filter-option">
-                  <input
-                    type="radio"
-                    name="remote"
-                    value={option.value}
-                    checked={filters.remote === option.value}
-                    onChange={() => handleFilterChange("remote", option.value)}
-                  />
-                  <span>{option.label}</span>
-                </label>
-              ))}
+              {safeFilterOptions.remote.length > 0 ? (
+                safeFilterOptions.remote.map((option) => (
+                  <label key={option.value} className="filter-option">
+                    <input
+                      type="radio"
+                      name="remote"
+                      value={option.value}
+                      checked={filters.remote === option.value}
+                      onChange={() =>
+                        handleFilterChange("remote", option.value)
+                      }
+                    />
+                    <span>{option.label}</span>
+                  </label>
+                ))
+              ) : (
+                <p className="text-sm">No work type options available</p>
+              )}
+            </div>
+          </div>
+
+          <div className="filter-section">
+            <h3>Payment</h3>
+            <div className="filter-options">
+              {safeFilterOptions.isPaid.length > 0 ? (
+                safeFilterOptions.isPaid.map((option) => (
+                  <label key={option.value} className="filter-option">
+                    <input
+                      type="radio"
+                      name="isPaid"
+                      value={option.value}
+                      checked={filters.isPaid === option.value}
+                      onChange={() =>
+                        handleFilterChange("isPaid", option.value)
+                      }
+                    />
+                    <span>{option.label}</span>
+                  </label>
+                ))
+              ) : (
+                <p className="text-sm">No payment options available</p>
+              )}
             </div>
           </div>
         </div>

@@ -478,7 +478,7 @@ function AuthModal({ isOpen, onClose, theme, color }) {
         }
 
         .dark .auth-modal {
-          background-color: #111827;
+          background-color: rgba(10, 10, 10, 0.97);
           box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.5),
             0 18px 36px -18px rgba(0, 0, 0, 0.6);
           border: 1px solid rgba(255, 255, 255, 0.1);
@@ -881,7 +881,7 @@ function AuthModal({ isOpen, onClose, theme, color }) {
         }
 
         .dark .form-input {
-          background-color: #1f2937;
+          background-color: #1e2023;
           border-color: #4b5563;
           color: #f9fafb;
         }
@@ -1063,7 +1063,7 @@ function AuthModal({ isOpen, onClose, theme, color }) {
 
         .dark .divider span {
           color: #9ca3af;
-          background-color: #111827; /* Match modal background */
+          background-color: #212124; /* Match modal background */
         }
 
         .social-buttons {
@@ -1090,7 +1090,7 @@ function AuthModal({ isOpen, onClose, theme, color }) {
         }
 
         .dark .social-button {
-          background-color: #1f2937;
+          background-color: #16171a;
           border-color: #4b5563;
           color: #d1d5db;
         }

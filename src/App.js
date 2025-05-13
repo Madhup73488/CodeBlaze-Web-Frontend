@@ -65,13 +65,6 @@ const AppContent = () => {
   const [color, setColor] = useState("orange");
   const location = useLocation();
   const navigate = useNavigate();
-
-  console.log("AppContent Render - Current State:", {
-    isAuthenticated,
-    user,
-    loading,
-    pathname: location.pathname,
-  });
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const isAdminRoute = location.pathname.startsWith("/admin");
 
@@ -83,53 +76,31 @@ const AppContent = () => {
     setColor(color === "purple" ? "orange" : "purple");
   };
 
-  // Effect for Admin Redirection and Protected Routes
-  useEffect(() => {
-    console.log("useEffect - checking auth state:", {
-      isAuthenticated,
-      user,
-      loading,
-      pathname: location.pathname,
-    });
-    if (!loading) {
-      console.log("useEffect - Loading finished:", {
-        isAuthenticated,
-        user,
-        pathname: location.pathname,
-        userRole: user?.role, // Log user role explicitly
-      });
-      const isAdmin =
-        user && (user.role === "admin" || user.role === "superadmin");
-      const currentPath = location.pathname;
-
-      if (currentPath.startsWith("/admin")) {
-        // More specific check for admin paths
-        console.log("useEffect - On Admin Path:", { isAuthenticated, isAdmin }); // <-- Add this log
-        if (isAuthenticated && !isAdmin) {
-          console.log(
-            "useEffect - Redirecting authenticated non-admin:",
-            user?.role
-          ); // <-- Add this log
-          navigate("/", { replace: true });
-        } else if (!isAuthenticated) {
-          console.log("useEffect - Redirecting unauthenticated user"); // <-- Add this log
-          navigate("/", { replace: true });
-        } else {
-          console.log("useEffect - User is admin, allowing access"); // <-- Add this log
-        }
-      }
-      // ... (other useEffect logic if any)
-    } else {
-      console.log("useEffect - Still Loading Auth State..."); // <-- Add this log
-    }
-  }, [isAuthenticated, user, loading, navigate, location.pathname]);
-
   // Effect to open the AuthModal automatically if authFlowState is 'reset_password_form'
   useEffect(() => {
     if (authFlowState === "reset_password_form") {
       setIsAuthModalOpen(true);
     }
   }, [authFlowState]);
+
+  // Effect for Admin Redirection and Protected Routes
+  useEffect(() => {
+    if (!loading && location.pathname.startsWith("/admin")) {
+      const isAdmin = user?.role === "admin" || user?.role === "superadmin";
+      
+      if (!isAuthenticated) {
+        // Wait a bit more to ensure auth check is complete
+        const timer = setTimeout(() => {
+          if (!isAuthenticated) {
+            navigate("/", { replace: true });
+          }
+        }, 500);
+        return () => clearTimeout(timer);
+      } else if (!isAdmin) {
+        navigate("/", { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, loading, navigate, location.pathname]);
 
   const openAuthModal = (initialFlowState = "initial") => {
     setAuthFlowState(initialFlowState);
@@ -148,6 +119,15 @@ const AppContent = () => {
       navigate("/", { replace: true });
     }
   };
+
+  // Don't render anything until auth state is determined
+  if (loading && location.pathname.startsWith("/admin")) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -249,7 +229,7 @@ const AppContent = () => {
           element={<PublicProfile theme={theme} color={color} />}
         />
 
-        {/* Admin Routes - Fixed structure */}
+        {/* Admin Routes */}
         <Route
           path="/admin"
           element={
@@ -286,8 +266,6 @@ const AppContent = () => {
             <Route path="internships" element={<InternshipApplications />} />
             <Route index element={<Navigate to="jobs" replace />} />
           </Route>
-
-          
 
           <Route path="*" element={<AdminNotFound />} />
         </Route>
