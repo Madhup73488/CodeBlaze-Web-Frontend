@@ -3,7 +3,7 @@
 // Base API URL configuration
 // Ensure this points to your backend's API root
 const API_BASE_URL =
-  process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+  process.env.REACT_APP_BACKEND_URL;
 
 // Request headers configuration
 const getHeaders = () => {

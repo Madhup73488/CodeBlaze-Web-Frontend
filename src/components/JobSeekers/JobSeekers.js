@@ -125,9 +125,8 @@ function JobSeekers({ theme = "light", color = "blue" }) {
     try {
       // You might want to add query parameters here later based on filters/pagination
       const response = await fetch(
-        `http://localhost:5000/api/jobs?page=${currentPage}&limit=10`
-      ); // Added basic pagination query params
-
+        `${process.env.REACT_APP_BACKEND_URL}/api/jobs?page=${currentPage}&limit=10`
+      );
       if (!response.ok) {
         throw new Error(
           `API error: ${response.statusText} (Status: ${response.status})`
