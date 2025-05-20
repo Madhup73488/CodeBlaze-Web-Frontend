@@ -64,6 +64,10 @@ import ProfileDashboard from "./components/profile/ProfileDashboard";
 import PublicProfile from "./components/profile/PublicProfile";
 import ProfilePage from "./components/profile/ProfilePage";
 
+// Import new Resources components
+import ResourcesPage from "./components/Resources/ResourcesPage"; // Assuming src/pages/ResourcesPage.jsx
+import SeventyQuestionsByNehaMalhotra from "./components/Resources/SeventyQuestionsByNehaMalhotra"; // Assuming src/components/resources/SeventyQuestionsByNehaMalhotra.jsx
+import ResumeWritingTips from "./components/Resources/ResumeWritingTips";
 const AppContent = () => {
   const { isAuthenticated, user, loading, authFlowState, setAuthFlowState } =
     useAuth();
@@ -248,6 +252,41 @@ const AppContent = () => {
         <Route
           path="/job-seekers"
           element={<JobSeekers theme={theme} color={color} />}
+        />
+
+        {/* NEW: Resources Routes */}
+        <Route
+          path="/resources"
+          element={
+            <ResourcesPage
+              theme={theme}
+              colorStyles={{
+                primary: color === "orange" ? "#ffc107" : "#8a2be2",
+              }}
+            />
+          }
+        />
+        <Route
+          path="/resources/seventy-questions-by-neha-malhotra"
+          element={
+            <SeventyQuestionsByNehaMalhotra
+              theme={theme}
+              colorStyles={{
+                primary: color === "orange" ? "#ffc107" : "#8a2be2",
+              }}
+            />
+          }
+        />
+        <Route
+          path="/resources/resume-writing-tips"
+          element={
+            <ResumeWritingTips
+              theme={theme}
+              colorStyles={{
+                primary: color === "orange" ? "#ffc107" : "#8a2be2",
+              }}
+            />
+          }
         />
 
         {/* This route is primarily to trigger the AuthModal via useEffect.

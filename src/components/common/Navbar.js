@@ -413,13 +413,16 @@ function Navbar({ theme, color, toggleTheme, toggleColor, openAuthModal }) {
             >
               Careers
             </Link>
-            <a
-              href="#contact"
+            <Link
+              to="/resources"
               className="link hover-effect"
-              onClick={handleContactClick}
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavigation("/resources");
+              }}
             >
-              Contact Us
-            </a>
+              Resources
+            </Link>
           </div>
 
           <div className="nav-actions">
