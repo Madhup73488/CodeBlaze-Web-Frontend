@@ -1,12 +1,12 @@
-// Updated AuthModal.js
+// Updated AuthModal.js with onLoginSuccess callback
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import AuthBranding from "./AuthBranding";
 import AuthContent from "./AuthContent";
-import Loader from "./Loader"; // Make sure Loader is imported if used directly in AuthModal
+import Loader from "./Loader";
 
-function AuthModal({ isOpen, onClose, theme, color }) {
+function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
   const {
     isAuthenticated,
     loading,
@@ -30,7 +30,7 @@ function AuthModal({ isOpen, onClose, theme, color }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [otpInputs, setOtpInputs] = useState(["", "", "", "", "", ""]);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
-  const [isMobileView, setIsMobileView] = useState(false); // State to track mobile view
+  const [isMobileView, setIsMobileView] = useState(false);
   const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
 
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
@@ -47,21 +47,25 @@ function AuthModal({ isOpen, onClose, theme, color }) {
     confirmNewPassword: "",
   });
 
-  // Check if mobile view on component mount and window resize
   useEffect(() => {
     const checkMobileView = () => {
-      setIsMobileView(window.innerWidth <= 768); // Adjust breakpoint as needed
+      setIsMobileView(window.innerWidth <= 768);
     };
 
-    // Check on initial load
     checkMobileView();
-
-    // Add resize listener
     window.addEventListener("resize", checkMobileView);
-
-    // Clean up
     return () => window.removeEventListener("resize", checkMobileView);
-  }, []); // Empty dependency array means this effect runs only once on mount and cleans up on unmount
+  }, []);
+
+  // Handle successful login and call onLoginSuccess if provided
+  useEffect(() => {
+    if (isAuthenticated && isOpen) {
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      }
+      onClose();
+    }
+  }, [isAuthenticated, isOpen, onClose, onLoginSuccess]);
 
   const handleLoginChange = (e) => {
     const { name, value } = e.target;
@@ -112,7 +116,6 @@ function AuthModal({ isOpen, onClose, theme, color }) {
 
   const handleResetPasswordChange = (e) => {
     const { name, value } = e.target;
-
     setResetPasswordForm({ ...resetPasswordForm, [name]: value });
     if (error) setError(null);
   };
@@ -122,13 +125,13 @@ function AuthModal({ isOpen, onClose, theme, color }) {
     e.stopPropagation();
     setIsButtonLoading(true);
     setTimeout(async () => {
-      // Using setTimeout for demo loading effect
       const result = await loginUser(loginForm.email, loginForm.password);
       if (result.success) {
+        // onLoginSuccess will be called via the useEffect hook
         onClose();
       }
-      setIsButtonLoading(false); // Set local loading state back to false
-    }, 2000); // Simulate network delay
+      setIsButtonLoading(false);
+    }, 2000);
   };
 
   const handleRequestOTP = async (e) => {
@@ -348,7 +351,6 @@ function AuthModal({ isOpen, onClose, theme, color }) {
           <X size={24} />
         </button>
         <div className="auth-container">
-          {/* Hide branding on mobile view */}
           {!isMobileView && <AuthBranding primaryColor={primaryColor} />}
           <AuthContent
             authFlowState={authFlowState}

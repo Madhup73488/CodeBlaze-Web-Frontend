@@ -1,0 +1,2450 @@
+Hi deepseek take reference of these components of jobseekers portal and i want you to give me similar components for my internship portal as well 
+Error.js
+import React from "react";
+
+function Error({ theme, error }) {
+  return (
+    <div className="error">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#ef4444"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="error-icon"
+      >
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <h3>Error loading jobs</h3>
+      <p>{error}</p>
+      <p>Please try again later</p>
+
+      <style jsx>{`
+        .error {
+          text-align: center;
+          padding: 2rem;
+          width: 100%;
+          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+        }
+
+        .error-icon {
+          width: 48px;
+          height: 48px;
+          margin-bottom: 1rem;
+        }
+
+        .error h3 {
+          font-size: 1.3rem;
+          margin-bottom: 0.5rem;
+          color: #ef4444;
+        }
+
+        .error p {
+          opacity: 0.7;
+          margin-bottom: 0.5rem;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export default Error;
+
+filterModal.js
+import React, { useEffect, useState } from "react";
+
+const FiltersModal = ({
+  theme,
+  filters = {}, // Default value to prevent undefined
+  handleFilterChange,
+  filterOptions = {}, // Default value to prevent undefined
+  isOpen,
+  onClose,
+  categories = [], // Default value to prevent undefined
+  activeCategory,
+  setActiveCategory,
+  primaryColor,
+}) => {
+  const [animationState, setAnimationState] = useState("closed");
+
+  useEffect(() => {
+    if (isOpen) {
+      setAnimationState("opening");
+      // Short timeout to ensure the opening class is applied after the component is rendered
+      const timer = setTimeout(() => {
+        setAnimationState("open");
+      }, 50);
+      return () => clearTimeout(timer);
+    } else {
+      if (animationState === "open") {
+        setAnimationState("closing");
+        // Add timeout to match the CSS transition duration
+        const timer = setTimeout(() => {
+          setAnimationState("closed");
+        }, 300); // Match this with your CSS transition time
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [isOpen]);
+
+  // Don't render anything if the modal is fully closed
+  if (animationState === "closed" && !isOpen) return null;
+
+  // Initialize filter options if they're undefined
+  const safeFilterOptions = {
+    salaryRange: filterOptions.salaryRange || [],
+    experienceLevel: filterOptions.experienceLevel || [],
+    jobType: filterOptions.jobType || [],
+    location: filterOptions.location || [],
+    remote: filterOptions.remote || [],
+    isPaid: filterOptions.isPaid || [],
+  };
+
+  return (
+    <div className={`modal-overlay ${animationState}`}>
+      <div className={`modal-container ${animationState}`}>
+        <div className="modal-header">
+          <h2>Filter Jobs</h2>
+          <button className="close-button" onClick={onClose}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <div className="modal-content">
+          <div className="filter-section categories-section">
+            <h3>Categories</h3>
+            <div className="categories-container">
+              {categories &&
+                categories.length > 0 &&
+                categories.map((category) => (
+                  <button
+                    key={category.id}
+                    className={`category-button ${
+                      activeCategory === category.id ? "active" : ""
+                    }`}
+                    onClick={() => setActiveCategory(category.id)}
+                    style={
+                      activeCategory === category.id
+                        ? { borderColor: primaryColor, color: primaryColor }
+                        : {}
+                    }
+                  >
+                    {category.name}
+                  </button>
+                ))}
+            </div>
+          </div>
+
+          <div className="filter-section">
+            <h3>Salary Range</h3>
+            <div className="filter-options">
+              {safeFilterOptions.salaryRange.length > 0 ? (
+                safeFilterOptions.salaryRange.map((option) => (
+                  <label key={option.value} className="filter-option">
+                    <input
+                      type="radio"
+                      name="salaryRange"
+                      value={option.value}
+                      checked={filters.salaryRange === option.value}
+                      onChange={() =>
+                        handleFilterChange("salaryRange", option.value)
+                      }
+                    />
+                    <span>{option.label}</span>
+                  </label>
+                ))
+              ) : (
+                <p className="text-sm">No salary range options available</p>
+              )}
+            </div>
+          </div>
+
+          <div className="filter-section">
+            <h3>Experience Level</h3>
+            <div className="filter-options">
+              {safeFilterOptions.experienceLevel.length > 0 ? (
+                safeFilterOptions.experienceLevel.map((option) => (
+                  <label key={option.value} className="filter-option">
+                    <input
+                      type="radio"
+                      name="experienceLevel"
+                      value={option.value}
+                      checked={filters.experienceLevel === option.value}
+                      onChange={() =>
+                        handleFilterChange("experienceLevel", option.value)
+                      }
+                    />
+                    <span>{option.label}</span>
+                  </label>
+                ))
+              ) : (
+                <p className="text-sm">No experience level options available</p>
+              )}
+            </div>
+          </div>
+
+          <div className="filter-section">
+            <h3>Job Type</h3>
+            <div className="filter-options">
+              {safeFilterOptions.jobType.length > 0 ? (
+                safeFilterOptions.jobType.map((option) => (
+                  <label key={option.value} className="filter-option">
+                    <input
+                      type="radio"
+                      name="jobType"
+                      value={option.value}
+                      checked={filters.jobType === option.value}
+                      onChange={() =>
+                        handleFilterChange("jobType", option.value)
+                      }
+                    />
+                    <span>{option.label}</span>
+                  </label>
+                ))
+              ) : (
+                <p className="text-sm">No job type options available</p>
+              )}
+            </div>
+          </div>
+
+          <div className="filter-section">
+            <h3>Location</h3>
+            <div className="filter-options">
+              {safeFilterOptions.location.length > 0 ? (
+                safeFilterOptions.location.map((option) => (
+                  <label key={option.value} className="filter-option">
+                    <input
+                      type="radio"
+                      name="location"
+                      value={option.value}
+                      checked={filters.location === option.value}
+                      onChange={() =>
+                        handleFilterChange("location", option.value)
+                      }
+                    />
+                    <span>{option.label}</span>
+                  </label>
+                ))
+              ) : (
+                <p className="text-sm">No location options available</p>
+              )}
+            </div>
+          </div>
+
+          <div className="filter-section">
+            <h3>Work Type</h3>
+            <div className="filter-options">
+              {safeFilterOptions.remote.length > 0 ? (
+                safeFilterOptions.remote.map((option) => (
+                  <label key={option.value} className="filter-option">
+                    <input
+                      type="radio"
+                      name="remote"
+                      value={option.value}
+                      checked={filters.remote === option.value}
+                      onChange={() =>
+                        handleFilterChange("remote", option.value)
+                      }
+                    />
+                    <span>{option.label}</span>
+                  </label>
+                ))
+              ) : (
+                <p className="text-sm">No work type options available</p>
+              )}
+            </div>
+          </div>
+
+          <div className="filter-section">
+            <h3>Payment</h3>
+            <div className="filter-options">
+              {safeFilterOptions.isPaid.length > 0 ? (
+                safeFilterOptions.isPaid.map((option) => (
+                  <label key={option.value} className="filter-option">
+                    <input
+                      type="radio"
+                      name="isPaid"
+                      value={option.value}
+                      checked={filters.isPaid === option.value}
+                      onChange={() =>
+                        handleFilterChange("isPaid", option.value)
+                      }
+                    />
+                    <span>{option.label}</span>
+                  </label>
+                ))
+              ) : (
+                <p className="text-sm">No payment options available</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="modal-footer">
+          <button className="apply-button" onClick={onClose}>
+            Apply Filters
+          </button>
+        </div>
+      </div>
+
+      <style jsx>{`
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+          transition: background 0.3s ease;
+        }
+
+        .modal-overlay.opening,
+        .modal-overlay.open {
+          background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-overlay.closing {
+          background: rgba(0, 0, 0, 0);
+        }
+
+        @media (max-width: 640px) {
+          .modal-overlay {
+            align-items: flex-end;
+          }
+        }
+
+        .modal-container {
+          background: ${theme === "dark" ? "#111" : "#fff"};
+          border-radius: 12px;
+          width: 90%;
+          max-width: 600px;
+          max-height: 90vh;
+          overflow-y: auto;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+          transition: transform 0.3s ease, opacity 0.3s ease;
+          transform: translateY(100%);
+          opacity: 0;
+        }
+
+        .modal-container.opening {
+          transform: translateY(100%);
+          opacity: 0;
+        }
+
+        .modal-container.open {
+          transform: translateY(0);
+          opacity: 1;
+        }
+
+        .modal-container.closing {
+          transform: translateY(100%);
+          opacity: 0;
+        }
+
+        @media (max-width: 640px) {
+          .modal-container {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 16px 16px 0 0;
+            max-height: 85vh;
+          }
+        }
+
+        .modal-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 1rem 1.5rem;
+          border-bottom: 1px solid ${theme === "dark" ? "#333" : "#eee"};
+        }
+
+        .modal-header h2 {
+          margin: 0;
+          font-size: 1.25rem;
+          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+        }
+
+        .close-button {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: ${theme === "dark" ? "#888" : "#666"};
+          padding: 0.25rem;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .close-button:hover {
+          background: ${theme === "dark" ? "#222" : "#f0f0f0"};
+        }
+
+        .close-button svg {
+          width: 20px;
+          height: 20px;
+        }
+
+        .modal-content {
+          padding: 1rem 1.5rem;
+          max-height: calc(80vh - 130px);
+          overflow-y: auto;
+        }
+
+        .categories-section {
+          border-bottom: 1px solid ${theme === "dark" ? "#333" : "#eee"};
+          padding-bottom: 1.5rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .categories-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.75rem;
+        }
+
+        .category-button {
+          padding: 0.5rem 1rem;
+          border-radius: 30px;
+          border: 2px solid ${theme === "dark" ? "#333" : "#e5e5e5"};
+          background: transparent;
+          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-size: 0.9rem;
+        }
+
+        .category-button:hover {
+          border-color: ${primaryColor || "#0066ff"};
+          color: ${primaryColor || "#0066ff"};
+        }
+
+        .category-button.active {
+          font-weight: 600;
+        }
+
+        .filter-section {
+          margin-bottom: 1.5rem;
+        }
+
+        .filter-section h3 {
+          font-size: 1rem;
+          margin: 0 0 0.75rem;
+          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+        }
+
+        .filter-options {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .filter-option {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          cursor: pointer;
+          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+        }
+
+        .filter-option input {
+          cursor: pointer;
+        }
+
+        .filter-option span {
+          font-size: 0.95rem;
+        }
+
+        .modal-footer {
+          padding: 1rem 1.5rem;
+          border-top: 1px solid ${theme === "dark" ? "#333" : "#eee"};
+          display: flex;
+          justify-content: flex-end;
+        }
+
+        .apply-button {
+          background: rgb(249, 115, 22);
+          color: white;
+          border: none;
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: background 0.2s ease;
+        }
+
+        .apply-button:hover {
+          background: rgb(242, 151, 87);
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default FiltersModal;
+
+JobCard.js
+import React from "react";
+
+function JobCard({
+  job, // Now receives the original job object from the API
+  theme,
+  primaryColor,
+  savedJobs,
+  appliedJobs,
+  toggleSaveJob,
+  toggleApplyJob,
+  getCompanyLogo, // This function is still defined and passed from JobSeekers
+  formatDate, // This function is still defined and passed from JobSeekers
+}) {
+  // Function to format the salary display string - Moved from JobSeekers
+  const formatSalary = (salary) => {
+    if (
+      !salary ||
+      (salary.min === undefined &&
+        salary.max === undefined &&
+        !salary.isNegotiable)
+    ) {
+      return "Salary not specified";
+    }
+
+    if (salary.isNegotiable) {
+      return "Salary: Negotiable";
+    }
+
+    const hasMin = salary.min !== undefined && salary.min !== null;
+    const hasMax = salary.max !== undefined && salary.max !== null;
+    const currency = salary.currency || ""; // Use default or empty if currency is missing
+
+    // Basic check if min/max are numeric before formatting
+    const isMinNumeric = typeof salary.min === "number";
+    const isMaxNumeric = typeof salary.max === "number";
+
+    if (hasMin && isMinNumeric && hasMax && isMaxNumeric) {
+      // Format in lakhs for INR, otherwise standard currency format
+      if (currency === "INR") {
+        const minInLakhs = (salary.min / 100000).toFixed(1);
+        const maxInLakhs = (salary.max / 100000).toFixed(1);
+        return `Salary: ₹${minInLakhs}L - ₹${maxInLakhs}L`;
+      } else {
+        const formatter = new Intl.NumberFormat("en-US", {
+          // You can adjust locale
+          style: "currency",
+          currency: currency || "USD", // Default to USD if currency is empty
+          maximumFractionDigits: 0, // Adjust as needed
+          minimumFractionDigits: 0,
+        });
+        // Safely format numbers
+        const formattedMin = isMinNumeric ? formatter.format(salary.min) : "";
+        const formattedMax = isMaxNumeric ? formatter.format(salary.max) : "";
+        return `Salary: ${formattedMin} - ${formattedMax}`;
+      }
+    } else if (hasMin && isMinNumeric) {
+      const formatter = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: currency || "USD",
+        maximumFractionDigits: 0,
+        minimumFractionDigits: 0,
+      });
+      return `Salary: From ${formatter.format(salary.min)}`;
+    } else if (hasMax && isMaxNumeric) {
+      const formatter = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: currency || "USD",
+        maximumFractionDigits: 0,
+        minimumFractionDigits: 0,
+      });
+      return `Salary: Up to ${formatter.format(salary.max)}`;
+    } else {
+      // Fallback if salary object exists but min/max are not numeric
+      if (salary.isNegotiable) return "Salary: Negotiable"; // Double-check negotiable
+      return "Salary not specified";
+    }
+  };
+
+  return (
+    <div className="job-card">
+      <div className="job-header">
+        {/* Use the getCompanyLogo function passed from parent */}
+        <div className="company-logo-container">
+          {/* Pass the job object to getCompanyLogo */}
+          {getCompanyLogo(job)}
+        </div>
+        <div className="job-title-info">
+          {/* Use job.title from the original API object */}
+          <h3 className="job-title">
+            {job?.title || "Title not specified"}
+          </h3>{" "}
+          {/* Use optional chaining */}
+          {/* Use job.company from the original API object */}
+          <div className="company-name">
+            {job?.company || "Company not specified"}
+          </div>{" "}
+          {/* Use optional chaining */}
+        </div>
+        <div className="job-actions">
+          {/* Use job._id or job.id for the identifier */}
+          <button
+            className={`save-job-button ${
+              savedJobs.includes(job?._id || job?.id) ? "saved" : ""
+            }`}
+            onClick={() => toggleSaveJob(job?._id || job?.id)}
+            title={
+              savedJobs.includes(job?._id || job?.id)
+                ? "Remove from saved jobs"
+                : "Save job"
+            }
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill={
+                savedJobs.includes(job?._id || job?.id) ? primaryColor : "none"
+              }
+              stroke={
+                savedJobs.includes(job?._id || job?.id)
+                  ? primaryColor
+                  : "currentColor"
+              }
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div className="job-details">
+        <div className="detail-item">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="detail-icon"
+          >
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          {/* Use job.location from the original API object */}
+          <span>{job?.location || "Location not specified"}</span>{" "}
+          {/* Use optional chaining */}
+        </div>
+        <div className="detail-item">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="detail-icon"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          {/* Use job.createdAt from the original API object and the passed formatDate function */}
+          <span>
+            Posted{" "}
+            {job?.createdAt ? formatDate(job.createdAt) : "Date not specified"}
+          </span>{" "}
+          {/* Use optional chaining */}
+        </div>
+        <div className="detail-item">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="detail-icon"
+          >
+            <path d="M12 1v22"></path>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+          {/* Use the formatSalary function defined in this component */}
+          <span>{formatSalary(job?.salary)}</span> {/* Use optional chaining */}
+        </div>
+        {/* The experience level field is not in your provided JSON.
+            Unless your API includes 'experienceLevel', this will likely always show 'Experience not specified'. */}
+        {/* <div className="detail-item">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="detail-icon"
+          >
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+
+          <span>{job?.experienceLevel || "Experience not specified"}</span>{" "}
+
+        </div> */}
+
+        <div className="detail-item">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="detail-icon"
+          >
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          </svg>
+          {/* Use job.employmentType from the original API object */}
+          <span>{job?.employmentType || "Type not specified"}</span>{" "}
+          {/* Use optional chaining */}
+        </div>
+        <div className="detail-item">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="detail-icon"
+          >
+            <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+            <path d="M2 2l7.586 7.586"></path>
+            <circle cx="11" cy="11" r="2"></circle>
+          </svg>
+          {/* Use job.workType from the original API object */}
+          {/* Map workType values to display strings */}
+          <span>
+            {job?.workType === "remote"
+              ? "Remote"
+              : job?.workType === "hybrid"
+              ? "Hybrid"
+              : job?.workType === "onsite"
+              ? "On-site"
+              : "Work type not specified"}
+          </span>{" "}
+          {/* Use optional chaining */}
+        </div>
+      </div>
+
+      <div className="job-footer">
+        <div className="job-metadata">
+          {/* Use job.createdAt from the original API object and the passed formatDate function */}
+          <span className="job-posted">
+            Posted on{" "}
+            {job?.createdAt ? formatDate(job.createdAt) : "Date not specified"}
+          </span>{" "}
+          {/* Use optional chaining */}
+        </div>
+        <div className="action-buttons">
+          {/* Use job._id or job.id for the identifier */}
+          <button
+            className={`save-button ${
+              savedJobs.includes(job?._id || job?.id) ? "saved" : ""
+            }`}
+            onClick={() => toggleSaveJob(job?._id || job?.id)}
+          >
+            {savedJobs.includes(job?._id || job?.id) ? "Saved" : "Save"}
+          </button>
+          {/* Use job.applicationUrl from the original API object */}
+          <a
+            href={job?.applicationUrl} // Use optional chaining
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`apply-button ${
+              appliedJobs.includes(job?._id || job?.id) ? "applied" : ""
+            }`}
+            style={{
+              backgroundColor: appliedJobs.includes(job?._id || job?.id)
+                ? "#22c55e"
+                : primaryColor,
+            }}
+            onClick={() => toggleApplyJob(job?._id || job?.id)}
+          >
+            Apply
+          </a>
+        </div>
+      </div>
+
+      <style jsx>{`
+        .job-card {
+          background: ${theme === "dark" ? "#1a1a1a" : "#fff"};
+          border-radius: 12px;
+          box-shadow: 0 4px 12px
+            rgba(0, 0, 0, ${theme === "dark" ? "0.3" : "0.1"});
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          padding: 1.25rem;
+          height: 100%;
+          border: 1px solid ${theme === "dark" ? "#2d2d2d" : "#e5e5e5"};
+        }
+
+        .job-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 16px
+            rgba(0, 0, 0, ${theme === "dark" ? "0.4" : "0.15"});
+        }
+
+        .job-header {
+          display: flex;
+          align-items: center;
+          margin-bottom: 0.8rem;
+          position: relative;
+        }
+
+        .company-logo-container {
+          width: 40px;
+          height: 40px;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          margin-right: 0.75rem;
+          flex-shrink: 0;
+          background: ${theme === "dark" ? "#2d2d2d" : "#f5f5f5"};
+          border: 1px solid ${theme === "dark" ? "#3d3d3d" : "#e0e0e0"};
+        }
+
+        .company-logo {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+
+        .company-logo-placeholder {
+          width: 100%;
+          height: 100%;
+          display: flex; /* Changed from none */
+          align-items: center;
+          justify-content: center;
+          font-size: 1rem;
+          font-weight: bold;
+          color: ${theme === "dark" ? "#aaa" : "#555"};
+        }
+        /* Style for the parent container when image fails */
+        .company-logo-container.placeholder-fallback .company-logo {
+          display: none; /* Hide the broken image */
+        }
+        .company-logo-container.placeholder-fallback .company-logo-placeholder {
+          display: flex; /* Show the placeholder */
+        }
+        /* Initial state where placeholder is shown if no URL */
+        .company-logo-container:not(.placeholder-fallback) .company-logo {
+          display: block; /* Show image if URL exists and no error */
+        }
+        .company-logo-container:not(.placeholder-fallback)
+          .company-logo-placeholder {
+          display: none; /* Hide placeholder if URL exists and no error */
+        }
+
+        .job-title-info {
+          flex: 1;
+          min-width: 0;
+          padding-right: 40px;
+        }
+
+        .job-title {
+          font-size: 1.1rem;
+          font-weight: 600;
+          margin: 0 0 0.2rem;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+          width: 100%;
+        }
+
+        .company-name {
+          font-size: 0.85rem;
+          opacity: 0.85;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          color: ${theme === "dark" ? "#ccc" : "#333"};
+        }
+
+        .job-actions {
+          position: absolute;
+          top: 0;
+          right: 0;
+          z-index: 1;
+        }
+
+        .save-job-button {
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 0.4rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: transform 0.2s ease;
+        }
+        .save-job-button:hover {
+          transform: scale(1.1);
+        }
+
+        .save-job-button svg {
+          width: 20px;
+          height: 20px;
+          transition: all 0.3s ease;
+        }
+
+        .job-details {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.6rem;
+          margin-bottom: 1rem;
+          padding-bottom: 1rem;
+        }
+
+        .detail-item {
+          display: flex;
+          align-items: center;
+          font-size: 0.8rem;
+          padding: 0.3rem 0.6rem;
+          background: ${theme === "dark" ? "#2d2d2d" : "#f5f5f5"};
+          border-radius: 20px;
+          color: ${theme === "dark" ? "#eee" : "#0a0a0a"};
+          box-shadow: 0 1px 3px
+            rgba(0, 0, 0, ${theme === "dark" ? "0.2" : "0.05"});
+        }
+
+        .detail-icon {
+          width: 14px;
+          height: 14px;
+          margin-right: 0.4rem;
+          opacity: 0.8;
+          stroke: ${theme === "dark" ? "#bbb" : "#555"};
+        }
+
+        .job-footer {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-top: auto;
+          padding-top: 0.8rem;
+          border-top: 1px solid ${theme === "dark" ? "#2d2d2d" : "#e5e5e5"};
+        }
+
+        .job-metadata {
+          font-size: 0.75rem;
+          opacity: 0.9;
+          color: ${theme === "dark" ? "#bbb" : "#555"};
+        }
+
+        .action-buttons {
+          display: flex;
+          gap: 0.8rem;
+        }
+
+        .save-button {
+          padding: 0.5rem 0.8rem;
+          border-radius: 6px;
+          border: 1.5px solid ${theme === "dark" ? "#555" : "#ddd"};
+          background: transparent;
+          color: ${theme === "dark" ? "#eee" : "#333"};
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-size: 0.8rem;
+        }
+
+        .save-button:hover {
+          border-color: ${primaryColor};
+          color: ${primaryColor};
+        }
+
+        .save-button.saved {
+          border-color: ${primaryColor};
+          color: ${primaryColor};
+          background-color: ${primaryColor}15;
+        }
+
+        .apply-button {
+          padding: 0.5rem 0.8rem;
+          border-radius: 6px;
+          border: none;
+          color: white;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          white-space: nowrap;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          font-size: 0.8rem;
+          background-color: ${primaryColor};
+        }
+
+        .apply-button:hover {
+          opacity: 0.9;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .apply-button.applied {
+          background-color: #22c55e !important;
+        }
+
+        @media (max-width: 767px) {
+          .job-card {
+            padding: 1rem;
+            border-radius: 10px;
+          }
+
+          .company-logo-container {
+            width: 36px;
+            height: 36px;
+            margin-right: 0.7rem;
+          }
+
+          .job-title {
+            font-size: 1rem;
+          }
+          .job-title-info {
+            padding-right: 30px;
+          }
+          .company-name {
+            font-size: 0.8rem;
+          }
+
+          .save-job-button svg {
+            width: 18px;
+            height: 18px;
+          }
+
+          .job-details {
+            gap: 0.5rem;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.8rem;
+          }
+
+          .detail-item {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+          }
+
+          .detail-icon {
+            width: 12px;
+            height: 12px;
+            margin-right: 0.3rem;
+          }
+
+          .job-footer {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.8rem;
+            padding-top: 0.7rem;
+          }
+
+          .action-buttons {
+            width: 100%;
+          }
+
+          .save-button,
+          .apply-button {
+            flex: 1;
+            text-align: center;
+            padding: 0.5rem;
+            font-size: 0.75rem;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export default JobCard;
+
+JobCardSkeleton.js
+import React from "react";
+
+function JobCardSkeleton({ theme }) {
+  const baseColor = theme === "dark" ? "#1a1a1a" : "#f0f0f0";
+  const highlightColor = theme === "dark" ? "#2d2d2d" : "#f7f7f7";
+
+  return (
+    <div
+      className={`job-card-skeleton ${
+        theme === "dark" ? "job-card-skeleton-dark" : ""
+      }`}
+    >
+      <div className="skeleton-header">
+        <div className="skeleton-logo pulse"></div>
+        <div className="skeleton-title-info">
+          <div className="skeleton-title pulse"></div>
+          <div className="skeleton-company pulse"></div>
+        </div>
+        <div className="skeleton-action pulse"></div>
+      </div>
+      <div className="skeleton-details">
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="skeleton-detail-item pulse"
+            style={{
+              width: `${Math.random() * 30 + 40}%`, // Random width between 40-70%
+              animationDelay: `${i * 0.1}s`, // Staggered animation
+            }}
+          ></div>
+        ))}
+      </div>
+      <div className="skeleton-footer">
+        <div className="skeleton-metadata pulse"></div>
+        <div className="skeleton-actions">
+          <div className="skeleton-button pulse"></div>
+          <div className="skeleton-button pulse"></div>
+        </div>
+      </div>
+      <style jsx>{`
+        .job-card-skeleton {
+          background: ${baseColor};
+          border-radius: 12px;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          padding: 1.5rem;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          transition: all 0.3s ease;
+        }
+
+        .job-card-skeleton-dark {
+          background: ${baseColor};
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .skeleton-header {
+          display: flex;
+          align-items: center;
+          margin-bottom: 1rem;
+          gap: 0.8rem;
+        }
+
+        .skeleton-logo {
+          width: 40px;
+          height: 40px;
+          border-radius: 8px;
+          background-color: ${highlightColor};
+          flex-shrink: 0;
+        }
+
+        .skeleton-title-info {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.4rem;
+        }
+
+        .skeleton-title {
+          width: 70%;
+          height: 1.2rem;
+          background-color: ${highlightColor};
+          border-radius: 4px;
+        }
+
+        .skeleton-company {
+          width: 50%;
+          height: 0.95rem;
+          background-color: ${highlightColor};
+          border-radius: 4px;
+        }
+
+        .skeleton-action {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background-color: ${highlightColor};
+        }
+
+        .skeleton-details {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.8rem;
+          margin-bottom: 1.2rem;
+          padding-bottom: 1.2rem;
+          border-bottom: 1px solid ${theme === "dark" ? "#2d2d2d" : "#e5e5e5"};
+        }
+
+        .skeleton-detail-item {
+          height: 1rem;
+          background-color: ${highlightColor};
+          border-radius: 16px;
+        }
+
+        .skeleton-footer {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-top: auto;
+          padding-top: 1rem;
+          border-top: 1px solid ${theme === "dark" ? "#2d2d2d" : "#e5e5e5"};
+        }
+
+        .skeleton-metadata {
+          width: 60%;
+          height: 0.85rem;
+          background-color: ${highlightColor};
+          border-radius: 4px;
+        }
+
+        .skeleton-actions {
+          display: flex;
+          gap: 0.8rem;
+        }
+
+        .skeleton-button {
+          width: 50px;
+          height: 2.1rem;
+          background-color: ${highlightColor};
+          border-radius: 5px;
+        }
+
+        /* Pulse animation */
+        .pulse {
+          animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+          0% {
+            opacity: 0.6;
+          }
+          50% {
+            opacity: 0.3;
+          }
+          100% {
+            opacity: 0.6;
+          }
+        }
+
+        /* Add slight movement to make it feel more alive */
+        .job-card-skeleton {
+          animation: subtle-move 3s infinite ease-in-out;
+        }
+
+        @keyframes subtle-move {
+          0% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-2px);
+          }
+          100% {
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export default JobCardSkeleton;
+
+Jobseekers.js
+import React, { useState, useEffect, useCallback } from "react";
+import JobSeekersHeader from "./JobSeekersHeader";
+import SearchSection from "./SearchSection";
+import FiltersModal from "./FilterModal";
+import JobCard from "./JobCard"; // We will update this next
+import Pagination from "./Pagination";
+import NoResults from "./NoResults";
+import Loading from "./Loading";
+import Error from "./Error";
+import JobCardSkeleton from "./JobCardSkeleton";
+
+function JobSeekers({ theme = "light", color = "blue" }) {
+  const primaryColor =
+    color === "blue"
+      ? "#3b82f6"
+      : color === "purple"
+      ? "#a855f7"
+      : color === "green"
+      ? "#10b981"
+      : color === "orange"
+      ? "#f97316"
+      : "#3b82f6";
+
+  // State for managing filters and search
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [minimumLoading, setMinimumLoading] = useState(true);
+  const [dataLoaded, setDataLoaded] = useState(false);
+  const [filters, setFilters] = useState({
+    salaryRange: "any",
+    experienceLevel: "any", // Note: Experience Level data is not in your sample JSON
+    jobType: "any",
+    location: "any",
+    remote: "any", // Maps to workType
+    isPaid: "any", // Note: Paid status is not explicitly in your sample JSON
+  });
+  const [savedJobs, setSavedJobs] = useState([]);
+  const [appliedJobs, setAppliedJobs] = useState([]);
+
+  // API Data and Pagination state
+  const [allJobs, setAllJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
+  const [showFilters, setShowFilters] = useState(false); // This state seems unused? FilterModal is controlled by isFiltersModalOpen
+  const [totalJobs, setTotalJobs] = useState(0);
+
+  // Categories - You can refine these based on keywords/titles
+  const categories = [
+    { id: "all", name: "All Jobs" },
+    { id: "tech", name: "Technology" },
+    { id: "design", name: "Design" },
+    { id: "marketing", name: "Marketing" },
+    { id: "business", name: "Business" },
+    { id: "engineering", name: "Engineering" },
+  ];
+
+  // Filter Options - Ensure these align with your API data/filtering capabilities
+  const filterOptions = {
+    salaryRange: [
+      { value: "any", label: "Any Salary" },
+      // Assuming salary values are in INR based on your JSON sample
+      { value: "0-500000", label: "Up to ₹5L" }, // Added smaller ranges for realism
+      { value: "500001-1000000", label: "₹5L - ₹10L" },
+      { value: "1000001-1500000", label: "₹10L - ₹15L" },
+      { value: "1500001-2000000", label: "₹15L - ₹20L" },
+      { value: "2000001-3000000", label: "₹20L - ₹30L" },
+      { value: "3000001+", label: "₹30L+" },
+    ],
+    // Note: experienceLevel is not in your sample JSON structure
+    experienceLevel: [
+      { value: "any", label: "Any Experience" },
+      { value: "entry_level", label: "Entry Level" }, // Adjusted names to common API formats
+      { value: "mid_level", label: "Mid Level" },
+      { value: "senior_level", label: "Senior Level" },
+      { value: "director", label: "Director" },
+      { value: "executive", label: "Executive" },
+    ],
+    jobType: [
+      { value: "any", label: "Any Type" },
+      { value: "full-time", label: "Full-Time" },
+      { value: "part-time", label: "Part-Time" },
+      { value: "contract", label: "Contract" },
+      { value: "temporary", label: "Temporary" },
+      { value: "internship", label: "Internship" },
+    ],
+    location: [
+      { value: "any", label: "Any Location" },
+      { value: "Bengaluru, Karnataka, IND", label: "Bengaluru" }, // Match exact string from API
+      { value: "New Delhi, Delhi, IND", label: "New Delhi" }, // Example exact string
+      { value: "Mumbai, Maharashtra, IND", label: "Mumbai" }, // Example exact string
+      { value: "Hyderabad, Telangana, IND", label: "Hyderabad" }, // Example exact string
+      { value: "Chennai, Tamil Nadu, IND", label: "Chennai" }, // Example exact string
+      { value: "Pune, Maharashtra, IND", label: "Pune" }, // Example exact string
+      { value: "San Francisco, CA", label: "San Francisco" }, // Example exact string
+      { value: "New York, NY", label: "New York" }, // Example exact string
+      { value: "London, UK", label: "London" }, // Example exact string
+      // You might need to fetch locations dynamically based on available data
+    ],
+    remote: [
+      // Maps to workType
+      { value: "any", label: "Any Work Type" },
+      { value: "remote", label: "Remote" },
+      { value: "hybrid", label: "Hybrid" },
+      { value: "onsite", label: "On-site" },
+    ],
+    // Note: isPaid is not in your sample JSON structure. This might be for Internships?
+    isPaid: [
+      { value: "any", label: "Any Payment" },
+      { value: "true", label: "Paid" },
+      { value: "false", label: "Unpaid" },
+    ],
+  };
+
+  const fetchJobs = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    setMinimumLoading(true);
+    setDataLoaded(false);
+
+    const startTime = Date.now();
+
+    try {
+      // You might want to add query parameters here later based on filters/pagination
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/jobs?page=${currentPage}&limit=10`
+      );
+      if (!response.ok) {
+        throw new Error(
+          `API error: ${response.statusText} (Status: ${response.status})`
+        );
+      }
+
+      const result = await response.json();
+
+      if (result?.success && result?.jobs) {
+        setAllJobs(result.jobs); // Keep original jobs for filtering/displaying current page
+        // Note: Pagination should ideally be handled by the API based on filters/search
+        // The current filtering/pagination logic is purely frontend
+        setTotalPages(result.totalPages || 1); // Use API totalPages if available
+        setTotalJobs(result.totalJobs || result.jobs.length); // Use API totalJobs if available
+        setCurrentPage(result.currentPage || 1); // Use API currentPage if available
+      } else {
+        setAllJobs([]);
+        setTotalPages(0);
+        setTotalJobs(0);
+        setCurrentPage(1);
+      }
+    } catch (err) {
+      console.error("Error fetching jobs:", err); // Log the error
+      setError(err.message);
+      setAllJobs([]);
+      setTotalPages(0);
+      setTotalJobs(0);
+      setCurrentPage(1);
+    } finally {
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(1000 - elapsedTime, 0); // Reduced minimum loading time slightly
+
+      setTimeout(() => {
+        setLoading(false);
+        setDataLoaded(true);
+        setMinimumLoading(false);
+      }, remainingTime);
+    }
+  }, [currentPage]); // Add currentPage to dependencies
+
+  useEffect(() => {
+    fetchJobs();
+  }, [fetchJobs]);
+
+  // Effect to refetch jobs when page changes
+  useEffect(() => {
+    // This effect is triggered by handlePageChange updating currentPage
+    fetchJobs();
+  }, [currentPage, fetchJobs]); // Added fetchJobs to dependencies
+
+  const handleFilterChange = (filterType, value) => {
+    setFilters({
+      ...filters,
+      [filterType]: value,
+    });
+    setCurrentPage(1); // Reset to first page when filters change
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      salaryRange: "any",
+      experienceLevel: "any",
+      jobType: "any",
+      location: "any",
+      remote: "any",
+      isPaid: "any",
+    });
+    setSearchQuery("");
+    setActiveCategory("all"); // Reset category
+    setCurrentPage(1); // Reset to first page
+  };
+
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+      // Note: If filtering is done backend, simply changing page here is enough.
+      // If filtering is frontend, you might need to re-apply filters after fetching the new page data.
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const toggleSaveJob = (jobId) => {
+    if (savedJobs.includes(jobId)) {
+      setSavedJobs(savedJobs.filter((id) => id !== jobId));
+    } else {
+      setSavedJobs([...savedJobs, jobId]);
+    }
+  };
+
+  const toggleApplyJob = (jobId) => {
+    if (appliedJobs.includes(jobId)) {
+      setAppliedJobs(appliedJobs.filter((id) => id !== jobId));
+    } else {
+      setAppliedJobs([...appliedJobs, jobId]);
+    }
+  };
+
+  // Modified getCompanyLogo to expect job.companyLogoUrl
+  const getCompanyLogo = (job) => {
+    if (job?.companyLogoUrl) {
+      // Use optional chaining for safety
+      return (
+        <img
+          src={job.companyLogoUrl}
+          alt={`${job.company || "Company"} logo`} // Use job.company for alt text
+          className="company-logo"
+          onError={(e) => {
+            e.target.style.visibility = "hidden";
+            e.target.parentNode.classList.add("placeholder-fallback");
+          }} // Handle image errors
+        />
+      );
+    }
+
+    // If no logo URL, create a placeholder with initials
+    // Use job.company for initials
+    if (!job || !job.company) {
+      return <div className="company-logo-placeholder">??</div>;
+    }
+
+    const initials = job.company
+      .split(" ")
+      .map((name) => name.charAt(0))
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
+
+    return <div className="company-logo-placeholder">{initials}</div>;
+  };
+
+  // formatDate function will be used directly in JobCard now
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "Date not specified"; // Added check
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Invalid Date"; // Added check for invalid date
+    return date.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  // Frontend filtering logic - This will only filter the jobs currently in `allJobs` state
+  const filteredJobs = useCallback(() => {
+    if (!allJobs) return [];
+
+    let filtered = [...allJobs];
+
+    // Filter by search query (uses original API property names)
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (job) =>
+          job.title?.toLowerCase().includes(query) || // Use optional chaining
+          job.company?.toLowerCase().includes(query) || // Use optional chaining
+          (job.skills &&
+            Array.isArray(job.skills) && // Check if skills is an array
+            job.skills.some((skill) => skill.toLowerCase().includes(query)))
+      );
+    }
+
+    // Filter by category (uses original API property names)
+    if (activeCategory !== "all") {
+      const categoryKeywords = {
+        tech: [
+          "software",
+          "developer",
+          "engineer",
+          "IT",
+          "tech",
+          "coding",
+          "programming",
+        ],
+        design: [
+          "design",
+          "UI",
+          "UX",
+          "graphic",
+          "creative",
+          "artist",
+          "Figma",
+          "Adobe",
+        ],
+        marketing: [
+          "marketing",
+          "SEO",
+          "SEM",
+          "branding",
+          "advertising",
+          "content",
+        ],
+        business: [
+          "business",
+          "finance",
+          "accounting",
+          "management",
+          "operations",
+          "sales",
+        ],
+        engineering: [
+          "engineering",
+          "mechanical",
+          "electrical",
+          "civil",
+          "hardware",
+        ],
+      };
+
+      const keywords = categoryKeywords[activeCategory] || [];
+      filtered = filtered.filter((job) =>
+        keywords.some(
+          (keyword) =>
+            job.title?.toLowerCase().includes(keyword) || // Use optional chaining
+            (job.skills &&
+              Array.isArray(job.skills) && // Check if skills is an array
+              job.skills.some((skill) => skill.toLowerCase().includes(keyword)))
+        )
+      );
+    }
+
+    // Filter by location (uses original API property name)
+    if (filters.location !== "any") {
+      // This filter requires an exact match to the location string from the API ("City, State, Country")
+      filtered = filtered.filter((job) => job.location === filters.location);
+    }
+
+    // Filter by work type (remote/hybrid/onsite) (uses original API property name)
+    if (filters.remote !== "any") {
+      filtered = filtered.filter((job) => job.workType === filters.remote);
+    }
+
+    // Filter by employment type (uses original API property name)
+    if (filters.jobType !== "any") {
+      filtered = filtered.filter(
+        (job) => job.employmentType === filters.jobType
+      );
+    }
+
+    // Filter by salary range (uses original API property names)
+    if (filters.salaryRange !== "any" && filters.salaryRange) {
+      const [minStr, maxStr] = filters.salaryRange.split("-");
+      const min = Number(minStr);
+      const max = Number(maxStr); // NaN if maxStr is undefined (for "+")
+
+      filtered = filtered.filter((job) => {
+        if (
+          !job.salary ||
+          job.salary.min === undefined ||
+          job.salary.min === null
+        )
+          return false; // Ensure salary.min exists
+
+        const salaryMin = job.salary.min;
+
+        if (filters.salaryRange.endsWith("+")) {
+          // For "+", check if salaryMin is greater than or equal to the min value
+          return salaryMin >= min;
+        }
+
+        // For ranges like "min-max", check if salaryMin is within the range
+        return salaryMin >= min && salaryMin <= max; // Use min and max numbers
+      });
+    }
+
+    // Note: experienceLevel and isPaid filters are included but not fully implemented
+    // as the corresponding data is not present in your sample JSON.
+
+    return filtered;
+  }, [allJobs, searchQuery, activeCategory, filters]); // Add dependencies
+
+  const getCurrentlyDisplayed = () => {
+    const filtered = filteredJobs();
+    return filtered.length;
+  };
+
+  const showSkeleton = minimumLoading; // Show skeleton only during minimum loading
+  const showContent = dataLoaded && !loading && !minimumLoading;
+  const hasResults = filteredJobs().length > 0;
+
+  return (
+    <div className={`job-seekers-container ${theme}`}>
+      <JobSeekersHeader theme={theme} primaryColor={primaryColor} />
+
+      <SearchSection
+        theme={theme}
+        primaryColor={primaryColor}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        showFilters={showFilters} // This prop might be for a direct toggle button? Modal is used now.
+        setShowFilters={() => setIsFiltersModalOpen(true)} // Button opens modal
+        filters={filters}
+        resetFilters={resetFilters}
+      />
+
+      {/* Filters Modal */}
+      <FiltersModal
+        theme={theme}
+        filters={filters}
+        handleFilterChange={handleFilterChange}
+        filterOptions={filterOptions}
+        isOpen={isFiltersModalOpen}
+        onClose={() => setIsFiltersModalOpen(false)}
+        categories={categories}
+        activeCategory={activeCategory}
+        setActiveCategory={setActiveCategory}
+        primaryColor={primaryColor}
+      />
+
+      <section className="jobs-section">
+        {/* Show skeleton only while loading or minimum loading */}
+        {loading || minimumLoading ? (
+          // Placeholder for skeleton loading indicator area
+          <div className="results-summary">
+            <span className="results-count">Loading jobs...</span>
+          </div>
+        ) : (
+          <div className="results-summary">
+            <span className="results-count">
+              Showing {getCurrentlyDisplayed()} of {totalJobs} jobs
+              {totalPages > 1 && ` (Page ${currentPage} of ${totalPages})`}
+            </span>
+            {/* Sort options might need backend implementation to be effective across pages */}
+            <div className="sort-options">
+              <span>Sort by: </span>
+              <select
+                className="sort-select"
+                // Add onChange handler to handle sorting (requires backend or complex frontend sort)
+              >
+                <option value="relevance">Relevance</option>
+                <option value="date">Date</option>
+                {/* Salary sorting is only meaningful if you have all jobs or if backend supports it */}
+                {/* <option value="salary-high">Salary (High to Low)</option>
+                     <option value="salary-low">Salary (Low to High)</option> */}
+              </select>
+            </div>
+          </div>
+        )}
+
+        <div className="jobs-list">
+          {
+            showSkeleton ? (
+              // Render skeletons during initial load or minimum loading
+              Array.from({ length: 6 }).map(
+                (
+                  _,
+                  index // Render more skeletons
+                ) => <JobCardSkeleton key={`skeleton-${index}`} theme={theme} />
+              )
+            ) : error ? (
+              // Show error if fetching failed
+              <Error error={error} />
+            ) : !hasResults && dataLoaded ? (
+              // Show no results if no jobs found after loading and filtering
+              <NoResults
+                primaryColor={primaryColor}
+                resetFilters={resetFilters}
+              />
+            ) : showContent && hasResults ? (
+              // Display jobs only when data is loaded, not loading, and there are results
+              filteredJobs().map((job) => (
+                <JobCard
+                  key={job._id || job.id} // Use _id or id for key
+                  job={job} // *** Pass the original job object ***
+                  primaryColor={primaryColor}
+                  theme={theme}
+                  savedJobs={savedJobs}
+                  toggleSaveJob={toggleSaveJob}
+                  appliedJobs={appliedJobs}
+                  toggleApplyJob={toggleApplyJob}
+                  getCompanyLogo={getCompanyLogo}
+                  formatDate={formatDate} // Still pass formatDate if needed in JobCard
+                  // formatSalary prop is REMOVED
+                />
+              ))
+            ) : null /* Or render nothing if not loading, no error, no results, and not yet loaded */
+          }
+        </div>
+
+        {/* Show pagination only if there are filtered jobs and more than one page */}
+        {hasResults && totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
+            primaryColor={primaryColor}
+          />
+        )}
+      </section>
+
+      <style jsx>{`
+        .job-seekers-container {
+          padding: 2rem 5%;
+          max-width: 1800px;
+          margin: 0 auto;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+          min-height: 100vh; /* Ensure container takes at least full viewport height */
+          box-sizing: border-box; /* Include padding in width/height */
+        }
+
+        .job-seekers-container.dark {
+          background-color: #0a0a0a;
+          color: #ffffff;
+        }
+
+        .job-seekers-container.light {
+          background-color: #ffffff;
+          color: #0a0a0a;
+        }
+
+        .jobs-section {
+          margin-top: 2rem;
+        }
+
+        .results-summary {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+          padding: 0 0.5rem;
+          min-height: 28px; /* Prevent layout shift while loading */
+        }
+
+        .results-count {
+          font-weight: 500;
+          font-size: 1rem;
+        }
+
+        .sort-options {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .sort-select {
+          padding: 0.5rem 1rem;
+          border-radius: 6px;
+          border: 1px solid ${theme === "dark" ? "#333" : "#e5e5e5"};
+          background: ${theme === "dark" ? "#111" : "#fff"};
+          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+          font-size: 0.9rem;
+          cursor: pointer;
+          transition: border-color 0.2s ease;
+        }
+
+        .sort-select:hover {
+          border-color: ${primaryColor};
+        }
+
+        .jobs-list {
+          display: grid;
+          gap: 1.5rem;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+
+        .company-logo {
+          width: 40px;
+          height: 40px;
+          object-fit: contain;
+          border-radius: 8px;
+        }
+        /* Style for the parent container when image fails */
+        .company-logo-container.placeholder-fallback .company-logo {
+          display: none; /* Hide the broken image */
+        }
+        .company-logo-container.placeholder-fallback .company-logo-placeholder {
+          display: flex; /* Show the placeholder */
+        }
+
+        .company-logo-placeholder {
+          width: 40px;
+          height: 40px;
+          border-radius: 8px;
+          background-color: ${primaryColor};
+          color: white;
+          display: none; /* Hide by default, shown by .placeholder-fallback */
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+          font-size: 16px;
+        }
+
+        /* Responsive grid layout */
+        @media (min-width: 1800px) {
+          .jobs-list {
+            grid-template-columns: repeat(4, 1fr);
+          }
+
+          .job-seekers-container {
+            padding: 2.5rem 6%;
+          }
+        }
+
+        @media (max-width: 1799px) and (min-width: 1400px) {
+          .jobs-list {
+            grid-template-columns: repeat(4, 1fr);
+          }
+        }
+
+        @media (max-width: 1399px) and (min-width: 1200px) {
+          .jobs-list {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+
+        @media (max-width: 1199px) and (min-width: 900px) {
+          .jobs-list {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+
+        @media (max-width: 899px) and (min-width: 600px) {
+          .jobs-list {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .job-seekers-container {
+            padding: 2rem 4%;
+          }
+        }
+
+        @media (max-width: 599px) {
+          .jobs-list {
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+          }
+
+          .job-seekers-container {
+            padding: 1.25rem 3%;
+          }
+
+          .results-summary {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+            margin-bottom: 1.25rem;
+          }
+
+          .sort-options {
+            width: 100%;
+          }
+
+          .sort-select {
+            flex: 1;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .job-seekers-container {
+            padding: 1rem 2%;
+          }
+
+          .jobs-list {
+            gap: 1rem;
+          }
+
+          .results-count {
+            font-size: 0.9rem;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export default JobSeekers;
+
+JobseekersHeader.js
+import React from "react";
+
+function JobSeekersHeader({ theme, primaryColor }) {
+  return (
+    <div className="job-seekers-header">
+      <h1 className="job-seekers-title">
+        Job <span style={{ color: primaryColor }}>Seekers</span> Platform
+      </h1>
+      <div
+        className="accent-line"
+        style={{ backgroundColor: primaryColor }}
+      ></div>
+      <p className="job-seekers-subtitle">
+        Find your perfect career opportunity with our advanced job search
+        platform.
+      </p>
+
+      <style jsx>{`
+        .job-seekers-header {
+          margin-bottom: 3rem;
+          text-align: center;
+        }
+
+        .job-seekers-title {
+          font-size: 2.5rem;
+          font-weight: 700;
+          margin-bottom: 0.5rem;
+          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+        }
+
+        .accent-line {
+          height: 4px;
+          width: 60px;
+          border-radius: 2px;
+          margin: 0 auto 1.5rem;
+        }
+
+        .job-seekers-subtitle {
+          font-size: 1.2rem;
+          max-width: 800px;
+          margin: 0 auto;
+          opacity: 0.9;
+          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+        }
+
+        @media (max-width: 767px) {
+          .job-seekers-title {
+            font-size: 2rem;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export default JobSeekersHeader;
+
+Loading.js
+import React from "react";
+
+function Loading({ theme, primaryColor }) {
+  return (
+    <div className="loading">
+      <div
+        className="loading-spinner"
+        style={{ borderColor: primaryColor }}
+      ></div>
+      Loading jobs...
+
+      <style jsx>{`
+        .loading {
+          text-align: center;
+          padding: 2rem;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 1rem;
+          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+        }
+
+        .loading-spinner {
+          width: 40px;
+          height: 40px;
+          border: 4px solid rgba(0, 0, 0, 0.1);
+          border-radius: 50%;
+          border-top-color: ${primaryColor};
+          animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export default Loading;
+
+Noresult.js
+import React from "react";
+
+function NoResults({ theme, primaryColor, resetFilters }) {
+  return (
+    <div className="no-results">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke={primaryColor}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="no-results-icon"
+      >
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <h3>No jobs found</h3>
+      <p>Try different keywords or adjust your filters</p>
+      <button
+        className="clear-search"
+        onClick={resetFilters}
+        style={{ color: primaryColor }}
+      >
+        Clear filters
+      </button>
+
+      <style jsx>{`
+        .no-results {
+          text-align: center;
+          padding: 3rem 0;
+          width: 100%;
+        }
+
+        .no-results-icon {
+          width: 48px;
+          height: 48px;
+          margin-bottom: 1rem;
+        }
+
+        .no-results h3 {
+          font-size: 1.3rem;
+          margin-bottom: 0.5rem;
+          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+        }
+
+        .no-results p {
+          opacity: 0.7;
+          margin-bottom: 1.5rem;
+          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+        }
+
+        .clear-search {
+          background: none;
+          border: none;
+          font-weight: 500;
+          cursor: pointer;
+          text-decoration: underline;
+          padding: 0.5rem 1rem;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export default NoResults;
+
+Pagination.js
+import React from "react";
+
+function Pagination({
+  currentPage,
+  totalPages,
+  handlePageChange,
+  primaryColor,
+  theme,
+}) {
+  const renderPagination = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`pagination-button ${currentPage === i ? "active" : ""}`}
+          style={{
+            backgroundColor: currentPage === i ? primaryColor : "transparent",
+            color: currentPage === i ? "#fff" : primaryColor,
+          }}
+        >
+          {i}
+        </button>
+      );
+    }
+
+    return (
+      <div className="pagination-controls">
+        <button
+          onClick={() => handlePageChange(1)}
+          disabled={currentPage === 1}
+          className="pagination-button"
+          style={{ borderColor: primaryColor, color: primaryColor }}
+        >
+          First
+        </button>
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="pagination-button"
+          style={{ borderColor: primaryColor, color: primaryColor }}
+        >
+          Previous
+        </button>
+
+        {startPage > 1 && <span className="pagination-ellipsis">...</span>}
+
+        {pages}
+
+        {endPage < totalPages && (
+          <span className="pagination-ellipsis">...</span>
+        )}
+
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="pagination-button"
+          style={{ borderColor: primaryColor, color: primaryColor }}
+        >
+          Next
+        </button>
+        <button
+          onClick={() => handlePageChange(totalPages)}
+          disabled={currentPage === totalPages}
+          className="pagination-button"
+          style={{ borderColor: primaryColor, color: primaryColor }}
+        >
+          Last
+        </button>
+      </div>
+    );
+  };
+
+  return (
+    <div className="pagination-container">
+      {renderPagination()}
+
+      <style jsx>{`
+        .pagination-container {
+          width: 100%;
+          margin-top: 2rem;
+        }
+
+        .pagination-controls {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+        }
+
+        .pagination-button {
+          padding: 0.6rem 1rem;
+          border-radius: 6px;
+          border: 1px solid ${primaryColor};
+          background: transparent;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          min-width: 40px;
+          text-align: center;
+        }
+
+        .pagination-button:hover:not(:disabled) {
+          background-color: ${primaryColor}10;
+        }
+
+        .pagination-button:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        .pagination-button.active {
+          background-color: ${primaryColor};
+          color: white;
+        }
+
+        .pagination-ellipsis {
+          padding: 0.6rem 0;
+          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export default Pagination;
+
+SearchSection.js
+import React from "react";
+
+function SearchSection({
+  theme,
+  primaryColor,
+  searchQuery,
+  setSearchQuery,
+  showFilters,
+  setShowFilters,
+  filters,
+  resetFilters,
+}) {
+  return (
+    <section className="search-section">
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder="Search for jobs, companies, or keywords..."
+          className="search-input"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <button
+          className="search-button"
+          style={{ backgroundColor: primaryColor }}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+      </div>
+      <div className="filter-toggle">
+        <button
+          className="filter-button"
+          onClick={() => setShowFilters(!showFilters)}
+          style={{ color: primaryColor }}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="filter-icon"
+          >
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          {showFilters ? "Hide Filters" : "Show Filters"}
+        </button>
+        {(filters.salaryRange !== "any" ||
+          filters.experienceLevel !== "any" ||
+          filters.jobType !== "any" ||
+          filters.location !== "any" ||
+          filters.remote !== "any" ||
+          filters.country !== "us" ||
+          searchQuery !== "") && (
+          <button className="reset-filters-button" onClick={resetFilters}>
+            Reset Filters
+          </button>
+        )}
+      </div>
+
+      <style jsx>{`
+        .search-section {
+          margin-bottom: 2rem;
+        }
+
+        .search-container {
+          display: flex;
+          max-width: 800px;
+          margin: 0 auto;
+          position: relative;
+        }
+
+        .search-input {
+          flex-grow: 1;
+          padding: 1rem 1.5rem;
+          border-radius: 30px;
+          border: 2px solid ${theme === "dark" ? "#333" : "#e5e5e5"};
+          background: ${theme === "dark" ? "#111" : "#fff"};
+          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+          font-size: 1rem;
+          transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+          outline: none;
+          border-color: ${primaryColor};
+          box-shadow: 0 0 0 3px ${primaryColor}33;
+        }
+
+        .search-button {
+          position: absolute;
+          right: 8px;
+          top: 8px;
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          cursor: pointer;
+          transition: opacity 0.3s ease;
+        }
+
+        .search-button:hover {
+          opacity: 0.9;
+        }
+
+        .search-button svg {
+          width: 20px;
+          height: 20px;
+        }
+
+        .filter-toggle {
+          display: flex;
+          justify-content: center;
+          margin-top: 1rem;
+          gap: 1rem;
+        }
+
+        .filter-button {
+          background: none;
+          border: none;
+          font-size: 1rem;
+          font-weight: 500;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+        }
+
+        .filter-icon {
+          width: 18px;
+          height: 18px;
+        }
+
+        .reset-filters-button {
+          background: none;
+          border: none;
+          font-size: 1rem;
+          opacity: 0.7;
+          cursor: pointer;
+          text-decoration: underline;
+          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
+        }
+      `}</style>
+    </section>
+  );
+}
+
+export default SearchSection;

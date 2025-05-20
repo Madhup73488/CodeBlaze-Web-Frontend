@@ -1,3 +1,4 @@
+// App.js
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./components/common/Navbar";
@@ -20,12 +21,16 @@ import { LoaderProvider } from "./contexts/LoaderContext";
 import Landing from "./pages/Landing";
 import TermsOfService from "./pages/TermsOfService";
 import PlacementGuidance from "./components/ForStudents/PlacementGuidance";
-import Internships from "./components/ForStudents/Internships";
+// import Internships from "./components/ForStudents/Internships"; // This will be replaced
 import ProjectSupport from "./components/ForStudents/ProjectSupport";
 import MentorshipPrograms from "./components/ForStudents/MentorshipPrograms";
 import Webinars from "./components/ForStudents/Webinars";
 import SkillsAndRoles from "./components/ForStudents/SkillsAndRoles";
 import JobSeekers from "./components/JobSeekers/JobSeekers";
+
+// Import the new InternshipPortalPage and InternshipDetailPage
+import InternshipPortalPage from "./components/Internships/InternshipPortal"; // Adjust path if necessary
+import InternshipDetailPage from "./components/Internships/InternshipDetailPage"; // Make sure this path is correct
 
 // Admin components
 import AdminLayout from "./admin/components/layout/AdminLayout";
@@ -41,10 +46,10 @@ import JobEdit from "./admin/pages/jobs/JobEdit";
 import JobDetail from "./admin/pages/jobs/JobDetail";
 
 // Admin Internships pages
-import InternshipList from "./admin/pages/internships/InternshipList";
-import InternshipCreate from "./admin/pages/internships/InternshipCreate";
-import InternshipEdit from "./admin/pages/internships/InternshipEdit";
-import InternshipDetail from "./admin/pages/internships/InternshipDetail";
+import AdminInternshipList from "./admin/pages/internships/InternshipList"; // Renamed to avoid conflict if needed
+import AdminInternshipCreate from "./admin/pages/internships/InternshipCreate"; // Renamed
+import AdminInternshipEdit from "./admin/pages/internships/InternshipEdit"; // Renamed
+import AdminInternshipDetail from "./admin/pages/internships/InternshipDetail"; // Renamed
 
 // Admin Applications pages
 import JobApplications from "./admin/pages/applications/JobApplications";
@@ -57,12 +62,13 @@ import AuthModal from "./components/Auth/AuthModal";
 // Profile components
 import ProfileDashboard from "./components/profile/ProfileDashboard";
 import PublicProfile from "./components/profile/PublicProfile";
+import ProfilePage from "./components/profile/ProfilePage";
 
 const AppContent = () => {
   const { isAuthenticated, user, loading, authFlowState, setAuthFlowState } =
     useAuth();
-  const [theme, setTheme] = useState("dark");
-  const [color, setColor] = useState("orange");
+  const [theme, setTheme] = useState("dark"); // Your existing theme state
+  const [color, setColor] = useState("orange"); // Your existing color state
   const location = useLocation();
   const navigate = useNavigate();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -76,25 +82,27 @@ const AppContent = () => {
     setColor(color === "purple" ? "orange" : "purple");
   };
 
-  // Effect to open the AuthModal automatically if authFlowState is 'reset_password_form'
   useEffect(() => {
     if (authFlowState === "reset_password_form") {
       setIsAuthModalOpen(true);
     }
   }, [authFlowState]);
 
-  // Effect for Admin Redirection and Protected Routes
   useEffect(() => {
     if (!loading && location.pathname.startsWith("/admin")) {
       const isAdmin = user?.role === "admin" || user?.role === "superadmin";
-      
+
       if (!isAuthenticated) {
-        // Wait a bit more to ensure auth check is complete
         const timer = setTimeout(() => {
           if (!isAuthenticated) {
-            navigate("/", { replace: true });
+            // Re-check after timeout
+            // If still not authenticated and trying to access admin, redirect or show auth modal
+            if (location.pathname !== "/") {
+              // Avoid redirect loop if already on /
+              navigate("/", { replace: true }); // Or openAuthModal('login');
+            }
           }
-        }, 500);
+        }, 500); // Delay to allow auth state to fully propagate
         return () => clearTimeout(timer);
       } else if (!isAdmin) {
         navigate("/", { replace: true });
@@ -109,9 +117,14 @@ const AppContent = () => {
 
   const closeAuthModal = () => {
     setIsAuthModalOpen(false);
-    if (authFlowState !== "reset_password_form") {
+    // Only reset if it's not a persistent state like password reset success message
+    if (
+      authFlowState !== "reset_password_form" &&
+      authFlowState !== "password_reset_success"
+    ) {
       setAuthFlowState("initial");
     }
+    // If user closes modal during reset password flow triggered by URL, navigate away from token URL
     if (
       authFlowState === "reset_password_form" &&
       location.pathname.startsWith("/reset-password/")
@@ -120,7 +133,16 @@ const AppContent = () => {
     }
   };
 
-  // Don't render anything until auth state is determined
+  // Effect to handle the /reset-password/:token route
+  useEffect(() => {
+    if (location.pathname.startsWith("/reset-password/")) {
+      // The token is part of the path, e.g., /reset-password/someTokenValue
+      // Extract token if necessary, though AuthModal might handle it via authFlowState
+      setAuthFlowState("reset_password_form");
+      setIsAuthModalOpen(true);
+    }
+  }, [location.pathname, setAuthFlowState]);
+
   if (loading && location.pathname.startsWith("/admin")) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -133,8 +155,11 @@ const AppContent = () => {
     <div
       className={`app ${theme}`}
       style={{
+        // These styles might be better handled by CSS classes for 'light' and 'dark' themes
+        // defined in a global stylesheet for consistency.
         backgroundColor: theme === "dark" ? "#0a0a0a" : "#ffffff",
         color: theme === "dark" ? "#ffffff" : "#0a0a0a",
+        minHeight: "100vh", // Ensure the div takes at least full viewport height
       }}
     >
       {!isAdminRoute && (
@@ -155,6 +180,7 @@ const AppContent = () => {
           path="/careers"
           element={<Careers theme={theme} color={color} />}
         />
+        {/* Other 'whoarewe' routes */}
         <Route
           path="/aboutus"
           element={<AboutUs theme={theme} color={color} />}
@@ -171,6 +197,7 @@ const AppContent = () => {
           path="/ourvalues"
           element={<OurValues theme={theme} color={color} />}
         />
+
         <Route
           path="/support"
           element={<Support theme={theme} color={color} />}
@@ -183,13 +210,27 @@ const AppContent = () => {
           path="/terms-of-service"
           element={<TermsOfService theme={theme} color={color} />}
         />
+
+        {/* ForStudents Routes */}
         <Route
           path="/placement-guidance"
           element={<PlacementGuidance theme={theme} color={color} />}
         />
+
+        {/* Updated Internships Route (List View) */}
         <Route
           path="/internships"
-          element={<Internships theme={theme} color={color} />}
+          element={<InternshipPortalPage theme={theme} color={color} />}
+        />
+        {/* NEW: Internship Detail Page Route */}
+        <Route
+          path="/internship/:id"
+          element={<InternshipDetailPage theme={theme} color={color} />}
+        />
+
+        <Route
+          path="/project-support"
+          element={<ProjectSupport theme={theme} color={color} />}
         />
         <Route
           path="/mentorship-programs"
@@ -203,24 +244,49 @@ const AppContent = () => {
           path="/skills-and-roles"
           element={<SkillsAndRoles theme={theme} color={color} />}
         />
-        <Route
-          path="/project-support"
-          element={<ProjectSupport theme={theme} color={color} />}
-        />
+
         <Route
           path="/job-seekers"
           element={<JobSeekers theme={theme} color={color} />}
         />
-        <Route path="/reset-password/:token" element={null} />
+
+        {/* This route is primarily to trigger the AuthModal via useEffect.
+            The actual UI for reset is within the modal.
+            Rendering null or a minimal placeholder is fine.
+            Navigating away happens in closeAuthModal or upon successful reset. */}
+        <Route
+          path="/reset-password/:token"
+          element={<Landing theme={theme} color={color} />}
+        />
 
         {/* Profile Routes */}
+        <Route
+          path="/profile"
+          element={
+            isAuthenticated ? (
+              <ProfilePage theme={theme} color={color} />
+            ) : (
+              // Redirect to home and open login modal if trying to access protected profile
+              <Navigate
+                to="/"
+                replace
+                state={{ from: location, openLogin: true }}
+              />
+            )
+          }
+        />
         <Route
           path="/profile/dashboard"
           element={
             isAuthenticated ? (
               <ProfileDashboard theme={theme} color={color} />
             ) : (
-              <Navigate to="/" replace />
+              // Redirect to home and open login modal if trying to access protected profile
+              <Navigate
+                to="/"
+                replace
+                state={{ from: location, openLogin: true }}
+              />
             )
           }
         />
@@ -236,10 +302,17 @@ const AppContent = () => {
             isAuthenticated &&
             (user?.role === "admin" || user?.role === "superadmin") ? (
               <AdminProvider>
-                <AdminLayout />
+                {" "}
+                <AdminLayout />{" "}
               </AdminProvider>
             ) : (
-              <Navigate to="/" replace />
+              // If not authenticated or not admin, redirect.
+              // Consider showing a "not authorized" message or redirecting to login.
+              <Navigate
+                to="/"
+                replace
+                state={{ from: location, openLogin: !isAuthenticated }}
+              />
             )
           }
         >
@@ -254,11 +327,12 @@ const AppContent = () => {
             <Route path=":id/edit" element={<JobEdit />} />
           </Route>
 
+          {/* Ensure admin internship routes use distinct names if needed */}
           <Route path="internships">
-            <Route index element={<InternshipList />} />
-            <Route path="create" element={<InternshipCreate />} />
-            <Route path=":id" element={<InternshipDetail />} />
-            <Route path=":id/edit" element={<InternshipEdit />} />
+            <Route index element={<AdminInternshipList />} />
+            <Route path="create" element={<AdminInternshipCreate />} />
+            <Route path=":id" element={<AdminInternshipDetail />} />
+            <Route path=":id/edit" element={<AdminInternshipEdit />} />
           </Route>
 
           <Route path="applications">
@@ -278,8 +352,9 @@ const AppContent = () => {
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={closeAuthModal}
-        theme={theme}
-        color={color}
+        theme={theme} // Pass theme to AuthModal
+        color={color} // Pass color to AuthModal
+        // initialFlowState is managed by useAuth now, modal can subscribe or receive it
       />
     </div>
   );
@@ -288,6 +363,8 @@ const AppContent = () => {
 function App() {
   return (
     <LoaderProvider color="orange">
+      {" "}
+      {/* You can pass your dynamic color here if needed */}
       <Router>
         <AuthProvider>
           <AppContent />
