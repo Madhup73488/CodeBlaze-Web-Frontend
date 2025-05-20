@@ -47,7 +47,7 @@ function InternshipPortal({ theme = "light", initialColor = "orange" }) {
   const [savedInternships, setSavedInternships] = useState([]);
   const [appliedInternships, setAppliedInternships] = useState([]);
 
-  const API_URL = "http://localhost:5000/api/internships";
+  const API_URL = `${process.env.REACT_APP_BACKEND_URL}/api/internships`;
 
   const internshipCategories = [
     { id: "all", name: "All Internships" },

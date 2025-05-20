@@ -63,11 +63,14 @@ const ApplyButton = ({ internship, theme = "light", colors }) => {
 
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5000/api/users/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/users/me`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.ok) {
         const { user } = await response.json();
@@ -300,7 +303,7 @@ const ApplyButton = ({ internship, theme = "light", colors }) => {
         const token = localStorage.getItem("token") || getCookie("token");
 
         // Make sure we're using the correct API endpoint
-        const apiUrl = "http://localhost:5000/api/applications";
+        const apiUrl = `${process.env.REACT_APP_BACKEND_URL}/api/applications`;
 
         console.log("Sending request to:", apiUrl);
 
