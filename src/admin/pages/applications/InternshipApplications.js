@@ -171,19 +171,28 @@ const InternshipApplications = () => {
   };
 
   const columns = [
-    { id: "_id", header: "ID", accessor: "_id" },
     {
       id: "applicantName",
-      header: "Student Name",
-      accessor: (row) => row.user?.name || "N/A",
+      header: "Name",
+      accessor: (row) => row.userId?.name || "N/A", // Access nested name from userId
     },
     {
-      id: "program",
+      id: "applicantEmail",
+      header: "Email",
+      accessor: (row) => row.userId?.email || "N/A", // Access nested email from userId
+    },
+    {
+      id: "applicantPhone",
+      header: "Phone",
+      accessor: (row) => row.userId?.phone || "N/A", // Assuming phone might be in userId, otherwise N/A
+    },
+    {
+      id: "internshipProgramTitle",
       header: "Internship Program",
-      accessor: (row) => row.internship?.title || "N/A",
+      accessor: (row) => row.internshipId?.title || "N/A", // Access nested title from internshipId
     },
     {
-      id: "submissionDate",
+      id: "appliedOn",
       header: "Applied On",
       accessor: (row) => new Date(row.createdAt).toLocaleDateString(),
     },
