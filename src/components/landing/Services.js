@@ -122,6 +122,8 @@ function Services({ theme, color }) {
   return (
     <div
       style={{
+        backgroundColor: "transparent", // Ensure it doesn't have its own conflicting background
+        // Text color should be inherited from .landing-page
         padding: isMobile ? "2rem 5%" : "4rem 5%",
         overflow: "hidden", // Prevent horizontal scroll
       }}

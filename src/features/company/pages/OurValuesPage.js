@@ -1,6 +1,6 @@
 import React from "react";
 
-function OurValues({ theme, color }) {
+function OurValuesPage({ theme, color }) { // Renamed component
   const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
 
   const values = [
@@ -235,7 +235,7 @@ function OurValues({ theme, color }) {
       <style jsx>{`
         .values-container {
           padding: 2rem 5%;
-          max-width: 1200px;
+          max-width: 100%; /* Changed from 1200px */
           margin: 0 auto;
         }
 
@@ -420,4 +420,4 @@ function OurValues({ theme, color }) {
   );
 }
 
-export default OurValues;
+export default OurValuesPage; // Renamed export

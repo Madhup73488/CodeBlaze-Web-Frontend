@@ -1,22 +1,23 @@
 // src/admin/pages/jobs/JobList.jsx
 import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { useAdmin } from "../../contexts/AdminContext"; // Assuming this context exists
-import DataTable from "../../components/common/DataTable"; // Assuming this component exists
-import StatusBadge from "../../components/common/StatusBadge"; // Assuming this component exists
-import api from "../../utils/api"; // Import the api functions
-import { FiTrash2 } from "react-icons/fi"; // Import delete icon
+import { useAdmin } from "../../contexts/AdminContext";
+import DataTable from "../../components/common/DataTable";
+import StatusBadge from "../../components/common/StatusBadge";
+import TableSkeletonLoader from "../../components/common/TableSkeletonLoader"; // Import skeleton loader
+import api from "../../utils/api";
+import { FiTrash2 } from "react-icons/fi";
 
 const JobList = () => {
-  const { theme } = useAdmin(); // Assuming theme is provided by AdminContext
+  const { theme } = useAdmin();
   const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Keep this for initial load and subsequent fetches
   const [searchTerm, setSearchTerm] = useState("");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   // State for pagination and sorting
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(20); // Matches backend default limit
+  const [itemsPerPage] = useState(20); // setItemsPerPage was unused, Matches backend default limit
   const [totalItems, setTotalItems] = useState(0);
   const [sortBy, setSortBy] = useState("createdAt"); // Matches backend default sort
   const [sortDirection, setSortDirection] = useState("desc"); // Matches backend default sort
@@ -281,30 +282,36 @@ const JobList = () => {
         </div>
       </div>
 
-      {/* DataTable component */}
-      <DataTable
-        columns={isMobile ? mobileColumns : desktopColumns}
-        data={jobs} // Pass the fetched jobs array
-        loading={loading}
-        emptyMessage="No jobs found matching your criteria." // Updated message
-        theme={theme}
-        hideSearch={true} // Keep this true as we have a custom search input
-        // Pagination props
-        pagination={true} // Enable pagination
-        totalItems={totalItems} // Pass the total count from the backend
-        itemsPerPage={itemsPerPage} // Pass the current items per page
-        currentPage={currentPage} // Pass the current page number
-        onPageChange={handlePageChange} // Pass the page change handler
-        // Sorting props
-        sorting={true} // Enable sorting
-        sortBy={sortBy} // Pass the current sort field
-        sortDirection={sortDirection} // Pass the current sort direction
-        onSortChange={handleSortChange} // Pass the sort change handler
-        // Note: Ensure DataTable component supports these pagination and sorting props
-        // If DataTable has its own actions column, you might need a prop like 'hideActions'
-        // based on your InternshipList code, adding 'actions={false}' might be the way to disable built-in actions
-        actions={false} // Assuming this disables DataTable's default actions column
-      />
+      {/* DataTable component or Skeleton Loader */}
+      {loading && jobs.length === 0 ? ( // Show skeleton only on initial load when jobs array is empty
+        <TableSkeletonLoader columns={isMobile ? 1 : 7} rows={itemsPerPage} theme={theme} />
+      ) : (
+        <DataTable
+          columns={isMobile ? mobileColumns : desktopColumns}
+          data={jobs}
+          // Pass loading to DataTable if it supports an internal loading indicator for re-fetches
+          // For now, we handle main loading state outside.
+          loading={loading && jobs.length > 0} // Indicate loading for re-fetches if data is already present
+          emptyMessage="No jobs found matching your criteria."
+          theme={theme}
+          hideSearch={true} // Keep this true as we have a custom search input
+          // Pagination props
+          pagination={true} // Enable pagination
+          totalItems={totalItems} // Pass the total count from the backend
+          itemsPerPage={itemsPerPage} // Pass the current items per page
+          currentPage={currentPage} // Pass the current page number
+          onPageChange={handlePageChange} // Pass the page change handler
+          // Sorting props
+          sorting={true} // Enable sorting
+          sortBy={sortBy} // Pass the current sort field
+          sortDirection={sortDirection} // Pass the current sort direction
+          onSortChange={handleSortChange} // Pass the sort change handler
+          // Note: Ensure DataTable component supports these pagination and sorting props
+          // If DataTable has its own actions column, you might need a prop like 'hideActions'
+          // based on your InternshipList code, adding 'actions={false}' might be the way to disable built-in actions
+          actions={false} // Assuming this disables DataTable's default actions column
+        />
+      )} {/* Ensure ternary operator is correctly closed */}
 
       {/* --- ADDED Delete Confirmation Modal JSX --- */}
       {deleteModalOpen && (

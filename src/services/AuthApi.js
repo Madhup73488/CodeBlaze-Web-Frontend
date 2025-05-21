@@ -1,45 +1,9 @@
-import axios from "axios";
-import Cookies from "js-cookie";
-const API_URL =
-  `${process.env.REACT_APP_BACKEND_URL}/api/auth` ||
-  "https://codeblaze-web-backend.onrender.com/api/auth";
-
-const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-  withCredentials: true,
-});
-
-// Add this near the top of your AuthApi.js file after creating the api instance
-api.interceptors.request.use(
-  (config) => {
-    // Try to get token from both localStorage and cookies for compatibility
-    const token = localStorage.getItem("token") || Cookies.get("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-const handleApiError = (error) => {
-  console.error("API Error:", error.response?.data || error.message);
-  const message =
-    error.response?.data?.message ||
-    error.message ||
-    "An unexpected error occurred.";
-  throw new Error(message);
-};
+import apiClient, { handleApiError } from "./api"; // Import the centralized apiClient and error handler
 
 // Updated to return both token and user data
 const register = async (userData) => {
   try {
-    const response = await api.post("/register", userData);
+    const response = await apiClient.post("/auth/register", userData);
     return {
       token: response.data.token,
       user: response.data.user,
@@ -53,7 +17,7 @@ const register = async (userData) => {
 // Updated to return both token and user data
 const verifyOTP = async (email, otp) => {
   try {
-    const response = await api.post("/verify-otp", { email, otp });
+    const response = await apiClient.post("/auth/verify-otp", { email, otp });
     return {
       token: response.data.token,
       user: response.data.user,
@@ -66,7 +30,7 @@ const verifyOTP = async (email, otp) => {
 
 const resendOTP = async (email) => {
   try {
-    const response = await api.post("/resend-otp", { email });
+    const response = await apiClient.post("/auth/resend-otp", { email });
     return response.data;
   } catch (error) {
     handleApiError(error);
@@ -75,7 +39,7 @@ const resendOTP = async (email) => {
 
 const login = async (email, password) => {
   try {
-    const response = await api.post("/login", { email, password });
+    const response = await apiClient.post("/auth/login", { email, password });
     console.log("Login API Response:", response.data); // Debug log
 
     // Handle the current response structure where user data might be missing
@@ -107,7 +71,9 @@ const login = async (email, password) => {
 // Updated to clear client-side token
 const logout = async () => {
   try {
-    const response = await api.get("/logout");
+    // Note: The logout endpoint might not need /auth prefix if it's a general session clear on backend
+    // However, to keep consistency with other auth routes, using /auth/logout
+    const response = await apiClient.get("/auth/logout");
     console.log("Logout response:", response.data); // Debug log
     return response.data;
   } catch (error) {
@@ -117,7 +83,7 @@ const logout = async () => {
 
 const forgotPassword = async (email) => {
   try {
-    const response = await api.post("/forgot-password", { email });
+    const response = await apiClient.post("/auth/forgot-password", { email });
     return response.data;
   } catch (error) {
     handleApiError(error);
@@ -126,7 +92,7 @@ const forgotPassword = async (email) => {
 
 const resetPassword = async (token, password) => {
   try {
-    const response = await api.put(`/reset-password/${token}`, { password });
+    const response = await apiClient.put(`/auth/reset-password/${token}`, { password });
     return {
       success: true,
       token: response.data.token,
@@ -140,7 +106,7 @@ const resetPassword = async (token, password) => {
 
 const validateToken = async () => {
   try {
-    const response = await api.get("/validate-token");
+    const response = await apiClient.get("/auth/validate-token");
     return {
       isValid: true,
       user: response.data.user,

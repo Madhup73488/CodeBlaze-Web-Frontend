@@ -501,7 +501,7 @@ function MentorshipPrograms({ theme, color }) {
       <style jsx>{`
         .mentorship-container {
           padding: 2rem 5%;
-          max-width: 1200px;
+          max-width: 100%; /* Changed from 1200px */
           margin: 0 auto;
         }
 

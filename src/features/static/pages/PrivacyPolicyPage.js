@@ -46,7 +46,7 @@ function PremiumPrivacyPolicy({ theme = "light", color = "purple" }) {
       color: colors.textPrimary,
       fontFamily:
         "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-      maxWidth: "1100px",
+      maxWidth: "100%", // Changed from 1100px
       margin: "0 auto",
       padding: "40px 30px",
       borderRadius: "12px",
@@ -451,7 +451,7 @@ function PremiumPrivacyPolicy({ theme = "light", color = "purple" }) {
     initialExpanded[sections[0].id] = true;
     setExpanded(initialExpanded);
     setActiveSection(sections[0].id);
-  }, []);
+  }, [sections]); // Added sections to dependency array
 
   // Handle scroll detection for back to top button
   useEffect(() => {
@@ -516,7 +516,7 @@ function PremiumPrivacyPolicy({ theme = "light", color = "purple" }) {
         <ul style={styles.navList}>
           {sections.map((section) => (
             <li key={section.id} style={styles.navItem}>
-              <a
+              <button // Changed from <a> to <button>
                 style={{
                   ...styles.navLink,
                   backgroundColor:
@@ -527,11 +527,15 @@ function PremiumPrivacyPolicy({ theme = "light", color = "purple" }) {
                     activeSection === section.id
                       ? colors.primary
                       : colors.textSecondary,
+                  width: '100%', // Ensure button takes full width of li
+                  border: `1px solid ${colors.border}`, // Ensure border is explicitly set as it was in navLink
+                  textAlign: 'center', // Ensure text alignment is preserved
+                  cursor: 'pointer', // Ensure cursor is pointer
                 }}
                 onClick={() => toggleSection(section.id)}
               >
                 {section.icon} {section.title}
-              </a>
+              </button>
             </li>
           ))}
         </ul>

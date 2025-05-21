@@ -1,6 +1,6 @@
 import React from "react";
 
-function OurMission({ theme, color }) {
+function OurMissionPage({ theme, color }) { // Renamed component
   const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
 
   return (
@@ -290,7 +290,7 @@ function OurMission({ theme, color }) {
       <style jsx>{`
         .mission-container {
           padding: 2rem 5%;
-          max-width: 1200px;
+          max-width: 100%; /* Changed from 1200px */
           margin: 0 auto;
         }
 
@@ -595,4 +595,4 @@ function OurMission({ theme, color }) {
   );
 }
 
-export default OurMission;
+export default OurMissionPage; // Renamed export

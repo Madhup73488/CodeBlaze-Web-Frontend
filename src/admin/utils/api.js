@@ -1,247 +1,113 @@
 // src/admin/utils/api.js
 
-// Base API URL configuration
-// Ensure this points to your backend's API root
-const API_BASE_URL =
-  process.env.REACT_APP_BACKEND_URL;
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Request headers configuration
 const getHeaders = () => {
-  const headers = {
-    "Content-Type": "application/json",
-  };
-
-  // Get token from local storage if available
+  const headers = { "Content-Type": "application/json" };
   const authToken = localStorage.getItem("token");
-  if (authToken) {
-    headers["Authorization"] = `Bearer ${authToken}`;
-  }
-
+  if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
   return headers;
 };
 
-// Generic API request handler
-const apiRequest = async (
-  endpoint,
-  method = "GET",
-  data = null,
-  customHeaders = {}
-) => {
+const apiRequest = async (endpoint, method = "GET", data = null, customHeaders = {}) => {
   try {
-    // Build the complete URL
-    // Remove the redundant '/api' from the endpoint if it's already included in the API_BASE_URL
-    const url = `${API_BASE_URL}${
-      endpoint.startsWith("/") ? endpoint : "/" + endpoint
-    }`;
-
-    const options = {
-      method,
-      headers: {
-        ...getHeaders(),
-        ...customHeaders,
-      },
-    };
-
-    if (
-      data !== null &&
-      (method === "POST" || method === "PUT" || method === "PATCH")
-    ) {
+    const url = `${API_BASE_URL}${endpoint.startsWith("/") ? endpoint : "/" + endpoint}`;
+    const options = { method, headers: { ...getHeaders(), ...customHeaders } };
+    if (data !== null && (method === "POST" || method === "PUT" || method === "PATCH")) {
       options.body = JSON.stringify(data);
     }
-
     const response = await fetch(url, options);
-
-    // Check if the response is JSON
     const contentType = response.headers.get("content-type");
     const isJson = contentType && contentType.includes("application/json");
-
-    // Parse response
-    // Handle empty responses (e.g., DELETE requests)
     let result = null;
-    if (response.status !== 204) {
-      // 204 No Content
-      result = isJson ? await response.json() : await response.text();
-    }
-
-    // Handle error responses (non-2xx status codes)
+    if (response.status !== 204) result = isJson ? await response.json() : await response.text();
     if (!response.ok) {
-      const errorDetail =
-        isJson && result && result.message
-          ? result.message
-          : result || "API request failed";
+      const errorDetail = isJson && result && result.message ? result.message : result || "API request failed";
       const error = new Error(errorDetail);
-      error.response = response; // Attach the response object for status codes
-      error.data = result; // Attach parsed data if available
+      error.response = response;
+      error.data = result;
       throw error;
     }
-
-    return result; // Return the parsed data (or null for 204)
+    return result;
   } catch (error) {
     console.error("API Request Error:", error);
-    // Re-throw the error so calling functions can handle it
     throw error;
   }
 };
 
 // --- Admin Panel Specific APIs ---
+export const fetchDashboardStats = async () => apiRequest("/api/admin/dashboard");
 
-// Dashboard related APIs
-export const fetchDashboardStats = async () => {
-  return apiRequest("/api/admin/dashboard");
-};
-
-// User Management APIs
 export const fetchUsers = async (filters = {}) => {
-  const queryParams = new URLSearchParams();
-  Object.entries(filters).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== "") {
-      queryParams.append(key, value);
-    }
-  });
-  const queryString = queryParams.toString()
-    ? `?${queryParams.toString()}`
-    : "";
-  return apiRequest(`/api/admin/users${queryString}`);
+  const queryParams = new URLSearchParams(Object.entries(filters).filter(([, value]) => value !== undefined && value !== null && value !== ""));
+  return apiRequest(`/api/admin/users${queryParams.toString() ? `?${queryParams.toString()}` : ""}`);
 };
+export const fetchUserById = async (id) => apiRequest(`/api/admin/users/${id}`);
+export const updateUser = async (id, userData) => apiRequest(`/api/admin/users/${id}`, "PUT", userData);
+export const deleteUser = async (id) => apiRequest(`/api/admin/users/${id}`, "DELETE");
 
-export const fetchUserById = async (id) => {
-  return apiRequest(`/api/admin/users/${id}`);
+export const fetchAdminAccounts = async (filters = {}) => {
+  const queryParams = new URLSearchParams(Object.entries(filters).filter(([, value]) => value !== undefined && value !== null && value !== ""));
+  return apiRequest(`/api/admin/admin-users${queryParams.toString() ? `?${queryParams.toString()}` : ""}`);
 };
+export const createAdminAccount = async (adminUserData) => apiRequest("/api/admin/admin-users", "POST", adminUserData);
+export const updateAdminAccount = async (id, adminUserData) => apiRequest(`/api/admin/admin-users/${id}`, "PUT", adminUserData);
+export const deleteAdminAccount = async (id) => apiRequest(`/api/admin/admin-users/${id}`, "DELETE");
 
-export const updateUser = async (id, userData) => {
-  return apiRequest(`/api/admin/users/${id}`, "PUT", userData);
-};
-
-export const deleteUser = async (id) => {
-  return apiRequest(`/api/admin/users/${id}`, "DELETE");
-};
-
-// Job Postings Management APIs
 export const fetchAdminJobs = async (filters = {}) => {
-  const queryParams = new URLSearchParams();
-  Object.entries(filters).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== "") {
-      queryParams.append(key, value);
-    }
-  });
-  const queryString = queryParams.toString()
-    ? `?${queryParams.toString()}`
-    : "";
-  return apiRequest(`/api/admin/jobs${queryString}`);
+  const queryParams = new URLSearchParams(Object.entries(filters).filter(([, value]) => value !== undefined && value !== null && value !== ""));
+  return apiRequest(`/api/admin/jobs${queryParams.toString() ? `?${queryParams.toString()}` : ""}`);
 };
+export const fetchAdminJobById = async (id) => apiRequest(`/api/admin/jobs/${id}`);
+export const createJobAdmin = async (jobData) => apiRequest("/api/admin/jobs/create", "POST", jobData);
+export const updateJobAdmin = async (id, jobData) => apiRequest(`/api/admin/jobs/${id}`, "PUT", jobData);
+export const deleteJobAdmin = async (id) => apiRequest(`/api/admin/jobs/${id}`, "DELETE");
+export const featureJob = async (id, featuredStatus) => apiRequest(`/api/admin/jobs/${id}/feature`, "PUT", { featured: featuredStatus });
 
-export const fetchAdminJobById = async (id) => {
-  return apiRequest(`/api/admin/jobs/${id}`);
-};
-
-export const createJobAdmin = async (jobData) => {
-  return apiRequest("/api/admin/jobs/create", "POST", jobData);
-};
-
-export const updateJobAdmin = async (id, jobData) => {
-  return apiRequest(`/api/admin/jobs/${id}`, "PUT", jobData);
-};
-
-export const deleteJobAdmin = async (id) => {
-  return apiRequest(`/api/admin/jobs/${id}`, "DELETE");
-};
-
-export const featureJob = async (id, featuredStatus) => {
-  return apiRequest(`/api/admin/jobs/${id}/feature`, "PUT", {
-    featured: featuredStatus,
-  });
-};
-
-// Internship Postings Management APIs
 export const fetchAdminInternships = async (filters = {}) => {
-  const queryParams = new URLSearchParams();
-  Object.entries(filters).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== "") {
-      queryParams.append(key, value);
-    }
-  });
-  const queryString = queryParams.toString()
-    ? `?${queryParams.toString()}`
-    : "";
-  return apiRequest(`/api/admin/internships${queryString}`);
+  const queryParams = new URLSearchParams(Object.entries(filters).filter(([, value]) => value !== undefined && value !== null && value !== ""));
+  return apiRequest(`/api/admin/internships${queryParams.toString() ? `?${queryParams.toString()}` : ""}`);
 };
+export const fetchAdminInternshipById = async (id) => apiRequest(`/api/admin/internships/${id}`);
+export const createInternshipAdmin = async (internshipData) => apiRequest("/api/admin/internships/create", "POST", internshipData);
+export const updateInternshipAdmin = async (id, internshipData) => apiRequest(`/api/admin/internships/${id}`, "PUT", internshipData);
+export const deleteInternshipAdmin = async (id) => apiRequest(`/api/admin/internships/${id}`, "DELETE");
+export const featureInternship = async (id, featuredStatus) => apiRequest(`/api/admin/internships/${id}/feature`, "PUT", { featured: featuredStatus });
 
-export const fetchAdminInternshipById = async (id) => {
-  return apiRequest(`/api/admin/internships/${id}`);
-};
-
-export const createInternshipAdmin = async (internshipData) => {
-  return apiRequest("/api/admin/internships/create", "POST", internshipData);
-};
-
-export const updateInternshipAdmin = async (id, internshipData) => {
-  return apiRequest(`/api/admin/internships/${id}`, "PUT", internshipData);
-};
-
-export const deleteInternshipAdmin = async (id) => {
-  return apiRequest(`/api/admin/internships/${id}`, "DELETE");
-};
-
-export const featureInternship = async (id, featuredStatus) => {
-  return apiRequest(`/api/admin/internships/${id}/feature`, "PUT", {
-    featured: featuredStatus,
-  });
-};
-
-// Application Management APIs
 export const fetchAdminJobApplications = async (filters = {}) => {
-  const queryParams = new URLSearchParams();
-  Object.entries(filters).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== "") {
-      queryParams.append(key, value);
-    }
-  });
-  const queryString = queryParams.toString()
-    ? `?${queryParams.toString()}`
-    : "";
-  return apiRequest(`/api/admin/job-applications${queryString}`);
+  const queryParams = new URLSearchParams(Object.entries(filters).filter(([, value]) => value !== undefined && value !== null && value !== ""));
+  return apiRequest(`/api/admin/job-applications${queryParams.toString() ? `?${queryParams.toString()}` : ""}`);
 };
-
 export const fetchAdminInternshipApplications = async (filters = {}) => {
-  const queryParams = new URLSearchParams();
-  Object.entries(filters).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== "") {
-      queryParams.append(key, value);
-    }
-  });
-  const queryString = queryParams.toString()
-    ? `?${queryParams.toString()}`
-    : "";
-  return apiRequest(`/api/admin/internship-applications${queryString}`);
+  const queryParams = new URLSearchParams(Object.entries(filters).filter(([, value]) => value !== undefined && value !== null && value !== ""));
+  return apiRequest(`/api/admin/internship-applications${queryParams.toString() ? `?${queryParams.toString()}` : ""}`);
+};
+export const updateApplicationStatus = async (id, status) => apiRequest(`/api/admin/applications/${id}/status`, "PUT", { status });
+
+export const fetchUserAnalytics = async () => apiRequest("/api/admin/analytics/users");
+export const fetchJobAnalytics = async () => apiRequest("/api/admin/analytics/jobs");
+export const fetchApplicationAnalytics = async () => apiRequest("/api/admin/analytics/applications");
+
+export const fetchAdminSettings = async () => apiRequest("/api/admin/settings");
+export const updateAdminSettings = async (settingsData) => apiRequest("/api/admin/settings", "PUT", settingsData);
+
+// Document Generation APIs
+export const generateOfferLetter = async (offerLetterData) => {
+  return apiRequest("/api/admin/documents/offer-letter/generate", "POST", offerLetterData);
 };
 
-export const updateApplicationStatus = async (id, status) => {
-  return apiRequest(`/api/admin/applications/${id}/status`, "PUT", { status });
+export const generateCertificate = async (certificateData) => {
+  return apiRequest("/api/admin/documents/certificate/generate", "POST", certificateData);
 };
 
-// Analytics APIs
-export const fetchUserAnalytics = async () => {
-  return apiRequest("/api/admin/analytics/users");
+// Public Certificate Verification API (might be in a different file if non-admin)
+export const verifyCertificatePublic = async (certificateId) => {
+  // Note: This uses API_BASE_URL which might be /api/admin. 
+  // If public API is different, adjust base URL or use a separate utility.
+  return apiRequest(`/api/public/certificate/${certificateId}`, "GET");
 };
 
-export const fetchJobAnalytics = async () => {
-  return apiRequest("/api/admin/analytics/jobs");
-};
 
-export const fetchApplicationAnalytics = async () => {
-  return apiRequest("/api/admin/analytics/applications");
-};
-
-// Settings related APIs
-export const fetchAdminSettings = async () => {
-  return apiRequest("/api/admin/settings");
-};
-
-export const updateAdminSettings = async (settingsData) => {
-  return apiRequest("/api/admin/settings", "PUT", settingsData);
-};
-
-// Export all admin API functions
 export default {
   fetchDashboardStats,
   fetchUsers,
@@ -268,4 +134,11 @@ export default {
   fetchApplicationAnalytics,
   fetchAdminSettings,
   updateAdminSettings,
+  fetchAdminAccounts,
+  createAdminAccount,
+  updateAdminAccount,
+  deleteAdminAccount,
+  generateOfferLetter, // Added
+  generateCertificate, // Added
+  verifyCertificatePublic, // Added
 };

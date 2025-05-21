@@ -1,5 +1,15 @@
-.App {
-  text-align: center;
+.app { /* Changed from .App to .app to match className in App.js */
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  /* text-align: center; */ /* Removed as it might not be desired globally */
+  transition: background-color var(--transition-default), color var(--transition-default);
+}
+
+.careers-page {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  /* Add other theme-dependent styles if needed */
 }
 
 .App-logo {
