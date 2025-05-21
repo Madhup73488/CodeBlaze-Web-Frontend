@@ -4,20 +4,16 @@ import { Link, useLocation } from "react-router-dom";
 import { useAdmin } from "../../contexts/AdminContext";
 
 function Sidebar({
-  // Receive props from AdminLayout that might originate from AdminContext or be local to AL
-  isOpen, // Mobile menu open state (likely local to AdminLayout)
-  onClose, // Mobile menu close handler (likely local to AdminLayout)
-  // Access collapsed, isMobile, theme, hasPermission, currentUser from AdminContext
+  isOpen,    // Mobile menu open state (from AdminLayout's local state)
+  onClose,   // Mobile menu close handler (from AdminLayout)
+  collapsed, // Desktop collapsed state (calculated and passed by AdminLayout)
+  isMobile,  // Mobile status (calculated and passed by AdminLayout)
+  theme,     // Theme (can be from AdminLayout prop or context, ensure consistency)
 }) {
   const location = useLocation();
-  // Use state and functions from AdminContext
-  const {
-    collapsed, // From AdminContext
-    isMobile, // From AdminContext (or updated by AdminLayout)
-    theme, // From AdminContext
-    hasPermission, // Function from AdminContext to check user permissions
-    currentUser, // User data from AdminContext (which gets it from AuthContext)
-  } = useAdmin();
+  // currentUser can still come from context if not passed as prop
+  const { currentUser } = useAdmin(); 
+
 
   // Navigation items with icons and permissions
   // Permissions listed here define what capabilities are needed to see the link
@@ -159,6 +155,64 @@ function Sidebar({
       permission: "users.view", // Permission to view users
     },
     {
+      title: "Analytics",
+      icon: (
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+          <polyline points="17 6 23 6 23 12"></polyline>
+        </svg>
+      ),
+      path: "/admin/analytics", // Base path for analytics
+      permission: "analytics.view", // General permission for analytics section
+      submenu: [
+        {
+          title: "User Analytics",
+          path: "/admin/analytics/users",
+          permission: "analytics.users.view",
+        },
+        {
+          title: "Job Analytics",
+          path: "/admin/analytics/jobs",
+          permission: "analytics.jobs.view",
+        },
+        {
+          title: "Application Analytics",
+          path: "/admin/analytics/applications",
+          permission: "analytics.applications.view",
+        },
+      ],
+    },
+    {
+      title: "Documents",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+          <polyline points="13 2 13 9 20 9"></polyline>
+        </svg>
+      ),
+      path: "/admin/documents",
+      permission: "documents.view", // General permission for documents section
+      submenu: [
+        {
+          title: "Offer Letters",
+          path: "/admin/documents/offer-letter",
+          permission: "documents.offerletters.generate",
+        },
+        {
+          title: "Certificates",
+          path: "/admin/documents/certificate",
+          permission: "documents.certificates.generate",
+        },
+      ],
+    },
+    {
       title: "Companies",
       icon: (
         <svg
@@ -234,7 +288,7 @@ function Sidebar({
     <>
       <aside
         className={`admin-sidebar ${
-          collapsed && !isMobile ? "collapsed" : ""
+          collapsed ? "collapsed" : "" // Use the 'collapsed' prop directly (already for desktop)
         } ${isMobile ? "mobile" : ""} ${isOpen ? "open" : ""}`}
       >
         <div className="sidebar-header">
@@ -243,12 +297,12 @@ function Sidebar({
             className="logo"
             onClick={isMobile ? onClose : undefined}
           >
-            {collapsed && !isMobile ? (
-              <span className="logo-short">JS</span>
+            {collapsed ? ( // Use the 'collapsed' prop for logo display
+              <span className="logo-short">CB</span> 
             ) : (
               <>
-                <span className="logo-text">Job</span>
-                <span className="logo-accent">Seekers</span>
+                <span className="logo-text">Code</span> 
+                <span className="logo-accent">Blaze</span>
               </>
             )}
           </Link>
@@ -442,8 +496,8 @@ function Sidebar({
           align-items: center;
           justify-content: space-between;
           border-bottom: 1px solid ${theme === "dark" ? "#333" : "#e6e6e6"};
-          /* Hide logo text when collapsed */
-          ${collapsed && !isMobile
+          /* Hide logo text when collapsed (using the prop) */
+          ${collapsed
             ? `.logo .logo-text, .logo .logo-accent { display: none; }`
             : ""}
         }
@@ -514,8 +568,8 @@ function Sidebar({
           border: none;
           background: none;
           font-size: 1rem;
-          /* Adjust padding when collapsed */
-          ${collapsed && !isMobile
+          /* Adjust padding when collapsed (using the prop) */
+          ${collapsed
             ? `padding: 0.75rem; justify-content: center;`
             : ""}
         }
@@ -537,9 +591,9 @@ function Sidebar({
           display: flex;
           align-items: center;
           justify-content: center;
-          margin-right: ${collapsed && !isMobile
+          margin-right: ${collapsed
             ? "0"
-            : "0.75rem"}; /* Adjust margin */
+            : "0.75rem"}; /* Adjust margin based on prop */
         }
 
         .nav-icon svg {
@@ -549,16 +603,16 @@ function Sidebar({
 
         .nav-text {
           flex: 1;
-          /* Hide text when collapsed */
-          ${collapsed && !isMobile ? `display: none;` : ""}
+          /* Hide text when collapsed (using the prop) */
+          ${collapsed ? `display: none;` : ""}
         }
 
         .submenu-arrow {
           display: flex;
           align-items: center;
           transition: transform 0.2s ease;
-          /* Hide arrow when collapsed */
-          ${collapsed && !isMobile ? `display: none;` : ""}
+          /* Hide arrow when collapsed (using the prop) */
+          ${collapsed ? `display: none;` : ""}
         }
 
         .submenu-arrow svg {
@@ -575,8 +629,8 @@ function Sidebar({
           overflow: hidden;
           transition: max-height 0.3s ease;
           padding-left: 1rem; /* Maintain padding */
-          /* Adjust padding when collapsed */
-          ${collapsed && !isMobile
+          /* Adjust padding when collapsed (using the prop) */
+          ${collapsed
             ? `padding-left: 0; text-align: center;`
             : ""}
         }
@@ -592,8 +646,8 @@ function Sidebar({
           text-decoration: none;
           font-size: 0.9rem;
           transition: all 0.2s ease;
-          /* Adjust padding when collapsed */
-          ${collapsed && !isMobile ? `padding: 0.5rem 0;` : ""}
+          /* Adjust padding when collapsed (using the prop) */
+          ${collapsed ? `padding: 0.5rem 0;` : ""}
         }
 
         .submenu-item:hover {
@@ -607,22 +661,21 @@ function Sidebar({
         .sidebar-footer {
           padding: 1rem 1.5rem;
           border-top: 1px solid ${theme === "dark" ? "#333" : "#e6e6e6"};
-          /* Center footer content when collapsed */
-          ${collapsed && !isMobile ? `text-align: center;` : ""}
+          /* Center footer content when collapsed (using the prop) */
+          ${collapsed ? `text-align: center;` : ""}
         }
 
         .admin-info {
           display: flex;
           align-items: center;
-          justify-content: ${collapsed && !isMobile ? "center" : "flex-start"};
-          /* Center on mobile regardless of collapsed state */
-          ${isMobile ? `justify-content: center;` : ""}
+          /* Justify based on collapsed prop for desktop, always center for mobile */
+          justify-content: ${isMobile ? 'center' : (collapsed ? "center" : "flex-start")};
         }
 
         .admin-details {
           margin-right: 0.75rem;
-          /* Hide details when collapsed or on mobile */
-          ${(collapsed && !isMobile) || isMobile ? `display: none;` : ""}
+          /* Hide details when collapsed (prop) or on mobile */
+          ${collapsed || isMobile ? `display: none;` : ""}
         }
 
         .admin-name {
@@ -648,8 +701,8 @@ function Sidebar({
           justify-content: center;
           font-weight: 600;
           font-size: 0.8rem;
-          /* Adjust margin when collapsed or on mobile */
-          ${(collapsed && !isMobile) || isMobile ? `margin-right: 0;` : ""}
+          /* Adjust margin when collapsed (prop) or on mobile */
+          ${collapsed || isMobile ? `margin-right: 0;` : ""}
         }
       `}</style>
     </>

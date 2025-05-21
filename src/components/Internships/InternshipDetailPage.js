@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom"; // Removed useNavigate
 import ApplyButton from "./ApplyButton";
 import {
   Clock,
@@ -12,12 +12,13 @@ import {
   Award,
   Star,
   ArrowLeft,
-  ExternalLink,
+  // ExternalLink, // Removed unused import
   Share2,
   BookmarkPlus,
 } from "lucide-react";
 
-const InternshipDetailPage = ({ theme = "light" }) => {
+// Add color to props, defaulting to "orange" if not provided by App.js (though App.js should provide it)
+const InternshipDetailPage = ({ theme = "light", color = "orange" }) => { 
   const { id: internshipId } = useParams();
   const [internship, setInternship] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -773,8 +774,9 @@ const InternshipDetailPage = ({ theme = "light" }) => {
               <h2 className="text-lg font-bold mb-4">Ready to Apply?</h2>
               <ApplyButton
                 internship={internship}
-                theme={theme}
-                colors={colors}
+                theme={theme} // Pass the theme received from App.js
+                color={color} // Pass the color received from App.js
+                colors={colors} // This 'colors' object is derived locally in InternshipDetailPage, might be redundant if AuthModal only needs singular 'color'
               />
               <p
                 className="text-xs text-center mt-3"

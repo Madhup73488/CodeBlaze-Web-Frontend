@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import AuthBranding from "./AuthBranding";
 import AuthContent from "./AuthContent";
-import Loader from "./Loader";
+// import Loader from "./Loader"; // Removed unused import
 
 function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
   const {
@@ -79,11 +79,12 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
     if (error) setError(null);
   };
 
-  const handleOtpChange = (e) => {
-    const { name, value } = e.target;
-    setOtpForm({ ...otpForm, [name]: value });
-    if (error) setError(null);
-  };
+  // Removed unused handleOtpChange
+  // const handleOtpChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setOtpForm({ ...otpForm, [name]: value });
+  //   if (error) setError(null);
+  // };
 
   const handleOtpInputChange = (index, value) => {
     if (value && !/^\d+$/.test(value)) return;
@@ -321,7 +322,7 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
     return () => {
       // Any cleanup needed when modal is unmounted or state changes trigger re-run
     };
-  }, [isOpen, setAuthFlowState, setError]); // Dependencies for the effect
+  }, [isOpen, setAuthFlowState, setError, authFlowState]); // Added authFlowState to dependencies
 
   // If the modal is not open and we are not specifically in the reset password flow (which might open the modal
   // independently via a link), don't render anything.
@@ -346,7 +347,12 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
         isMobileView ? "mobile-view" : ""
       }`}
     >
-      <div className={`auth-modal ${isMobileView ? "mobile-modal" : ""}`}>
+      <div 
+        className={`auth-modal ${isMobileView ? "mobile-modal" : ""}`}
+        style={{ 
+          backgroundColor: theme === 'dark' ? 'rgba(10, 10, 10, 0.97)' : '#ffffff' 
+        }}
+      >
         <button className="close-button" onClick={onClose}>
           <X size={24} />
         </button>
@@ -698,6 +704,13 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
           padding: 2rem 1.5rem;
         }
 
+        .dark .auth-content {
+          /* Ensures text color within auth-content is appropriate for dark theme */
+          /* This might not be strictly necessary if all child elements are individually themed,
+             but acts as a fallback. */
+          color: #f9fafb; /* Default light text color for dark theme */
+        }
+
         .auth-tabs {
           display: flex;
           margin-bottom: 2rem;
@@ -909,6 +922,16 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
           color: #818cf8;
         }
 
+        .dark .form-input::placeholder {
+          color: #9ca3af; /* Light grey for placeholders in dark mode */
+        }
+        .dark .form-input:-ms-input-placeholder { /* Edge */
+          color: #9ca3af;
+        }
+        .dark .form-input::-ms-input-placeholder { /* IE 10-11 */
+          color: #9ca3af;
+        }
+
         .password-toggle {
           position: absolute;
           right: 16px;
@@ -969,6 +992,15 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
         .dark .otp-input:focus {
           border-color: #818cf8;
           box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.15);
+        }
+        .dark .otp-input::placeholder { /* If OTP inputs ever use placeholders */
+          color: #9ca3af;
+        }
+        .dark .otp-input:-ms-input-placeholder {
+          color: #9ca3af;
+        }
+        .dark .otp-input::-ms-input-placeholder {
+          color: #9ca3af;
         }
 
         .auth-button {

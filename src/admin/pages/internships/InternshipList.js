@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useAdmin } from "../../contexts/AdminContext";
-import { fetchAdminInternships, deleteInternshipAdmin } from "../../utils/api";
+import { fetchAdminInternships, deleteInternshipAdmin } from "../../utils/api"; // Assuming fetchAdminInternships is the correct name
 import DataTable from "../../components/common/DataTable";
 import StatusBadge from "../../components/common/StatusBadge";
+import TableSkeletonLoader from "../../components/common/TableSkeletonLoader"; // Import skeleton loader
 
 const InternshipList = () => {
   const { theme } = useAdmin();
   const [internships, setInternships] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Keep for initial and subsequent fetches
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -18,7 +19,7 @@ const InternshipList = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(10); // setItemsPerPage was unused
   const [totalItems, setTotalItems] = useState(0);
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortDirection, setSortDirection] = useState("desc");
@@ -343,15 +344,18 @@ const InternshipList = () => {
 
       {error && <div className="error-message">{error}</div>}
 
-      <DataTable
-        columns={isMobile ? mobileColumns : desktopColumns}
-        data={internships}
-        loading={loading}
-        emptyMessage="No internships found matching your criteria."
-        theme={theme}
-        hideSearch={true} // Assuming you want to use the search input above the table
-        pagination={true}
-        totalItems={totalItems}
+      {loading && internships.length === 0 ? ( // Show skeleton only on initial load
+        <TableSkeletonLoader columns={isMobile ? 1 : 7} rows={itemsPerPage} theme={theme} />
+      ) : (
+        <DataTable
+          columns={isMobile ? mobileColumns : desktopColumns}
+          data={internships}
+          loading={loading && internships.length > 0} // Indicate loading for re-fetches
+          emptyMessage="No internships found matching your criteria."
+          theme={theme}
+          hideSearch={true} // Assuming you want to use the search input above the table
+          pagination={true}
+          totalItems={totalItems}
         itemsPerPage={itemsPerPage}
         currentPage={currentPage}
         onPageChange={handlePageChange}
@@ -361,6 +365,7 @@ const InternshipList = () => {
         onSortChange={handleSortChange}
         actions={false} // <--- Add this prop to disable DataTable's built-in actions
       />
+      )} {/* Ensure ternary operator is correctly closed */}
 
       {deleteModalOpen && (
         <div className="modal-overlay">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 
 // Reusable component for a single expandable question
 const QuestionItem = ({
@@ -100,7 +100,7 @@ const QuestionItem = ({
 
 const SeventyQuestionsByNehaMalhotra = ({ theme, colorStyles }) => {
   // Your 70 interview questions data
-  const interviewQuestions = [
+  const interviewQuestions = useMemo(() => [
     {
       id: 1,
       question: "Tell me about yourself.",
@@ -569,7 +569,7 @@ const SeventyQuestionsByNehaMalhotra = ({ theme, colorStyles }) => {
       answer:
         "Certainly. I managed a project with tight budget constraints by closely monitoring expenses, negotiating with suppliers for favorable terms, and optimizing resource allocation. By prioritizing essential elements and minimizing non-essential costs, we successfully delivered the project within budget.",
     },
-  ];
+  ], []); // Added empty dependency array for useMemo
 
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
   const [openStates, setOpenStates] = useState(
@@ -618,7 +618,7 @@ const SeventyQuestionsByNehaMalhotra = ({ theme, colorStyles }) => {
       setFilteredQuestions(filtered);
     }
     setActiveQuestionIndex(0);
-  }, [searchTerm]);
+  }, [searchTerm, interviewQuestions]); // Added interviewQuestions to dependency array
 
   return (
     <section
