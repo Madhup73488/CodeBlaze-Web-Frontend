@@ -1,8 +1,8 @@
 import { Sun, Moon, Menu, X, ChevronDown, LogIn, User } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useLoader } from "../../contexts/LoaderContext";
-import { useAuth } from "../../contexts/AuthContext";
+import { useLoader } from "../../contexts/LoaderContext"; // Reverted path
+import { useAuth } from "../../contexts/AuthContext"; // Reverted path
 
 function Navbar({ theme, color, toggleTheme, toggleColor, openAuthModal }) {
   const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
@@ -138,24 +138,7 @@ function Navbar({ theme, color, toggleTheme, toggleColor, openAuthModal }) {
     toggleTheme();
   };
 
-  const handleColorToggle = (e) => {
-    e.stopPropagation();
-    toggleColor();
-  };
-
-  const handleContactClick = (e) => {
-    e.preventDefault();
-    closeAllMenus();
-    startLoader();
-
-    setTimeout(() => {
-      stopLoader();
-      window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: "smooth",
-      });
-    }, 1500);
-  };
+  // Removed unused handleColorToggle and handleContactClick functions
 
   const handleOpenAuthModal = () => {
     closeAllMenus();

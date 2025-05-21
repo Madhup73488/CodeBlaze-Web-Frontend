@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function OurTeam({ theme, color }) {
+function OurTeamPage({ theme, color }) { // Renamed component
   const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
   const [activeTab, setActiveTab] = useState("leadership");
 
@@ -241,7 +241,7 @@ function OurTeam({ theme, color }) {
       <style jsx>{`
         .team-container {
           padding: 2rem 5%;
-          max-width: 1200px;
+          max-width: 100%; /* Changed from 1200px */
           margin: 0 auto;
         }
 
@@ -439,4 +439,4 @@ function OurTeam({ theme, color }) {
   );
 }
 
-export default OurTeam;
+export default OurTeamPage; // Renamed export

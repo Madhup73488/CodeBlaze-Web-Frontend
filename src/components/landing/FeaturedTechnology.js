@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
-const FeaturedTechnology = ({ theme = "light" }) => {
+const FeaturedTechnology = ({ theme = "light", color = "orange" }) => { // Added color prop
+  const primaryColor = color === "purple" ? "#a855f7" : "#f97316"; // Define primaryColor
   const containerRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -115,9 +116,11 @@ const FeaturedTechnology = ({ theme = "light" }) => {
   return (
     <div
       ref={containerRef}
-      className={`w-full py-16 lg:py-24 ${
-        isDark ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
-      }`}
+      className="w-full py-16 lg:py-24" // Removed theme classes from here
+      style={{
+        backgroundColor: `var(--bg-primary)`, // Use CSS variable
+        color: `var(--text-primary)` // Use CSS variable
+      }}
     >
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
@@ -132,10 +135,11 @@ const FeaturedTechnology = ({ theme = "light" }) => {
               ${isVisible ? "animate-expand-width" : "w-0"}`}
           />
           <p
-            className={`mt-4 text-lg max-w-2xl mx-auto ${
-              isDark ? "text-gray-300" : "text-gray-600"
-            }
+            className={`mt-4 text-lg max-w-2xl mx-auto 
               ${isVisible ? "animate-fade-in-up delay-200" : "opacity-0"}`}
+            // Text color will be inherited from parent div's var(--text-primary)
+            // If a secondary text color is desired, use var(--text-secondary)
+            style={{ color: `var(--text-secondary)`}} 
           >
             Optimized solutions built with industry-leading technologies
           </p>
@@ -155,9 +159,11 @@ const FeaturedTechnology = ({ theme = "light" }) => {
             >
               <div
                 className={`flex items-center justify-center p-6 rounded-full 
-                ${isDark ? "bg-gray-800" : "bg-white"} shadow-xl border ${
-                  isDark ? "border-gray-700" : "border-gray-200"
-                }`}
+                 shadow-xl border`}
+                style={{
+                  backgroundColor: `var(--bg-secondary)`, // Use CSS variable for card-like background
+                  borderColor: isDark ? "var(--border-dark, #444444)" : "var(--border-light, #e5e7eb)" // Assuming these vars or use direct values
+                }}
               >
                 <div className="text-orange-500 mr-3">
                   <svg
@@ -209,13 +215,14 @@ const FeaturedTechnology = ({ theme = "light" }) => {
                         index === activeIndex
                           ? "scale-125 ring-2 ring-offset-2"
                           : ""
-                      }
-                      ${isDark ? "bg-gray-800" : "bg-white"}`}
+                      }`}
                     style={{
+                      backgroundColor: `var(--bg-secondary)`, // Use CSS variable
                       color: tech.color,
                       boxShadow:
                         index === activeIndex ? `0 0 20px ${tech.color}40` : "",
                       ringColor: tech.color,
+                      borderColor: isDark ? "var(--border-dark, #444444)" : "var(--border-light, #e5e7eb)"
                     }}
                   >
                     <svg viewBox="0 0 24 24" className="w-6 h-6">
@@ -230,11 +237,12 @@ const FeaturedTechnology = ({ theme = "light" }) => {
           {/* Right column - Tech details */}
           <div className="w-full lg:w-1/2 flex flex-col">
             <div
-              className={`rounded-lg ${
-                isDark ? "bg-gray-800" : "bg-white"
-              } shadow-lg p-8
-                border ${isDark ? "border-gray-700" : "border-gray-100"}
+              className={`rounded-lg shadow-lg p-8 border
                 ${isVisible ? "animate-fade-in-right" : "opacity-0"}`}
+              style={{
+                backgroundColor: `var(--bg-secondary)`, // Use CSS variable
+                borderColor: isDark ? "var(--border-dark, #444444)" : "var(--border-light, #e5e7eb)"
+              }}
             >
               {/* Active technology information */}
               <div className="flex items-center mb-6">
@@ -254,9 +262,8 @@ const FeaturedTechnology = ({ theme = "light" }) => {
                     {technologies[activeIndex].name}
                   </h3>
                   <span
-                    className={`text-sm ${
-                      isDark ? "text-gray-400" : "text-gray-500"
-                    }`}
+                    className="text-sm"
+                    style={{color: `var(--text-secondary)`}}
                   >
                     {technologies[activeIndex].category}
                   </span>
@@ -264,7 +271,8 @@ const FeaturedTechnology = ({ theme = "light" }) => {
               </div>
 
               <p
-                className={`mb-8 ${isDark ? "text-gray-300" : "text-gray-600"}`}
+                className="mb-8"
+                style={{color: `var(--text-secondary)`}}
               >
                 {technologies[activeIndex].description}
               </p>
@@ -277,12 +285,11 @@ const FeaturedTechnology = ({ theme = "light" }) => {
                     (category) => (
                       <div
                         key={category}
-                        className={`px-3 py-2 rounded-md text-center text-sm font-medium
-                        ${
-                          isDark
-                            ? "bg-gray-700 text-gray-200"
-                            : "bg-gray-100 text-gray-800"
-                        }`}
+                        className="px-3 py-2 rounded-md text-center text-sm font-medium"
+                        style={{
+                          backgroundColor: isDark ? "var(--bg-primary-darker, #111827)" : "var(--bg-light-accent, #f3f4f6)", // Assuming these vars or use direct values
+                          color: `var(--text-secondary)`
+                        }}
                       >
                         {category}
                       </div>
@@ -297,14 +304,10 @@ const FeaturedTechnology = ({ theme = "light" }) => {
               {technologies.map((tech, index) => (
                 <button
                   key={`indicator-${tech.name}`}
-                  className={`w-2 h-2 rounded-full transition-all duration-300
-                    ${
-                      index === activeIndex
-                        ? "w-6 bg-orange-500"
-                        : isDark
-                        ? "bg-gray-600"
-                        : "bg-gray-300"
-                    }`}
+                  className={`w-2 h-2 rounded-full transition-all duration-300`}
+                  style={{
+                    backgroundColor: index === activeIndex ? primaryColor : (isDark ? 'var(--border-dark, #4b5563)' : 'var(--border-light, #d1d5db)')
+                  }}
                   onClick={() => setActiveIndex(index)}
                   aria-label={`Select ${tech.name}`}
                 />

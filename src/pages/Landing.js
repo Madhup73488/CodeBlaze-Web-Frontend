@@ -7,7 +7,13 @@ import FeaturedTechnology from "../components/landing/FeaturedTechnology";
 
 const Landing = ({ theme, color }) => {
   return (
-    <div className="careers-page">
+    <div 
+      className="landing-page" // Changed class name
+      style={{
+        backgroundColor: `var(--bg-primary)`,
+        color: `var(--text-primary)`
+      }}
+    >
       <Hero theme={theme} color={color} />
       <Services theme={theme} color={color} />
       <Strategy theme={theme} color={color} />

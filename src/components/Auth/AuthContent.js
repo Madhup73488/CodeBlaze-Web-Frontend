@@ -6,9 +6,9 @@ import RegisterForm from "./RegisterForm";
 import OtpForm from "./OtpForm";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import ResetPasswordForm from "./ResetPasswordForm";
-import SocialLogin from "./SocialLogin";
-import ErrorMessage from "./ErrorMessage";
-import Loader from "./Loader"; // Assuming Loader is also a component
+// import SocialLogin from "./SocialLogin"; // Removed unused import
+// import ErrorMessage from "./ErrorMessage"; // Removed unused import
+// import Loader from "./Loader"; // Removed unused import
 
 function AuthContent({
   authFlowState,
@@ -45,6 +45,7 @@ function AuthContent({
   setShowPassword,
   showConfirmPassword,
   setShowConfirmPassword,
+  theme, // Added theme prop
 }) {
   const renderContent = () => {
     if (loading) {
@@ -64,6 +65,7 @@ function AuthContent({
           primaryColor={primaryColor}
           error={error}
           isButtonLoading={isButtonLoading}
+          theme={theme} // Pass theme
         />
       );
     }
@@ -78,6 +80,7 @@ function AuthContent({
           primaryColor={primaryColor}
           error={error}
           isButtonLoading={isButtonLoading}
+          theme={theme} // Pass theme
         />
       );
     }
@@ -119,6 +122,7 @@ function AuthContent({
           setShowPassword={setShowPassword}
           showConfirmPassword={showConfirmPassword}
           setShowConfirmPassword={setShowConfirmPassword}
+          theme={theme} // Pass theme
         />
       );
     }
@@ -148,6 +152,7 @@ function AuthContent({
             isButtonLoading={isButtonLoading}
             showPassword={showPassword}
             setShowPassword={setShowPassword}
+            theme={theme} // Pass theme
           />
         ) : (
           <RegisterForm
@@ -162,6 +167,7 @@ function AuthContent({
             setShowPassword={setShowPassword}
             showConfirmPassword={showConfirmPassword}
             setShowConfirmPassword={setShowConfirmPassword}
+            theme={theme} // Pass theme
           />
         )}
       </>

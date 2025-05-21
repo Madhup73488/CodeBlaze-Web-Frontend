@@ -19,7 +19,8 @@ const backendFieldMap = {
   // or handle them generically if the backend doesn't provide a simple field name.
 };
 
-const ApplyButton = ({ internship, theme = "light", colors }) => {
+// Added theme and color to props, with defaults if not provided by parent
+const ApplyButton = ({ internship, theme = "light", color = "purple", colors }) => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showApplicationForm, setShowApplicationForm] = useState(false);
@@ -707,6 +708,8 @@ const ApplyButton = ({ internship, theme = "light", colors }) => {
           isOpen={showAuthModal}
           onClose={() => setShowAuthModal(false)}
           onLoginSuccess={handleLoginSuccess}
+          theme={theme} // Pass theme
+          color={color} // Pass color
         />
       )}
 

@@ -833,7 +833,7 @@ function ProjectSupport({ theme, color }) {
 
       <style jsx>{`
         .project-support-container {
-          max-width: 1200px;
+          max-width: 100%; /* Changed from 1200px */
           margin: 0 auto;
           padding: 20px;
           font-family: "Inter", sans-serif;

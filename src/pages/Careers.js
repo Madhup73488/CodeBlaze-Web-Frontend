@@ -21,7 +21,13 @@ const Careers = ({ theme, color }) => {
   };
 
   return (
-    <div className="careers-page">
+    <div 
+      className="careers-page"
+      style={{
+        backgroundColor: `var(--bg-primary)`,
+        color: `var(--text-primary)`
+      }}
+    >
       <CareersHero theme={theme} colorStyles={colorStyles} />
       <CultureSection theme={theme} colorStyles={colorStyles} />
       <BenefitsSection theme={theme} colorStyles={colorStyles} />
