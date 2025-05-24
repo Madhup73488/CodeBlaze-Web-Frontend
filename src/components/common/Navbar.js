@@ -1,81 +1,85 @@
 import { Sun, Moon, Menu, X, ChevronDown, LogIn, User } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useLoader } from "../../contexts/LoaderContext"; // Reverted path
-import { useAuth } from "../../contexts/AuthContext"; // Reverted path
+import { Link } from "react-router-dom"; // Import Link
+import { useLoader } from "../../contexts/LoaderContext"; // Import useLoader
+import codeBlazeLogo from "../../assets/images/codeblazelogoorange.png"; // Import the actual logo
 
-function Navbar({ theme, color, toggleTheme, toggleColor, openAuthModal }) {
+function Navbar({
+  theme = "dark",
+  color = "orange",
+  toggleTheme = () => {},
+  // toggleColor = () => {}, // Assuming toggleColor might be used elsewhere or intended for future use
+  openAuthModal = () => {}, // Prop to open the authentication modal
+  onNavigate = (path) => {
+    console.warn(`Navbar: onNavigate to "${path}" not implemented.`);
+  }, // Prop for navigation (still needed for dropdowns)
+  isAuthenticated, // Add isAuthenticated to props
+  user, // Add user to props
+}) {
+  const { showLoaderFor } = useLoader(); // Use the loader hook
   const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const navigate = useNavigate();
-  const { startLoader, stopLoader } = useLoader();
-  const { isAuthenticated, user, logout } = useAuth();
+
+  // Mock authentication state (can be replaced by global state)
 
   const dropdownRefs = useRef({});
   const profileDropdownRef = useRef(null);
   const navRef = useRef(null);
-  const dropdownContentRef = useRef(null);
 
-  // Check if user is admin
   const isAdmin = user && (user.role === "admin" || user.role === "superadmin");
 
-  useEffect(() => {
-    console.log("Auth state in Navbar:", { isAuthenticated, user, isAdmin });
-  }, [isAuthenticated, user, isAdmin]);
-
-  const closeAllMenus = () => {
+  const closeAllMenus = useCallback(() => {
     setIsMenuOpen(false);
     setActiveDropdown(null);
-  };
+  }, []);
 
   const handleNavigation = useCallback(
     (to) => {
-      startLoader();
       closeAllMenus();
-
-      setTimeout(() => {
-        stopLoader();
-        if (to) {
-          navigate(to);
-        }
-      }, 1500);
+      showLoaderFor(1500); // Show loader for 1.5 seconds on navigation
+      onNavigate(to); // Use the onNavigate prop
     },
-    [navigate, startLoader, stopLoader]
+    [closeAllMenus, onNavigate, showLoaderFor]
   );
 
-  const toggleMobileMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  const toggleMobileMenu = useCallback(() => {
     setActiveDropdown(null);
-  };
+    setIsMenuOpen((prevIsOpen) => !prevIsOpen);
+  }, []);
 
-  const handleMouseEnter = (dropdownName) => {
+  const handleMouseEnter = useCallback((dropdownName) => {
     if (window.innerWidth > 768) {
       setActiveDropdown(dropdownName);
     }
-  };
+  }, []);
 
-  const handleDropdownClick = (dropdownName) => {
-    setActiveDropdown(activeDropdown === dropdownName ? null : dropdownName);
+  const handleDropdownClick = useCallback(
+    (dropdownName) => {
+      const newActiveDropdown =
+        activeDropdown === dropdownName ? null : dropdownName;
+      setActiveDropdown(newActiveDropdown);
 
-    // Scroll to show dropdown content on mobile after a slight delay to allow rendering
-    if (activeDropdown !== dropdownName && window.innerWidth <= 768) {
-      setTimeout(() => {
-        const activeTrigger = document.querySelector(
-          `.dropdown-trigger.active`
-        );
-        if (activeTrigger) {
-          activeTrigger.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      }, 100);
-    }
-  };
+      if (newActiveDropdown && window.innerWidth <= 768) {
+        setTimeout(() => {
+          const triggerElement = dropdownRefs.current[dropdownName];
+          if (triggerElement) {
+            triggerElement.scrollIntoView({
+              behavior: "smooth",
+              block: "nearest",
+            });
+          }
+        }, 100);
+      }
+    },
+    [activeDropdown]
+  );
 
   const handleDropdownSectionClick = useCallback(
     (to, e) => {
       e.preventDefault();
       e.stopPropagation();
-      closeAllMenus();
+      // handleNavigation will call closeAllMenus
       handleNavigation(to);
     },
     [handleNavigation]
@@ -83,48 +87,52 @@ function Navbar({ theme, color, toggleTheme, toggleColor, openAuthModal }) {
 
   const handleClickOutside = useCallback(
     (event) => {
-      if (
-        activeDropdown &&
-        activeDropdown !== "profile" &&
-        dropdownRefs.current[activeDropdown] &&
-        !dropdownRefs.current[activeDropdown].contains(event.target) &&
-        navRef.current &&
-        !navRef.current.contains(event.target)
-      ) {
-        setActiveDropdown(null);
+      if (navRef.current && !navRef.current.contains(event.target)) {
+        if (isMenuOpen) {
+          setIsMenuOpen(false); // This will also trigger setActiveDropdown(null) via an effect
+        }
+        if (activeDropdown && activeDropdown !== "profile") {
+          setActiveDropdown(null);
+        }
       }
 
       if (
         activeDropdown === "profile" &&
         profileDropdownRef.current &&
-        !profileDropdownRef.current.contains(event.target)
+        !profileDropdownRef.current.contains(event.target) &&
+        event.target.closest &&
+        !event.target.closest(".profile-container")
       ) {
         setActiveDropdown(null);
       }
     },
-    [activeDropdown]
+    [activeDropdown, isMenuOpen]
   );
 
   useEffect(() => {
-    if (activeDropdown) {
+    if (isMenuOpen || activeDropdown) {
       document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [activeDropdown, handleClickOutside]);
+  }, [isMenuOpen, activeDropdown, handleClickOutside]);
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 768 && isMenuOpen) {
         setIsMenuOpen(false);
+        setActiveDropdown(null);
       }
     };
-
     window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isMenuOpen]);
+
+  useEffect(() => {
+    if (!isMenuOpen && window.innerWidth <= 768) {
+      setActiveDropdown(null);
+    }
   }, [isMenuOpen]);
 
   const setDropdownRef = (element, name) => {
@@ -138,395 +146,562 @@ function Navbar({ theme, color, toggleTheme, toggleColor, openAuthModal }) {
     toggleTheme();
   };
 
-  // Removed unused handleColorToggle and handleContactClick functions
-
+  // This function will be called by the Login button
   const handleOpenAuthModal = () => {
     closeAllMenus();
-    openAuthModal();
+    openAuthModal(); // Calls the prop passed to the Navbar
   };
 
-  const handleLogout = () => {
-    logout();
-    setActiveDropdown(null);
-    handleNavigation("/");
-  };
+  // The logout logic should be handled by the parent component (App.js) or AuthContext.
+  // This function is removed to prevent undefined state setter calls.
+  // const handleLogout = () => {
+  //   setUser(null);
+  //   setIsAuthenticated(false);
+  //   closeAllMenus();
+  //   handleNavigation("/"); // Navigate to home after logout
+  // };
 
   const userIsAuthenticated = isAuthenticated && user;
 
   return (
     <>
       <nav className={`navbar ${theme}`} ref={navRef}>
-        <div className="navbar-brand">
-          <div
-            className="logo-box pulse"
-            style={{ backgroundColor: primaryColor }}
-          ></div>
-          <Link
-            to="/"
-            className="brand-text"
-            onClick={(e) => {
-              e.preventDefault();
-              handleNavigation("/");
-            }}
-          >
-            CodeBlaze
+        <div className="navbar-container">
+          <Link to="/" className="navbar-brand">
+            <div className="logo-container">
+              <img
+                src={codeBlazeLogo}
+                alt="CodeBlaze Logo"
+                className="navbar-logo-img"
+              />
+              <div className="logo-glow"></div>
+            </div>
+            <span className="brand-text">
+              Code<span className="brand-accent">Blaze</span>
+            </span>
           </Link>
-        </div>
 
-        <div className="hamburger" onClick={toggleMobileMenu}>
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </div>
-
-        <div className={`nav-slide-wrapper ${isMenuOpen ? "open" : ""}`}>
-          <div className="nav-links">
-            <Link
-              to="/"
-              className="link hover-effect"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavigation("/");
-              }}
-            >
-              Home
-            </Link>
-
-            <div
-              className={`link dropdown-trigger hover-effect ${
-                activeDropdown === "who" ? "active" : ""
-              }`}
-              ref={(el) => setDropdownRef(el, "who")}
-              onMouseEnter={() => handleMouseEnter("who")}
-              onClick={() => handleDropdownClick("who")}
-            >
-              Who we are <ChevronDown size={15} className="chevron-icon" />
+          <div
+            className="hamburger"
+            onClick={toggleMobileMenu}
+            role="button"
+            aria-label="Toggle menu"
+            aria-expanded={isMenuOpen.toString()}
+          >
+            <div className="hamburger-box">
+              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </div>
-            {activeDropdown === "who" && (
-              <div
-                className="dropdown-overlay"
-                onMouseEnter={() => handleMouseEnter("who")}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div
-                  className="dropdown-menu-container"
-                  ref={dropdownContentRef}
-                >
-                  <div className="dropdown-content">
-                    <div
-                      className="dropdown-section"
-                      onClick={(e) => handleDropdownSectionClick("/aboutus", e)}
-                    >
-                      <div>
-                        <h3 className="dropdown-title">About Us</h3>
-                        <p className="dropdown-desc">
-                          Learn about our company background
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      className="dropdown-section"
-                      onClick={(e) => handleDropdownSectionClick("/ourteam", e)}
-                    >
-                      <div>
-                        <h3 className="dropdown-title">Our Team</h3>
-                        <p className="dropdown-desc">
-                          Meet our leadership team
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      className="dropdown-section"
-                      onClick={(e) =>
-                        handleDropdownSectionClick("/ourmission", e)
-                      }
-                    >
-                      <div>
-                        <h3 className="dropdown-title">Our Mission</h3>
-                        <p className="dropdown-desc">What drives us forward</p>
-                      </div>
-                    </div>
-                    <div
-                      className="dropdown-section"
-                      onClick={(e) =>
-                        handleDropdownSectionClick("/ourvalues", e)
-                      }
-                    >
-                      <div>
-                        <h3 className="dropdown-title">Our Values</h3>
-                        <p className="dropdown-desc">
-                          The principles we live by
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div
-              className={`link dropdown-trigger hover-effect ${
-                activeDropdown === "forstudents" ? "active" : ""
-              }`}
-              ref={(el) => setDropdownRef(el, "forstudents")}
-              onMouseEnter={() => handleMouseEnter("forstudents")}
-              onClick={() => handleDropdownClick("forstudents")}
-            >
-              For Students <ChevronDown size={15} className="chevron-icon" />
-            </div>
-            {activeDropdown === "forstudents" && (
-              <div
-                className="dropdown-overlay"
-                onMouseEnter={() => handleMouseEnter("forstudents")}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div
-                  className="dropdown-menu-container"
-                  ref={dropdownContentRef}
-                >
-                  <div className="dropdown-content">
-                    <div
-                      className="dropdown-section"
-                      onClick={(e) =>
-                        handleDropdownSectionClick("/placement-guidance", e)
-                      }
-                    >
-                      <div>
-                        <h3 className="dropdown-title">Placement Guidance</h3>
-                        <p className="dropdown-desc">
-                          Personalized support to ace your placements and crack
-                          interviews.
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      className="dropdown-section"
-                      onClick={(e) =>
-                        handleDropdownSectionClick("/internships", e)
-                      }
-                    >
-                      <div>
-                        <h3 className="dropdown-title">Internships</h3>
-                        <p className="dropdown-desc">
-                          Explore real-world internship opportunities and skill
-                          development.
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      className="dropdown-section"
-                      onClick={(e) =>
-                        handleDropdownSectionClick("/project-support", e)
-                      }
-                    >
-                      <div>
-                        <h3 className="dropdown-title">Project Support</h3>
-                        <p className="dropdown-desc">
-                          Get expert help and guidance to complete academic or
-                          personal projects.
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      className="dropdown-section"
-                      onClick={(e) =>
-                        handleDropdownSectionClick("/webinars", e)
-                      }
-                    >
-                      <div>
-                        <h3 className="dropdown-title">Webinars</h3>
-                        <p className="dropdown-desc">
-                          Join interactive webinars hosted by industry experts
-                          and educators.
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      className="dropdown-section"
-                      onClick={(e) =>
-                        handleDropdownSectionClick("/mentorship-programs", e)
-                      }
-                    >
-                      <div>
-                        <h3 className="dropdown-title">Mentorship Programs</h3>
-                        <p className="dropdown-desc">
-                          Connect with mentors for guidance on career and
-                          personal growth.
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      className="dropdown-section"
-                      onClick={(e) =>
-                        handleDropdownSectionClick("/skills-and-roles", e)
-                      }
-                    >
-                      <div>
-                        <h3 className="dropdown-title">Skills & Roles</h3>
-                        <p className="dropdown-desc">
-                          Discover essential skills mapped to trending tech
-                          roles.
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      className="dropdown-section"
-                      onClick={(e) =>
-                        handleDropdownSectionClick("/job-seekers", e)
-                      }
-                    >
-                      <div>
-                        <h3 className="dropdown-title">Job Seekers Portal</h3>
-                        <p className="dropdown-desc">
-                          Get Job Updates as soon as possible, apply it, get
-                          interview call soon, and get hired
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <Link
-              to="/careers"
-              className="link hover-effect"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavigation("/careers");
-              }}
-            >
-              Careers
-            </Link>
-            <Link
-              to="/resources"
-              className="link hover-effect"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavigation("/resources");
-              }}
-            >
-              Resources
-            </Link>
           </div>
 
-          <div className="nav-actions">
-            <button
-              className="theme-toggle"
-              onClick={handleThemeToggle}
-              title={
-                theme === "dark"
-                  ? "Switch to light mode"
-                  : "Switch to dark mode"
-              }
-              style={{
-                color: theme === "dark" ? "#ffffff" : "#0a0a0a",
-              }}
-            >
-              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
-
-            {userIsAuthenticated ? (
-              <div
-                className="profile-container"
-                ref={profileDropdownRef}
-                onClick={() => handleDropdownClick("profile")}
-              >
-                <div className="profile-content">
-                  <div className="profile-image-container">
-                    {user?.photoURL ? (
-                      <img
-                        src={user.photoURL}
-                        alt="Profile"
-                        className="profile-image"
-                      />
-                    ) : (
-                      <div
-                        className="profile-placeholder"
-                        style={{ backgroundColor: primaryColor }}
-                      >
-                        <User size={16} color="#fff" />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {activeDropdown === "profile" && (
-                  <div className="profile-dropdown">
-                    <div className="profile-dropdown-header">
-                      <p className="profile-name">
-                        {user?.name || user?.displayName || "User"}
-                      </p>
-                      <p className="profile-email">{user?.email || ""}</p>
-                      {isAdmin && <p className="profile-role">Admin</p>}
-                    </div>
-                    <div className="profile-dropdown-menu">
-                      <div
-                        className="profile-menu-item"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleNavigation("/profile");
-                        }}
-                      >
-                        My Profile
-                      </div>
-                      <div
-                        className="profile-menu-item"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // If user is admin, go to admin dashboard, otherwise profile dashboard
-                          handleNavigation(
-                            isAdmin ? "/admin/dashboard" : "/profile/dashboard"
-                          );
-                        }}
-                      >
-                        Dashboard
-                      </div>
-                      {isAdmin && (
-                        <div
-                          className="profile-menu-item"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleNavigation("/admin/settings");
-                          }}
-                        >
-                          Admin Settings
-                        </div>
-                      )}
-                      <div
-                        className="profile-menu-item"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleNavigation("/settings");
-                        }}
-                      >
-                        Settings
-                      </div>
-                      <div
-                        className="profile-menu-item logout"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleLogout();
-                        }}
-                      >
-                        Logout
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <button
-                className="login-button"
-                onClick={handleOpenAuthModal}
-                style={{
-                  backgroundColor: "transparent",
-                  color: primaryColor,
-                  border: `1px solid ${primaryColor}`,
+          <div className={`nav-slide-wrapper ${isMenuOpen ? "open" : ""}`}>
+            <div className="nav-links">
+              <Link
+                to="/"
+                className="link hover-effect"
+                onClick={() => {
+                  closeAllMenus(); // Close menu on click
+                  showLoaderFor(1500);
                 }}
               >
-                <LogIn size={16} />
-                <span>Login</span>
+                <span>Home</span>
+                <div className="link-underline"></div>
+              </Link>
+
+              <div
+                className={`link dropdown-trigger hover-effect ${
+                  activeDropdown === "who" ? "active" : ""
+                }`}
+                ref={(el) => setDropdownRef(el, "who")}
+                onMouseEnter={() => handleMouseEnter("who")}
+                onClick={() => handleDropdownClick("who")}
+                role="button"
+                tabIndex={0}
+                aria-haspopup="true"
+                aria-expanded={(activeDropdown === "who").toString()}
+                onKeyPress={(e) =>
+                  e.key === "Enter" && handleDropdownClick("who")
+                }
+              >
+                <span>Who we are</span>
+                <ChevronDown size={14} className="chevron-icon" />
+                <div className="link-underline"></div>
+              </div>
+
+              {activeDropdown === "who" && (
+                <div
+                  className="dropdown-overlay"
+                  onMouseEnter={() => handleMouseEnter("who")}
+                  onMouseLeave={() =>
+                    window.innerWidth > 768 && setActiveDropdown(null)
+                  }
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="dropdown-menu-container">
+                    <div className="dropdown-content">
+                      <div
+                        className="dropdown-section"
+                        onClick={(e) => {
+                          closeAllMenus(); // Close menu on click
+                          handleDropdownSectionClick("/aboutus", e);
+                        }}
+                        role="menuitem"
+                        tabIndex={0}
+                        onKeyPress={(e) =>
+                          e.key === "Enter" &&
+                          handleDropdownSectionClick("/aboutus", e)
+                        }
+                      >
+                        <div className="dropdown-icon">📋</div>
+                        <div>
+                          <h3 className="dropdown-title">About Us</h3>
+                          <p className="dropdown-desc">
+                            Learn about our company background and story
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        className="dropdown-section"
+                        onClick={(e) => {
+                          closeAllMenus(); // Close menu on click
+                          handleDropdownSectionClick("/ourteam", e);
+                        }}
+                        role="menuitem"
+                        tabIndex={0}
+                        onKeyPress={(e) =>
+                          e.key === "Enter" &&
+                          handleDropdownSectionClick("/ourteam", e)
+                        }
+                      >
+                        <div className="dropdown-icon">👥</div>
+                        <div>
+                          <h3 className="dropdown-title">Our Team</h3>
+                          <p className="dropdown-desc">
+                            Meet our passionate leadership team
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        className="dropdown-section"
+                        onClick={(e) => {
+                          closeAllMenus(); // Close menu on click
+                          handleDropdownSectionClick("/ourmission", e);
+                        }}
+                        role="menuitem"
+                        tabIndex={0}
+                        onKeyPress={(e) =>
+                          e.key === "Enter" &&
+                          handleDropdownSectionClick("/ourmission", e)
+                        }
+                      >
+                        <div className="dropdown-icon">🎯</div>
+                        <div>
+                          <h3 className="dropdown-title">Our Mission</h3>
+                          <p className="dropdown-desc">
+                            What drives us forward every day
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        className="dropdown-section"
+                        onClick={(e) => {
+                          closeAllMenus(); // Close menu on click
+                          handleDropdownSectionClick("/ourvalues", e);
+                        }}
+                        role="menuitem"
+                        tabIndex={0}
+                        onKeyPress={(e) =>
+                          e.key === "Enter" &&
+                          handleDropdownSectionClick("/ourvalues", e)
+                        }
+                      >
+                        <div className="dropdown-icon">💎</div>
+                        <div>
+                          <h3 className="dropdown-title">Our Values</h3>
+                          <p className="dropdown-desc">
+                            The core principles we live by
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div
+                className={`link dropdown-trigger hover-effect ${
+                  activeDropdown === "forstudents" ? "active" : ""
+                }`}
+                ref={(el) => setDropdownRef(el, "forstudents")}
+                onMouseEnter={() => handleMouseEnter("forstudents")}
+                onClick={() => handleDropdownClick("forstudents")}
+                role="button"
+                tabIndex={0}
+                aria-haspopup="true"
+                aria-expanded={(activeDropdown === "forstudents").toString()}
+                onKeyPress={(e) =>
+                  e.key === "Enter" && handleDropdownClick("forstudents")
+                }
+              >
+                <span>For Students</span>
+                <ChevronDown size={14} className="chevron-icon" />
+                <div className="link-underline"></div>
+              </div>
+
+              {activeDropdown === "forstudents" && (
+                <div
+                  className="dropdown-overlay"
+                  onMouseEnter={() => handleMouseEnter("forstudents")}
+                  onMouseLeave={() =>
+                    window.innerWidth > 768 && setActiveDropdown(null)
+                  }
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="dropdown-menu-container">
+                    <div className="dropdown-content">
+                      <div
+                        className="dropdown-section"
+                        onClick={(e) => {
+                          closeAllMenus(); // Close menu on click
+                          handleDropdownSectionClick("/placement-guidance", e);
+                        }}
+                        role="menuitem"
+                        tabIndex={0}
+                      >
+                        <div className="dropdown-icon">🎓</div>
+                        <div>
+                          <h3 className="dropdown-title">Placement Guidance</h3>
+                          <p className="dropdown-desc">
+                            Personalized support to ace your placements
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        className="dropdown-section"
+                        onClick={(e) => {
+                          closeAllMenus(); // Close menu on click
+                          handleDropdownSectionClick("/internships", e);
+                        }}
+                        role="menuitem"
+                        tabIndex={0}
+                      >
+                        <div className="dropdown-icon">💼</div>
+                        <div>
+                          <h3 className="dropdown-title">Internships</h3>
+                          <p className="dropdown-desc">
+                            Explore real-world internship opportunities
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        className="dropdown-section"
+                        onClick={(e) => {
+                          closeAllMenus(); // Close menu on click
+                          handleDropdownSectionClick("/project-support", e);
+                        }}
+                        role="menuitem"
+                        tabIndex={0}
+                      >
+                        <div className="dropdown-icon">🚀</div>
+                        <div>
+                          <h3 className="dropdown-title">Project Support</h3>
+                          <p className="dropdown-desc">
+                            Get expert help for academic projects
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        className="dropdown-section"
+                        onClick={(e) => {
+                          closeAllMenus(); // Close menu on click
+                          handleDropdownSectionClick("/webinars", e);
+                        }}
+                        role="menuitem"
+                        tabIndex={0}
+                      >
+                        <div className="dropdown-icon">📺</div>
+                        <div>
+                          <h3 className="dropdown-title">Webinars</h3>
+                          <p className="dropdown-desc">
+                            Join interactive sessions with experts
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        className="dropdown-section"
+                        onClick={(e) => {
+                          closeAllMenus(); // Close menu on click
+                          handleDropdownSectionClick("/mentorship-programs", e);
+                        }}
+                        role="menuitem"
+                        tabIndex={0}
+                      >
+                        <div className="dropdown-icon">🤝</div>
+                        <div>
+                          <h3 className="dropdown-title">Mentorship</h3>
+                          <p className="dropdown-desc">
+                            Connect with mentors for guidance
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        className="dropdown-section"
+                        onClick={(e) => {
+                          closeAllMenus(); // Close menu on click
+                          handleDropdownSectionClick("/skills-and-roles", e);
+                        }}
+                        role="menuitem"
+                        tabIndex={0}
+                      >
+                        <div className="dropdown-icon">⚡</div>
+                        <div>
+                          <h3 className="dropdown-title">Skills & Roles</h3>
+                          <p className="dropdown-desc">
+                            Discover essential tech skills
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        className="dropdown-section"
+                        onClick={(e) => {
+                          closeAllMenus(); // Close menu on click
+                          handleDropdownSectionClick("/job-seekers", e);
+                        }}
+                        role="menuitem"
+                        tabIndex={0}
+                      >
+                        <div className="dropdown-icon">🔍</div>
+                        <div>
+                          <h3 className="dropdown-title">Job Seekers</h3>
+                          <p className="dropdown-desc">
+                            Instant job updates & calls
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <Link
+                to="/careers"
+                className="link hover-effect"
+                onClick={() => {
+                  closeAllMenus(); // Close menu on click
+                  showLoaderFor(1500);
+                }}
+              >
+                <span>Careers</span>
+                <div className="link-underline"></div>
+              </Link>
+              <Link
+                to="/resources"
+                className="link hover-effect"
+                onClick={() => {
+                  closeAllMenus(); // Close menu on click
+                  showLoaderFor(1500);
+                }}
+              >
+                <span>Resources</span>
+                <div className="link-underline"></div>
+              </Link>
+            </div>
+
+            <div className="nav-actions">
+              <button
+                className="theme-toggle"
+                onClick={handleThemeToggle}
+                title={
+                  theme === "dark"
+                    ? "Switch to light mode"
+                    : "Switch to dark mode"
+                }
+                aria-label={
+                  theme === "dark"
+                    ? "Switch to light mode"
+                    : "Switch to dark mode"
+                }
+              >
+                <div className="theme-icon-container">
+                  {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+                </div>
               </button>
-            )}
+
+              {userIsAuthenticated ? (
+                <div
+                  className="profile-container"
+                  onClick={() => handleDropdownClick("profile")}
+                  role="button"
+                  tabIndex={0}
+                  aria-haspopup="true"
+                  aria-expanded={(activeDropdown === "profile").toString()}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" && handleDropdownClick("profile")
+                  }
+                >
+                  <div className="profile-content">
+                    <div className="profile-image-container">
+                      {user?.photoURL ? (
+                        <img
+                          src={user.photoURL}
+                          alt="Profile"
+                          className="profile-image"
+                        />
+                      ) : (
+                        <div className="profile-placeholder">
+                          <User size={16} color="#fff" />
+                        </div>
+                      )}
+                      <div className="profile-status-dot"></div>
+                    </div>
+                    <div className="profile-info">
+                      <span className="profile-name">
+                        {user?.name?.split(" ")[0]}
+                      </span>
+                      <ChevronDown
+                        size={12}
+                        className={`profile-chevron ${
+                          activeDropdown === "profile" ? "open" : ""
+                        }`}
+                      />
+                    </div>
+                  </div>
+
+                  {activeDropdown === "profile" && (
+                    <div
+                      className="profile-dropdown"
+                      ref={profileDropdownRef}
+                      role="menu"
+                    >
+                      <div className="profile-dropdown-header">
+                        <div className="profile-header-avatar">
+                          {user?.photoURL ? (
+                            <img src={user.photoURL} alt="Profile" />
+                          ) : (
+                            <div className="profile-header-placeholder">
+                              <User size={20} color="#fff" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="profile-header-info">
+                          <p className="profile-header-name">
+                            {user?.name || user?.displayName || "User"}
+                          </p>
+                          <p className="profile-header-email">
+                            {user?.email || ""}
+                          </p>
+                          {isAdmin && (
+                            <span className="profile-role-badge">Admin</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="profile-dropdown-menu">
+                        <div
+                          className="profile-menu-item"
+                          role="menuitem"
+                          tabIndex={0}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleNavigation("/profile");
+                          }}
+                          onKeyPress={(e) =>
+                            e.key === "Enter" && handleNavigation("/profile")
+                          }
+                        >
+                          <span>👤</span>
+                          <span>My Profile</span>
+                        </div>
+                        <div
+                          className="profile-menu-item"
+                          role="menuitem"
+                          tabIndex={0}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleNavigation(
+                              isAdmin
+                                ? "/admin/dashboard"
+                                : "/profile/dashboard"
+                            );
+                          }}
+                          onKeyPress={(e) =>
+                            e.key === "Enter" &&
+                            handleNavigation(
+                              isAdmin
+                                ? "/admin/dashboard"
+                                : "/profile/dashboard"
+                            )
+                          }
+                        >
+                          <span>📊</span>
+                          <span>Dashboard</span>
+                        </div>
+                        {isAdmin && (
+                          <div
+                            className="profile-menu-item"
+                            role="menuitem"
+                            tabIndex={0}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleNavigation("/admin/settings");
+                            }}
+                            onKeyPress={(e) =>
+                              e.key === "Enter" &&
+                              handleNavigation("/admin/settings")
+                            }
+                          >
+                            <span>⚙️</span>
+                            <span>Admin Settings</span>
+                          </div>
+                        )}
+                        <div
+                          className="profile-menu-item"
+                          role="menuitem"
+                          tabIndex={0}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleNavigation("/settings");
+                          }}
+                          onKeyPress={(e) =>
+                            e.key === "Enter" && handleNavigation("/settings")
+                          }
+                        >
+                          <span>🔧</span>
+                          <span>Settings</span>
+                        </div>
+                        <div className="profile-menu-divider"></div>
+                        <div
+                          className="profile-menu-item logout"
+                          role="menuitem"
+                          tabIndex={0}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // handleLogout(); // Removed, logout should be handled by parent
+                          }}
+                          onKeyPress={(e) =>
+                            e.key === "Enter" &&
+                            // handleLogout() // Removed, logout should be handled by parent
+                            console.log(
+                              "Logout action triggered (handled by parent)"
+                            )
+                          }
+                        >
+                          <span>🚪</span>
+                          <span>Logout</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                // Login button now calls handleOpenAuthModal
+                <button className="login-button" onClick={handleOpenAuthModal}>
+                  <LogIn size={16} />
+                  <span>Login</span>
+                  <div className="button-shine"></div>
+                </button>
+                // If you still want the mock toggle for quick demo, you could add a separate, temporary button
+                // For example: <button onClick={toggleAuthForDemo}>Demo Toggle Auth</button>
+              )}
+            </div>
           </div>
         </div>
       </nav>
@@ -536,375 +711,670 @@ function Navbar({ theme, color, toggleTheme, toggleColor, openAuthModal }) {
       )}
 
       <style jsx>{`
-        /* Base navbar styles */
+        /* Paste the exact CSS from your previous component version here */
+        /* Ensure it includes all styles for .navbar, .navbar-container, .profile-chevron.open, etc. */
+        /* AND all @media (max-width: 768px) styles for responsiveness */
+
         .navbar {
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+          width: 100%;
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border-bottom: 1px solid
+            ${theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"};
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .navbar.dark {
+          background: linear-gradient(
+            135deg,
+            rgba(10, 10, 10, 0.95) 0%,
+            rgba(15, 15, 15, 0.97) 50%,
+            rgba(10, 10, 10, 0.95) 100%
+          );
+          color: #ffffff;
+        }
+
+        .navbar.light {
+          background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(250, 250, 250, 0.97) 50%,
+            rgba(255, 255, 255, 0.95) 100%
+          );
+          color: #0a0a0a;
+        }
+
+        .navbar-container {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 0.75rem 5%;
-          flex-wrap: wrap;
-          position: sticky;
-          top: 0;
-          z-index: 50;
-          width: 100%;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-          transition: all 0.3s ease;
+          padding: 0.875rem 5%;
+          max-width: 1400px;
+          margin: 0 auto;
+          position: relative;
         }
-        .navbar.dark {
-          background-color: rgba(10, 10, 10, 0.97);
-          color: #ffffff;
-        }
-        .navbar.light {
-          background-color: rgba(255, 255, 255, 0.97);
-          color: #0a0a0a;
-        }
+
         .navbar-brand {
           display: flex;
           align-items: center;
-          gap: 0.75rem;
-          font-weight: bold;
+          font-weight: 700;
           font-size: 1.5rem;
-          transition: transform 0.2s ease;
-        }
-        .navbar-brand:hover {
-          transform: translateY(-2px);
-        }
-        .logo-box {
-          width: 2rem;
-          height: 2rem;
-          border-radius: 6px;
-          position: relative;
-          overflow: hidden;
-        }
-        .pulse {
-          animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-          0% {
-            box-shadow: 0 0 0 0
-              rgba(
-                ${primaryColor === "#a855f7" ? "168, 85, 247" : "249, 115, 22"},
-                0.4
-              );
-          }
-          70% {
-            box-shadow: 0 0 0 8px
-              rgba(
-                ${primaryColor === "#a855f7" ? "168, 85, 247" : "249, 115, 22"},
-                0
-              );
-          }
-          100% {
-            box-shadow: 0 0 0 0
-              rgba(
-                ${primaryColor === "#a855f7" ? "168, 85, 247" : "249, 115, 22"},
-                0
-              );
-          }
-        }
-        .brand-text {
+          cursor: pointer;
           text-decoration: none;
           color: inherit;
-          letter-spacing: 0.5px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
         }
+
+        .navbar-brand:hover {
+          transform: translateY(-1px);
+        }
+        .navbar-brand:focus-visible {
+          outline: 2px solid ${primaryColor};
+          outline-offset: 2px;
+          border-radius: 4px;
+        }
+
+        .logo-container {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .navbar-logo-img {
+          height: 2.5rem;
+          width: 2.5rem;
+          border-radius: 12px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 2;
+          position: relative;
+        }
+
+        .logo-glow {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 3rem;
+          height: 3rem;
+          background: radial-gradient(
+            circle,
+            ${primaryColor}40 0%,
+            transparent 70%
+          );
+          border-radius: 50%;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          z-index: 1;
+        }
+
+        .navbar-brand:hover .logo-glow {
+          opacity: 1;
+        }
+
+        .brand-text {
+          letter-spacing: -0.5px;
+          background: linear-gradient(
+            135deg,
+            ${theme === "dark" ? "#ffffff" : "#0a0a0a"} 0%,
+            ${theme === "dark" ? "#e5e5e5" : "#374151"} 100%
+          );
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .brand-accent {
+          color: ${primaryColor};
+          -webkit-text-fill-color: ${primaryColor};
+        }
+
         .hamburger {
           display: none;
           cursor: pointer;
           padding: 0.5rem;
-          border-radius: 0.25rem;
-          transition: all 0.2s ease;
-        }
-        .hamburger:hover {
-          background-color: ${theme === "dark"
-            ? "rgba(255,255,255,0.1)"
+          border-radius: 12px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          background: ${theme === "dark"
+            ? "rgba(255,255,255,0.05)"
             : "rgba(0,0,0,0.05)"};
+          z-index: 1002;
         }
 
-        /* Desktop navigation - default flex row */
+        .hamburger:hover {
+          background: ${theme === "dark"
+            ? "rgba(255,255,255,0.1)"
+            : "rgba(0,0,0,0.1)"};
+          transform: scale(1.05);
+        }
+        .hamburger:focus-visible {
+          outline: 2px solid ${primaryColor};
+          outline-offset: 2px;
+        }
+
+        .hamburger-box {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
         .nav-slide-wrapper {
           display: flex;
           align-items: center;
-          justify-content: flex-end;
-          gap: 2.5rem;
-          transition: all 0.3s ease;
+          gap: 3rem;
+          transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+            opacity 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        /* Nav links and actions inline on desktop */
         .nav-links {
           display: flex;
           gap: 2rem;
           position: relative;
           align-items: center;
         }
+
         .nav-actions {
           display: flex;
-          gap: 1.25rem;
+          gap: 1rem;
           align-items: center;
         }
+
         .link {
           cursor: pointer;
           position: relative;
-          padding: 0.5rem 0;
+          padding: 0.75rem 0;
           display: flex;
           align-items: center;
-          gap: 0.35rem;
+          gap: 0.5rem;
           text-decoration: none;
           color: inherit;
           font-weight: 500;
-          transition: all 0.2s ease;
+          font-size: 0.95rem;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           white-space: nowrap;
+          border-radius: 4px;
+        }
+        .link:focus-visible {
+          outline: 2px solid ${primaryColor};
+          outline-offset: -1px;
         }
 
-        /* Hover effect for links */
-        .hover-effect:after {
-          content: "";
+        .link span {
+          position: relative;
+        }
+
+        .link-underline {
           position: absolute;
+          bottom: -2px;
+          left: 0;
           width: 0;
           height: 2px;
-          bottom: 0;
-          left: 0;
-          background-color: ${primaryColor};
-          transition: width 0.3s ease;
-        }
-        .hover-effect:hover:after {
-          width: 100%;
-        }
-        .hover-effect:hover {
-          color: ${primaryColor};
+          background: linear-gradient(
+            90deg,
+            ${primaryColor},
+            ${primaryColor}80
+          );
+          transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          border-radius: 1px;
         }
 
-        /* Dropdown styles */
+        .hover-effect:hover .link-underline,
+        .link.dropdown-trigger.active .link-underline {
+          width: 100%;
+        }
+
+        .hover-effect:hover,
+        .link.dropdown-trigger.active {
+          color: ${primaryColor};
+        }
+        .hover-effect:hover {
+          transform: translateY(-1px);
+        }
+
         .dropdown-trigger {
           position: relative;
         }
-        .dropdown-trigger.active {
-          color: ${primaryColor};
+
+        .chevron-icon {
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          opacity: 0.7;
         }
-        .dropdown-trigger.active:after {
-          width: 100%;
-        }
-        .dropdown-trigger .chevron-icon {
-          transition: transform 0.3s ease;
-        }
+
         .dropdown-trigger.active .chevron-icon {
           transform: rotate(180deg);
+          opacity: 1;
         }
+
         .dropdown-overlay {
           position: fixed;
-          top: 4rem;
+          top: calc(4.5rem - 1px);
           left: 0;
           width: 100%;
-          background-color: ${theme === "dark"
-            ? "rgba(17, 17, 17, 0.98)"
-            : "rgba(255, 255, 255, 0.98)"};
-          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-          padding: 2rem 5%;
-          z-index: 40;
+          background: ${theme === "dark"
+            ? "linear-gradient(135deg, rgba(15, 15, 15, 0.98) 0%, rgba(20, 20, 20, 0.99) 100%)"
+            : "linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(250, 250, 250, 0.99) 100%)"};
+          backdrop-filter: blur(15px);
+          -webkit-backdrop-filter: blur(15px);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+          padding: 2.5rem 5%;
+          z-index: 999;
           overflow-y: auto;
-          animation: fadeInDown 0.3s ease;
-          max-height: calc(100vh - 4rem);
+          animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          max-height: calc(100vh - (4.5rem - 1px));
+          border-bottom: 1px solid
+            ${theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"};
         }
-        @keyframes fadeInDown {
+
+        @keyframes slideDown {
           from {
             opacity: 0;
-            transform: translateY(-10px);
           }
           to {
             opacity: 1;
-            transform: translateY(0);
           }
         }
+
         .dropdown-menu-container {
-          max-width: 1200px;
+          max-width: 1400px;
           margin: 0 auto;
           display: flex;
           width: 100%;
         }
+
         .dropdown-content {
-          max-width: 1200px;
-          margin: 0 auto;
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
           gap: 1.5rem;
           width: 100%;
         }
+
         .dropdown-section {
-          padding: 1rem;
-          transition: all 0.2s ease;
-          border-radius: 10px;
+          display: flex;
+          align-items: flex-start;
+          gap: 1rem;
+          padding: 1.5rem;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          border-radius: 16px;
           border: 1px solid
-            ${theme === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)"};
-        }
-        .dropdown-section:hover {
-          background-color: ${theme === "dark" ? "#1a1a1a" : "#f3f4f6"};
+            ${theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"};
+          background: ${theme === "dark"
+            ? "linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.05) 100%)"
+            : "linear-gradient(135deg, rgba(0,0,0,0.01) 0%, rgba(0,0,0,0.03) 100%)"};
           cursor: pointer;
-          transform: translateY(-3px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+          position: relative;
+          overflow: hidden;
         }
+        .dropdown-section:focus-visible {
+          outline: 2px solid ${primaryColor};
+          outline-offset: 0px;
+        }
+
+        .dropdown-section::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, ${primaryColor}1A, transparent);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+
+        .dropdown-section:hover::before {
+          opacity: 1;
+        }
+
+        .dropdown-section:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+          border-color: ${primaryColor}66;
+        }
+
+        .dropdown-icon {
+          font-size: 1.5rem;
+          width: 2.5rem;
+          height: 2.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: ${theme === "dark"
+            ? "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)"
+            : "linear-gradient(135deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.02) 100%)"};
+          border-radius: 12px;
+          flex-shrink: 0;
+          transition: all 0.3s ease;
+        }
+
+        .dropdown-section:hover .dropdown-icon {
+          transform: scale(1.1);
+          background: linear-gradient(
+            135deg,
+            ${primaryColor}33,
+            ${primaryColor}1A
+          );
+        }
+
         .dropdown-title {
           font-weight: 600;
           font-size: 1.1rem;
           margin: 0 0 0.5rem 0;
           color: ${primaryColor};
+          line-height: 1.3;
         }
+
         .dropdown-desc {
           font-size: 0.9rem;
           margin: 0;
-          color: ${theme === "dark" ? "#e5e5e5" : "#4b5563"};
-          line-height: 1.4;
+          color: ${theme === "dark" ? "#c1c1c1" : "#6b7280"};
+          line-height: 1.5;
         }
 
-        /* Profile styles */
-        .profile-container {
-          position: relative;
-          cursor: pointer;
-        }
-        .profile-content {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.25rem;
-        }
-        .profile-text {
-          font-size: 0.875rem;
-          font-weight: 500;
-          color: ${theme === "dark" ? "#fff" : "#000"};
-        }
-        .profile-image-container {
-          width: 2.5rem;
-          height: 2.5rem;
-          border-radius: 50%;
-          overflow: hidden;
-          border: 2px solid ${primaryColor};
-          transition: all 0.3s ease;
-          flex-shrink: 0;
-        }
-        .profile-image-container:hover {
-          transform: translateY(-2px) scale(1.05);
-          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        .profile-image {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-        .profile-placeholder {
-          width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .profile-dropdown {
-          position: absolute;
-          top: calc(100% + 0.75rem);
-          right: 0;
-          min-width: 220px;
-          background-color: ${theme === "dark" ? "#111" : "#fff"};
+        .theme-toggle {
+          padding: 0.75rem;
           border-radius: 12px;
-          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-          overflow: hidden;
-          z-index: 50;
-          animation: fadeInUp 0.3s ease;
-        }
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .profile-dropdown-header {
-          padding: 1.25rem;
-          border-bottom: 1px solid ${theme === "dark" ? "#333" : "#eee"};
-        }
-        .profile-name {
-          font-weight: 600;
-          margin: 0 0 0.25rem 0;
-          color: ${theme === "dark" ? "#fff" : "#000"};
-        }
-        .profile-email {
-          font-size: 0.8rem;
-          margin: 0;
-          color: ${theme === "dark" ? "#aaa" : "#666"};
-        }
-        .profile-dropdown-menu {
-          padding: 0.5rem 0;
-        }
-        .profile-menu-item {
-          padding: 0.75rem 1.25rem;
-          transition: all 0.2s ease;
-          cursor: pointer;
-          color: ${theme === "dark" ? "#eee" : "#333"};
-          font-weight: 500;
-        }
-        .profile-menu-item:hover {
-          background-color: ${theme === "dark" ? "#222" : "#f5f5f5"};
-          padding-left: 1.5rem;
-        }
-        .profile-menu-item.logout {
-          color: #ef4444;
-          border-top: 1px solid ${theme === "dark" ? "#333" : "#eee"};
-          margin-top: 0.5rem;
-        }
-
-        /* Button styles */
-        .theme-toggle,
-        .color-toggle {
-          padding: 0.5rem;
-          border-radius: 0.5rem;
           background: ${theme === "dark"
-            ? "rgba(255,255,255,0.1)"
-            : "rgba(0,0,0,0.05)"};
-          border: none;
+            ? "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)"
+            : "linear-gradient(135deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.02) 100%)"};
+          border: 1px solid
+            ${theme === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"};
           cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: all 0.2s ease;
+          color: inherit;
+          position: relative;
+          overflow: hidden;
         }
-        .theme-toggle:hover,
-        .color-toggle:hover {
-          transform: translateY(-2px);
-          background: ${theme === "dark"
-            ? "rgba(255,255,255,0.15)"
-            : "rgba(0,0,0,0.1)"};
+        .theme-toggle:focus-visible {
+          outline: 2px solid ${primaryColor};
+          outline-offset: 2px;
         }
+
+        .theme-toggle::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, ${primaryColor}33, transparent);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+
+        .theme-toggle:hover::before {
+          opacity: 1;
+        }
+
+        .theme-toggle:hover {
+          transform: translateY(-2px) scale(1.05);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+          border-color: ${primaryColor}66;
+        }
+
+        .theme-icon-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          z-index: 1;
+        }
+
         .login-button {
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          padding: 0.6rem 1.25rem;
-          border-radius: 0.5rem;
-          font-weight: 500;
-          transition: all 0.3s ease;
+          padding: 0.75rem 1.5rem;
+          background: linear-gradient(
+            135deg,
+            ${primaryColor} 0%,
+            ${primaryColor}CC 100%
+          );
+          color: white;
+          border: none;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 0.9rem;
           cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          overflow: hidden;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
         }
+        .login-button:focus-visible {
+          outline: 2px solid ${primaryColor};
+          outline-offset: 2px;
+        }
+
         .login-button:hover {
           transform: translateY(-2px);
-          box-shadow: 0 5px 15px
-            rgba(
-              ${primaryColor === "#a855f7" ? "168, 85, 247" : "249, 115, 22"},
-              0.25
-            );
-          background-color: ${primaryColor};
-          color: white !important;
+          box-shadow: 0 8px 32px ${primaryColor}66;
         }
+
+        .button-shine {
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent
+          );
+          transition: left 0.6s ease;
+        }
+        .login-button:hover .button-shine {
+          left: 100%;
+          transition: left 0.4s ease;
+        }
+
+        .profile-container {
+          position: relative;
+          cursor: pointer;
+          border-radius: 12px;
+          padding: 0.5rem;
+          transition: background-color 0.2s ease;
+        }
+        .profile-container:hover,
+        .profile-container:focus-visible {
+          background-color: ${theme === "dark"
+            ? "rgba(255,255,255,0.07)"
+            : "rgba(0,0,0,0.04)"};
+        }
+        .profile-container:focus-visible {
+          outline: 2px solid ${primaryColor};
+          outline-offset: 0px;
+        }
+
+        .profile-content {
+          display: flex;
+          align-items: center;
+          gap: 0.6rem;
+        }
+
+        .profile-image-container {
+          position: relative;
+          width: 2rem;
+          height: 2rem;
+        }
+
+        .profile-image,
+        .profile-placeholder {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 2px solid
+            ${theme === "dark" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)"};
+        }
+        .profile-placeholder {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: ${primaryColor};
+        }
+
+        .profile-status-dot {
+          position: absolute;
+          bottom: 1px;
+          right: 1px;
+          width: 0.6rem;
+          height: 0.6rem;
+          background-color: #22c55e;
+          border-radius: 50%;
+          border: 2px solid ${theme === "dark" ? "#1f2937" : "#ffffff"};
+        }
+
+        .profile-info {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+        }
+        .profile-name {
+          font-weight: 500;
+          font-size: 0.9rem;
+          color: inherit;
+        }
+        .profile-chevron {
+          transition: transform 0.2s ease;
+        }
+        .profile-chevron.open {
+          transform: rotate(180deg);
+        }
+
+        .profile-dropdown {
+          position: absolute;
+          top: calc(100% + 0.75rem);
+          right: 0;
+          width: 280px;
+          background: ${theme === "dark"
+            ? "rgba(25,25,25,0.98)"
+            : "rgba(252,252,252,0.98)"};
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border-radius: 12px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+          border: 1px solid
+            ${theme === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"};
+          z-index: 1050;
+          overflow: hidden;
+          animation: fadeInScale 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          color: ${theme === "dark" ? "#e5e7eb" : "#1f2937"};
+        }
+
+        @keyframes fadeInScale {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        .profile-dropdown-header {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 1rem 1.25rem;
+          border-bottom: 1px solid
+            ${theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"};
+        }
+        .profile-header-avatar img,
+        .profile-header-placeholder {
+          width: 2.5rem;
+          height: 2.5rem;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+        .profile-header-placeholder {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: ${primaryColor};
+        }
+        .profile-header-info p {
+          margin: 0;
+          line-height: 1.4;
+        }
+        .profile-header-name {
+          font-weight: 600;
+          font-size: 1rem;
+          color: ${theme === "dark" ? "#ffffff" : "#0a0a0a"};
+        }
+        .profile-header-email {
+          font-size: 0.8rem;
+          color: ${theme === "dark" ? "#9ca3af" : "#6b7280"};
+        }
+        .profile-role-badge {
+          background-color: ${primaryColor}33;
+          color: ${primaryColor};
+          font-size: 0.7rem;
+          font-weight: 500;
+          padding: 0.1rem 0.4rem;
+          border-radius: 6px;
+          margin-top: 0.25rem;
+          display: inline-block;
+        }
+
+        .profile-dropdown-menu {
+          padding: 0.5rem;
+        }
+        .profile-menu-item {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.75rem 1rem;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: background-color 0.2s ease, color 0.2s ease;
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+        .profile-menu-item:hover,
+        .profile-menu-item:focus-visible {
+          background-color: ${primaryColor}26;
+          color: ${primaryColor};
+        }
+        .profile-menu-item:focus-visible {
+          outline: none;
+        }
+        .profile-menu-item span:first-child {
+          font-size: 1.1rem;
+        }
+        .profile-menu-divider {
+          height: 1px;
+          background-color: ${theme === "dark"
+            ? "rgba(255,255,255,0.08)"
+            : "rgba(0,0,0,0.08)"};
+          margin: 0.5rem 0;
+        }
+        .profile-menu-item.logout:hover,
+        .profile-menu-item.logout:focus-visible {
+          background-color: rgba(239, 68, 68, 0.15);
+          color: #ef4444;
+        }
+
         .mobile-backdrop {
-          display: none;
           position: fixed;
           top: 0;
           left: 0;
-          right: 0;
-          bottom: 0;
+          width: 100%;
+          height: 100%;
           background: rgba(0, 0, 0, 0.5);
-          z-index: 45;
-          backdrop-filter: blur(3px);
-          animation: fadeIn 0.2s ease;
+          z-index: 998;
+          backdrop-filter: blur(5px);
+          -webkit-backdrop-filter: blur(5px);
+          animation: fadeIn 0.3s ease;
         }
+
         @keyframes fadeIn {
           from {
             opacity: 0;
@@ -914,225 +1384,140 @@ function Navbar({ theme, color, toggleTheme, toggleColor, openAuthModal }) {
           }
         }
 
-        /* Mobile Styles */
         @media (max-width: 768px) {
-          .navbar {
-            padding: 0.75rem 1rem;
+          .navbar-container {
+            padding: 0.75rem 4%;
           }
           .hamburger {
-            display: block;
+            display: flex;
           }
           .nav-slide-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 80%;
+            max-width: 320px;
+            height: 100vh;
+            background: ${theme === "dark"
+              ? "rgba(18,18,18,1)"
+              : "rgba(253,253,253,1)"};
             flex-direction: column;
-            width: 100%;
-            overflow: hidden;
-            max-height: 0;
-            opacity: 0;
-            transition: all 0.3s ease-in-out;
             align-items: flex-start;
-            padding: 0;
+            padding: 5rem 1.5rem 2rem;
+            gap: 1.5rem;
+            transform: translateX(-100%);
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            overflow-y: auto;
           }
           .nav-slide-wrapper.open {
-            max-height: 80vh;
-            opacity: 1;
-            overflow-y: auto;
-            margin-top: 1rem;
-            padding-bottom: 1rem;
+            transform: translateX(0);
           }
-          .nav-links,
+          .nav-links {
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+            gap: 0.5rem;
+          }
           .nav-actions {
             flex-direction: column;
             align-items: flex-start;
             width: 100%;
-            gap: 0;
-          }
-          .nav-links {
-            padding-top: 0;
-            max-height: 60vh;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-          }
-          .nav-links .link {
-            padding: 0.85rem 0;
-            width: 100%;
-            border-bottom: 1px solid
-              ${theme === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.07)"};
-          }
-          .dropdown-trigger.active {
-            border-bottom: none !important;
-          }
-          .dropdown-trigger.active .chevron-icon {
-            transform: rotate(180deg);
-          }
-          .nav-actions {
-            margin: 1rem 0 0;
-            flex-direction: row;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
             gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid
+              ${theme === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"};
           }
-          .theme-toggle {
-            margin-right: auto;
-          }
-          .login-button {
-            margin-top: 0;
+          .link {
             width: 100%;
-            justify-content: center;
+            padding: 0.8rem 0.5rem;
+            font-size: 1rem;
+            justify-content: space-between;
           }
+          .link-underline {
+            display: none;
+          }
+          .hover-effect:hover {
+            transform: none;
+          }
+          .link.dropdown-trigger.active {
+            color: ${primaryColor};
+          }
+
+          .dropdown-trigger.active .link-underline {
+            width: 0;
+          }
+
           .dropdown-overlay {
             position: static;
             width: 100%;
+            background: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
             box-shadow: none;
-            padding: 0 0 0.75rem;
-            margin-bottom: 0.5rem;
-            background-color: ${theme === "dark"
-              ? "rgba(30,30,30,0.4)"
-              : "rgba(245,245,245,0.4)"};
-            animation: none;
+            padding: 0.5rem 0 0.5rem 1rem;
             max-height: none;
+            animation: none;
+            border-bottom: none;
             overflow-y: visible;
-            border-radius: 8px;
+            margin-top: 0.25rem;
+            border-left: 2px solid ${primaryColor}33;
           }
           .dropdown-menu-container {
-            position: relative;
-            padding-left: 1rem;
-            border-left: 3px solid ${primaryColor};
-            margin-left: 0.5rem;
-            overflow-y: auto;
-            max-height: 300px;
-            scrollbar-width: thin;
-            scrollbar-color: ${primaryColor} transparent;
-          }
-          .dropdown-menu-container::-webkit-scrollbar {
-            width: 4px;
-          }
-          .dropdown-menu-container::-webkit-scrollbar-thumb {
-            background-color: ${primaryColor};
-            border-radius: 4px;
+            max-width: none;
+            margin: 0;
           }
           .dropdown-content {
             grid-template-columns: 1fr;
-            gap: 0.75rem;
-            padding: 0.5rem 0;
+            gap: 0.5rem;
           }
           .dropdown-section {
-            padding: 0.75rem;
-            margin-bottom: 0.25rem;
+            padding: 0.8rem;
             border: none;
-            background-color: ${theme === "dark"
+            background: transparent;
+            border-radius: 8px;
+          }
+          .dropdown-section:hover,
+          .dropdown-section:focus-visible {
+            background: ${theme === "dark"
               ? "rgba(255,255,255,0.05)"
               : "rgba(0,0,0,0.03)"};
-            transition: all 0.2s ease;
+            transform: none;
+            box-shadow: none;
+            border-color: transparent;
           }
-          .dropdown-section:hover {
-            transform: translateX(3px);
-            background-color: ${theme === "dark"
-              ? "rgba(255,255,255,0.1)"
-              : "rgba(0,0,0,0.05)"};
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          .dropdown-section::before {
+            display: none;
+          }
+          .dropdown-icon {
+            font-size: 1.2rem;
+            width: 2rem;
+            height: 2rem;
           }
           .dropdown-title {
             font-size: 0.95rem;
-            margin-bottom: 0.25rem;
           }
           .dropdown-desc {
             font-size: 0.8rem;
-            opacity: 0.9;
-          }
-          .mobile-backdrop {
-            display: block;
           }
 
-          /* Mobile profile improvements */
+          .theme-toggle,
+          .login-button,
           .profile-container {
             width: 100%;
-            margin-top: 0.5rem;
-          }
-          .profile-content {
-            width: 100%;
             justify-content: center;
-            padding: 0.5rem;
-            border-radius: 8px;
-            background-color: ${theme === "dark"
-              ? "rgba(255,255,255,0.05)"
-              : "rgba(0,0,0,0.03)"};
+          }
+          .profile-container {
+            padding: 0.75rem;
           }
           .profile-dropdown {
-            position: static;
-            width: 100%;
-            margin-top: 0.75rem;
-            box-shadow: none;
-            border: 1px solid
-              ${theme === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)"};
-            animation: fadeIn 0.3s ease;
-          }
-          .profile-dropdown-header {
-            padding: 0.75rem 1rem;
-          }
-          .profile-menu-item {
-            padding: 0.75rem 1rem;
-          }
-          .profile-menu-item:hover {
-            padding-left: 1.25rem;
-          }
-
-          /* Auto scroll to active dropdown */
-          .dropdown-trigger.active + .dropdown-overlay {
-            scroll-margin-top: 4rem;
-          }
-        }
-
-        /* Additional responsive improvements for medium screens */
-        @media (min-width: 769px) and (max-width: 1024px) {
-          .navbar {
-            padding: 0.75rem 3%;
-          }
-          .nav-links {
-            gap: 1.5rem;
-          }
-          .dropdown-content {
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-          }
-        }
-
-        /* Small screen improvements */
-        @media (max-width: 380px) {
-          .navbar-brand {
-            font-size: 1.25rem;
-          }
-          .logo-box {
-            width: 1.75rem;
-            height: 1.75rem;
-          }
-          .link {
-            font-size: 0.95rem;
-          }
-          .profile-image-container {
-            width: 2.25rem;
-            height: 2.25rem;
-          }
-          .hamburger {
-            padding: 0.35rem;
-          }
-          .dropdown-title {
-            font-size: 0.9rem;
-          }
-          .dropdown-desc {
-            font-size: 0.75rem;
-          }
-        }
-
-        /* Prefers reduced motion */
-        @media (prefers-reduced-motion: reduce) {
-          .pulse,
-          .hover-effect:after,
-          .dropdown-overlay,
-          .profile-dropdown,
-          .mobile-backdrop,
-          * {
-            animation: none !important;
-            transition-duration: 0.01ms !important;
+            width: calc(100% + 3rem);
+            left: -1.5rem;
+            right: auto;
+            top: calc(100% + 0.5rem);
+            position: absolute;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
           }
         }
       `}</style>

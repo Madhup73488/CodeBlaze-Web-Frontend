@@ -1,11 +1,14 @@
 // src/contexts/LoaderContext.js
 import { createContext, useState, useContext, useRef, useEffect } from "react";
+import logo from "./../assets/images/codeblazelogoorange.png"; // Import the logo
 
 const LoaderContext = createContext();
 
 export const LoaderProvider = ({ children, color }) => {
   const [loading, setLoading] = useState(false);
-  const [primaryColor, setPrimaryColor] = useState(color === "purple" ? "#a855f7" : "#f97316");
+  const [primaryColor, setPrimaryColor] = useState(
+    color === "purple" ? "#a855f7" : "#f97316"
+  );
   const timeoutRef = useRef(null);
 
   // Update the color when the prop changes
@@ -18,6 +21,7 @@ export const LoaderProvider = ({ children, color }) => {
       clearTimeout(timeoutRef.current);
     }
     setLoading(true);
+    console.log("Loader: startLoader called");
   };
 
   const stopLoader = () => {
@@ -26,6 +30,7 @@ export const LoaderProvider = ({ children, color }) => {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
+    console.log("Loader: stopLoader called");
   };
 
   const showLoaderFor = (duration = 1500) => {
@@ -44,114 +49,70 @@ export const LoaderProvider = ({ children, color }) => {
   }, []);
 
   return (
-    <LoaderContext.Provider value={{ loading, startLoader, stopLoader, showLoaderFor }}>
+    <LoaderContext.Provider
+      value={{ loading, startLoader, stopLoader, showLoaderFor }}
+    >
       {children}
       {loading && (
-        <>
-          <div className="global-loader-container">
-            <div className="global-loader-track">
-              <div className="global-loader-bar" style={{ 
-                '--primary-color': primaryColor,
-                '--primary-color-rgb': color === "purple" ? "168, 85, 247" : "249, 115, 22"
-              }} />
-            </div>
-          </div>
-          <div className="global-dim-overlay" />
-        </>
+        <div
+          className="full-page-loader-overlay"
+          style={{ "--primary-color": primaryColor }}
+        >
+          <img src={logo} alt="Loading..." className="loader-logo" />
+        </div>
       )}
       <style jsx global>{`
-        .global-loader-container {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 2px;
-          overflow: visible;
-          z-index: 100;
-          pointer-events: none;
-        }
-        
-        .global-loader-track {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          background: transparent;
-          overflow: visible;
-        }
-        
-        .global-loader-bar {
-          position: absolute;
-          top: 0;
-          height: 100%;
-          width: 100%;
-          transform-origin: left center;
-          animation: shopify-progress 2s infinite cubic-bezier(0.65, 0.05, 0.36, 1);
-          background: var(--primary-color);
-          
-          /* The intense glow effect */
-          box-shadow:
-            0 0 2px 0 var(--primary-color),
-            0 0 5px 0 var(--primary-color),
-            0 0 10px 1px rgba(var(--primary-color-rgb), 0.8),
-            0 0 15px 2px rgba(var(--primary-color-rgb), 0.5),
-            0 0 20px 3px rgba(var(--primary-color-rgb), 0.3);
-        }
-        
-        .global-loader-bar::after {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: linear-gradient(
-            90deg,
-            transparent 0%,
-            rgba(255, 255, 255, 0.8) 50%,
-            transparent 100%
-          );
-          animation: shopify-shine 2s infinite;
-        }
-        
-        .global-dim-overlay {
+        .full-page-loader-overlay {
           position: fixed;
           top: 0;
           left: 0;
           width: 100%;
           height: 100%;
-          background-color: rgba(0, 0, 0, 0.15);
-          z-index: 90;
-          backdrop-filter: blur(1px);
+          background-color: rgba(
+            0,
+            0,
+            0,
+            0.7
+          ); /* Darker overlay for better contrast with orange logo */
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 9999; /* Ensure it's on top of everything */
+          backdrop-filter: blur(17px); /* Stronger blur */
+          -webkit-backdrop-filter: blur(5px);
+          animation: fadeIn 0.2s ease-out;
         }
-        
-        @keyframes shopify-progress {
+
+        .loader-logo {
+          width: 100px; /* Adjust size as needed */
+          height: 100px;
+          border-radius: 50%; /* Make it circular */
+          box-shadow: 0 0 15px var(--primary-color),
+            0 0 30px rgba(var(--primary-color), 0.5); /* Use CSS variable for glow */
+          animation: blink 1.5s infinite alternate; /* Blinking animation */
+        }
+
+        @keyframes blink {
           0% {
-            transform: scaleX(0);
-            transform-origin: left center;
-          }
-          49% {
-            transform: scaleX(1);
-            transform-origin: left center;
+            opacity: 0.5;
+            transform: scale(0.95);
           }
           50% {
-            transform: scaleX(1);
-            transform-origin: right center;
+            opacity: 1;
+            transform: scale(0.98);
           }
           100% {
-            transform: scaleX(0);
-            transform-origin: right center;
+            opacity: 0.5;
+            transform: scale(0.95);
           }
         }
-        
-        @keyframes shopify-shine {
-          0% {
-            transform: translateX(-100%);
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
           }
-          60% {
-            transform: translateX(100%);
-          }
-          100% {
-            transform: translateX(100%);
+          to {
+            opacity: 1;
           }
         }
       `}</style>
