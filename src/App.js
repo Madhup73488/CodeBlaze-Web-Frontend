@@ -1,5 +1,5 @@
 // App.js
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./components/common/Navbar";
 import Careers from "./pages/Careers";
@@ -17,7 +17,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import PremiumPrivacyPolicy from "./features/static/pages/PrivacyPolicyPage"; // Updated import
-import { LoaderProvider } from "./contexts/LoaderContext";
+import { LoaderProvider, useLoader } from "./contexts/LoaderContext"; // Import useLoader
 import Landing from "./pages/Landing";
 import TermsOfServicePage from "./features/static/pages/TermsOfServicePage"; // Updated import
 import PlacementGuidance from "./components/ForStudents/PlacementGuidance";
@@ -60,13 +60,12 @@ import AdminUsersPage from "./admin/pages/users/AdminUsersPage";
 
 // Admin Analytics Pages
 import UserAnalyticsPage from "./admin/pages/analytics/UserAnalyticsPage";
-import JobAnalyticsPage from "./admin/pages/analytics/JobAnalyticsPage"; 
+import JobAnalyticsPage from "./admin/pages/analytics/JobAnalyticsPage";
 import ApplicationAnalyticsPage from "./admin/pages/analytics/ApplicationAnalyticsPage";
 
 // Admin Documents Pages
 import OfferLetterGeneratorPage from "./admin/pages/documents/OfferLetterGeneratorPage";
 import CertificateGeneratorPage from "./admin/pages/documents/CertificateGeneratorPage";
-
 
 // Auth components
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
@@ -82,7 +81,7 @@ import ResourcesPage from "./components/Resources/ResourcesPage";
 import SeventyQuestionsByNehaMalhotra from "./components/Resources/SeventyQuestionsByNehaMalhotra";
 import ResumeWritingTips from "./components/Resources/ResumeWritingTips";
 // Import Certificate Verification Page
-import CertificateVerificationPage from "./pages/CertificateVerificationPage"; 
+import CertificateVerificationPage from "./pages/CertificateVerificationPage";
 import {
   DEFAULT_THEME,
   DEFAULT_COLOR,
@@ -92,9 +91,16 @@ import {
 import { ROUTES } from "./constants/routes"; // Reverted to relative
 
 const AppContent = () => {
-  const { isAuthenticated, user, loading, authFlowState, setAuthFlowState } =
-    useAuth();
+  const {
+    isAuthenticated,
+    user,
+    loading: authLoading, // Renamed loading to authLoading to avoid conflict
+    authFlowState,
+    setAuthFlowState,
+  } = useAuth();
+  const { showLoaderFor } = useLoader(); // Only need showLoaderFor
   const [theme, setTheme] = useState(DEFAULT_THEME); // Use default theme constant
+  const initialLoadHandled = useRef(false); // Ref to track initial load
   const [color, setColor] = useState(DEFAULT_COLOR); // Use default color constant
   const location = useLocation();
   const navigate = useNavigate();
@@ -115,8 +121,16 @@ const AppContent = () => {
     }
   }, [authFlowState]);
 
+  // Show loader on initial app load for a fixed duration
+  // useEffect(() => {
+  //   if (!initialLoadHandled.current) {
+  //     showLoaderFor(2000); // Show loader for 2 seconds on initial load
+  //     initialLoadHandled.current = true;
+  //   }
+  // }, [showLoaderFor]); // Dependency on showLoaderFor is fine as it's stable
+
   useEffect(() => {
-    if (!loading && location.pathname.startsWith("/admin")) {
+    if (!authLoading && location.pathname.startsWith("/admin")) {
       const isAdmin = user?.role === "admin" || user?.role === "superadmin";
 
       if (!isAuthenticated) {
@@ -135,7 +149,7 @@ const AppContent = () => {
         navigate("/", { replace: true });
       }
     }
-  }, [isAuthenticated, user, loading, navigate, location.pathname]);
+  }, [isAuthenticated, user, authLoading, navigate, location.pathname]);
 
   const openAuthModal = (initialFlowState = "initial") => {
     setAuthFlowState(initialFlowState);
@@ -170,7 +184,8 @@ const AppContent = () => {
     }
   }, [location.pathname, setAuthFlowState]);
 
-  if (loading && location.pathname.startsWith("/admin")) {
+  // The existing admin loading spinner can remain, it's separate from the global loader
+  if (authLoading && location.pathname.startsWith("/admin")) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -192,11 +207,15 @@ const AppContent = () => {
           openAuthModal={openAuthModal}
           isAuthenticated={isAuthenticated}
           user={user}
+          onNavigate={navigate}
         />
       )}
 
       <Routes>
-        <Route path={ROUTES.HOME} element={<Landing theme={theme} color={color} />} />
+        <Route
+          path={ROUTES.HOME}
+          element={<Landing theme={theme} color={color} />}
+        />
         <Route
           path={ROUTES.CAREERS}
           element={<Careers theme={theme} color={color} />}
@@ -352,7 +371,7 @@ const AppContent = () => {
         />
 
         {/* Public Certificate Verification Route */}
-        <Route 
+        <Route
           path={ROUTES.CERTIFICATE_VERIFICATION}
           element={<CertificateVerificationPage theme={theme} />} // Pass theme if needed
         />
@@ -378,57 +397,146 @@ const AppContent = () => {
             )
           }
         >
-          <Route index element={<Navigate to={ROUTES.ADMIN_DASHBOARD.split('/').pop()} replace />} /> {/* Relative path for nested route */}
-          <Route path={ROUTES.ADMIN_DASHBOARD.split('/').pop()} element={<DashboardHome />} />
-          <Route path={ROUTES.ADMIN_SETTINGS.split('/').pop()} element={<AdminSettings />} />
-
-          <Route path={ROUTES.ADMIN_JOBS.split('/').pop()}>
+          <Route
+            index
+            element={
+              <Navigate to={ROUTES.ADMIN_DASHBOARD.split("/").pop()} replace />
+            }
+          />{" "}
+          {/* Relative path for nested route */}
+          <Route
+            path={ROUTES.ADMIN_DASHBOARD.split("/").pop()}
+            element={<DashboardHome />}
+          />
+          <Route
+            path={ROUTES.ADMIN_SETTINGS.split("/").pop()}
+            element={<AdminSettings />}
+          />
+          <Route path={ROUTES.ADMIN_JOBS.split("/").pop()}>
             <Route index element={<JobList />} />
-            <Route path={ROUTES.ADMIN_JOBS_CREATE.split('/').pop()} element={<JobCreate />} />
-            <Route path={ROUTES.ADMIN_JOB_DETAIL.split('/').pop()} element={<JobDetail />} />
-            <Route path={ROUTES.ADMIN_JOB_EDIT.substring(ROUTES.ADMIN_JOBS.length + 1)} element={<JobEdit />} />
+            <Route
+              path={ROUTES.ADMIN_JOBS_CREATE.split("/").pop()}
+              element={<JobCreate />}
+            />
+            <Route
+              path={ROUTES.ADMIN_JOB_DETAIL.split("/").pop()}
+              element={<JobDetail />}
+            />
+            <Route
+              path={ROUTES.ADMIN_JOB_EDIT.substring(
+                ROUTES.ADMIN_JOBS.length + 1
+              )}
+              element={<JobEdit />}
+            />
           </Route>
-
           {/* Ensure admin internship routes use distinct names if needed */}
-          <Route path={ROUTES.ADMIN_INTERNSHIPS.split('/').pop()}>
+          <Route path={ROUTES.ADMIN_INTERNSHIPS.split("/").pop()}>
             <Route index element={<AdminInternshipList />} />
-            <Route path={ROUTES.ADMIN_INTERNSHIPS_CREATE.split('/').pop()} element={<AdminInternshipCreate />} />
-            <Route path={ROUTES.ADMIN_INTERNSHIP_DETAIL.split('/').pop()} element={<AdminInternshipDetail />} />
-            <Route path={ROUTES.ADMIN_INTERNSHIP_EDIT.substring(ROUTES.ADMIN_INTERNSHIPS.length + 1)} element={<AdminInternshipEdit />} />
+            <Route
+              path={ROUTES.ADMIN_INTERNSHIPS_CREATE.split("/").pop()}
+              element={<AdminInternshipCreate />}
+            />
+            <Route
+              path={ROUTES.ADMIN_INTERNSHIP_DETAIL.split("/").pop()}
+              element={<AdminInternshipDetail />}
+            />
+            <Route
+              path={ROUTES.ADMIN_INTERNSHIP_EDIT.substring(
+                ROUTES.ADMIN_INTERNSHIPS.length + 1
+              )}
+              element={<AdminInternshipEdit />}
+            />
           </Route>
-
-          <Route path={ROUTES.ADMIN_APPLICATIONS.split('/').pop()}>
-            <Route path={ROUTES.ADMIN_APPLICATIONS_JOBS.split('/').pop()} element={<JobApplications />} />
-            <Route path={ROUTES.ADMIN_APPLICATIONS_INTERNSHIPS.split('/').pop()} element={<InternshipApplications />} />
-            <Route index element={<Navigate to={ROUTES.ADMIN_APPLICATIONS_JOBS.split('/').pop()} replace />} />
+          <Route path={ROUTES.ADMIN_APPLICATIONS.split("/").pop()}>
+            <Route
+              path={ROUTES.ADMIN_APPLICATIONS_JOBS.split("/").pop()}
+              element={<JobApplications />}
+            />
+            <Route
+              path={ROUTES.ADMIN_APPLICATIONS_INTERNSHIPS.split("/").pop()}
+              element={<InternshipApplications />}
+            />
+            <Route
+              index
+              element={
+                <Navigate
+                  to={ROUTES.ADMIN_APPLICATIONS_JOBS.split("/").pop()}
+                  replace
+                />
+              }
+            />
           </Route>
-
           {/* Admin Users Route */}
-          <Route path={ROUTES.ADMIN_USERS.split('/').pop()} element={<AdminUsersPage />} />
-
+          <Route
+            path={ROUTES.ADMIN_USERS.split("/").pop()}
+            element={<AdminUsersPage />}
+          />
           {/* Admin Analytics Routes */}
           {/* Parent route for /admin/analytics, could have an index page or redirect */}
-          <Route path={ROUTES.ADMIN_ANALYTICS.split('/').pop()}>
-            <Route index element={<Navigate to={ROUTES.ADMIN_ANALYTICS_USERS.split('/').pop()} replace />} />
-            <Route path={ROUTES.ADMIN_ANALYTICS_USERS.split('/').pop()} element={<UserAnalyticsPage />} />
-            <Route path={ROUTES.ADMIN_ANALYTICS_JOBS.split('/').pop()} element={<JobAnalyticsPage />} />
-            <Route path={ROUTES.ADMIN_ANALYTICS_APPLICATIONS.split('/').pop()} element={<ApplicationAnalyticsPage />} />
+          <Route path={ROUTES.ADMIN_ANALYTICS.split("/").pop()}>
+            <Route
+              index
+              element={
+                <Navigate
+                  to={ROUTES.ADMIN_ANALYTICS_USERS.split("/").pop()}
+                  replace
+                />
+              }
+            />
+            <Route
+              path={ROUTES.ADMIN_ANALYTICS_USERS.split("/").pop()}
+              element={<UserAnalyticsPage />}
+            />
+            <Route
+              path={ROUTES.ADMIN_ANALYTICS_JOBS.split("/").pop()}
+              element={<JobAnalyticsPage />}
+            />
+            <Route
+              path={ROUTES.ADMIN_ANALYTICS_APPLICATIONS.split("/").pop()}
+              element={<ApplicationAnalyticsPage />}
+            />
           </Route>
-
           {/* Admin Documents Routes */}
-          <Route path={ROUTES.ADMIN_DOCUMENTS.split('/').pop()}>
-            <Route index element={<Navigate to={ROUTES.ADMIN_DOCUMENTS_OFFER_LETTER.split('/').pop()} replace />} />
-            <Route path={ROUTES.ADMIN_DOCUMENTS_OFFER_LETTER.split('/').pop()} element={<OfferLetterGeneratorPage />} />
-            <Route path={ROUTES.ADMIN_DOCUMENTS_CERTIFICATE.split('/').pop()} element={<CertificateGeneratorPage />} />
+          <Route path={ROUTES.ADMIN_DOCUMENTS.split("/").pop()}>
+            <Route
+              index
+              element={
+                <Navigate
+                  to={ROUTES.ADMIN_DOCUMENTS_OFFER_LETTER.split("/").pop()}
+                  replace
+                />
+              }
+            />
+            <Route
+              path={ROUTES.ADMIN_DOCUMENTS_OFFER_LETTER.split("/").pop()}
+              element={<OfferLetterGeneratorPage />}
+            />
+            <Route
+              path={ROUTES.ADMIN_DOCUMENTS_CERTIFICATE.split("/").pop()}
+              element={<CertificateGeneratorPage />}
+            />
           </Route>
-
           <Route path={ROUTES.NOT_FOUND} element={<AdminNotFound />} />
         </Route>
 
-        <Route path={ROUTES.NOT_FOUND} element={<NotFound theme={theme} color={color} />} />
+        <Route
+          path={ROUTES.NOT_FOUND}
+          element={<NotFound theme={theme} color={color} />}
+        />
       </Routes>
 
-      {!isAdminRoute && <Footer theme={theme} color={color} />}
+      {!isAdminRoute && (
+        <Footer
+          theme={theme}
+          color={color}
+          toggleTheme={toggleTheme}
+          toggleColor={toggleColor}
+          openAuthModal={openAuthModal}
+          isAuthenticated={isAuthenticated}
+          user={user}
+          onNavigate={navigate}
+        />
+      )}
 
       <AuthModal
         isOpen={isAuthModalOpen}
