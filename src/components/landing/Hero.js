@@ -398,7 +398,13 @@ const Hero = ({ theme, color, openCallbackModal }) => {
             }`}
           >
             <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300 cursor-pointer" />
-            <span>Watch Preview</span>
+            <span
+              onClick={() => {
+                navigate("/internships");
+              }}
+            >
+              Watch Preview
+            </span>
           </button>
         </div>
         <div className="pt-8">
@@ -612,14 +618,14 @@ const Hero = ({ theme, color, openCallbackModal }) => {
         >
           {/* Slide 1: Business Growth */}
           <div className="w-full flex-shrink-0">
-            <div className="container mx-auto px-6 pt-14 md:pt-22 lg:pt-14 pb-12">
+            <div className="container mx-auto px-6 pt-6 md:pt-22 lg:pt-8 pb-0">
               <BusinessSlide />
             </div>
           </div>
 
           {/* Slide 2: Learning Platform */}
           <div className="w-full flex-shrink-0">
-            <div className="container mx-auto px-6 pt-14 md:pt-22 lg:pt-14 pb-12">
+            <div className="container mx-auto px-6 pt-6 md:pt-22 lg:pt-8 pb-0">
               <LearningSlide />
             </div>
           </div>
@@ -628,7 +634,7 @@ const Hero = ({ theme, color, openCallbackModal }) => {
 
       {/* Bottom CTA Section */}
       <div
-        className={`border-t mt-20 ${
+        className={`border-t mt-4 ${
           isDarkMode ? "border-gray-800" : "border-gray-200"
         }`}
       >

@@ -19,23 +19,43 @@ function Footer({ theme = "dark", color = "purple" }) {
   const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
 
-  const footerLinks = {
-    main: ["Home", "Our Services", "Career", "Contact Us", "Privacy Policy"],
-    whoWeAre: [
-      "Who We Are",
-      "Overview",
-      "Company Values",
-      "Portfolio",
-      "Global Presence",
-    ],
-    services: [
-      "Software Development",
-      "Digital Transformation",
-      "Cloud Solutions",
-      "AI & Machine Learning",
-      "UI/UX Design",
-    ],
-  };
+  const footerLinkSections = [
+    {
+      title: "Main Links",
+      links: [
+        { text: "Home", path: "/" },
+        { text: "Services", path: "/services" },
+        { text: "Careers", path: "/careers" },
+        { text: "Contact Us", path: "/contact" }, // Assuming /contact, adjust if different
+        { text: "Privacy Policy", path: "/privacy" },
+      ],
+      mdColSpan: 1,
+      lgColSpan: 2,
+    },
+    {
+      title: "Company", // Replaces "Who We Are"
+      links: [
+        { text: "About Us", path: "/aboutus" },
+        { text: "Our Team", path: "/ourteam" },
+        { text: "Our Mission", path: "/ourmission" },
+        { text: "Our Values", path: "/ourvalues" },
+      ],
+      mdColSpan: 1,
+      lgColSpan: 3,
+    },
+    {
+      title: "Our Services",
+      links: [ // All these now point to /services
+        { text: "Software Development", path: "/services" },
+        { text: "Digital Transformation", path: "/services" },
+        { text: "Cloud Solutions", path: "/services" },
+        { text: "AI & Machine Learning", path: "/services" },
+        { text: "UI/UX Design", path: "/services" },
+      ],
+      mdColSpan: 1,
+      lgColSpan: 3,
+    },
+  ];
 
   // Theme configurations
   const themeConfig = {
@@ -131,10 +151,10 @@ function Footer({ theme = "dark", color = "purple" }) {
   };
 
   // Map paths for links
-  const getRoutePath = (linkText) => {
-    // Convert link text to route path
-    return linkText.toLowerCase().replace(/\s+/g, "-");
-  };
+  // const getRoutePath = (linkText) => { // No longer needed if paths are explicit
+  //   // Convert link text to route path
+  //   return linkText.toLowerCase().replace(/\s+/g, "-");
+  // };
 
   return (
     <footer
@@ -206,7 +226,7 @@ function Footer({ theme = "dark", color = "purple" }) {
                     className={`flex items-center gap-3 ${currentTheme.subtext} ${currentColor.hover} transition-colors`}
                   >
                     <Mail size={16} />
-                    <span>info@codeblaze.com</span>
+                    <span>info@codeblaze.net</span>
                   </Link>
                   <Link
                     to="/contact"
@@ -214,7 +234,7 @@ function Footer({ theme = "dark", color = "purple" }) {
                     className={`flex items-center gap-3 ${currentTheme.subtext} ${currentColor.hover} transition-colors`}
                   >
                     <Phone size={16} />
-                    <span>+971 4 555 5555</span>
+                    <span>+9 7348878479</span>
                   </Link>
                 </div>
               </div>
@@ -230,8 +250,9 @@ function Footer({ theme = "dark", color = "purple" }) {
                 >
                   <MapPin size={16} className="mt-1 flex-shrink-0" />
                   <span>
-                    W10, The Shed St, 8th St, Al Quoz, Al Quoz Industrial Area
-                    3, Dubai, UAE
+                    636, 2nd Cross Rd, Manyata Tech Park, Service Rd, MS Ramaiah
+                    North City, Manayata Tech Park, Nagavara, Bengaluru,
+                    Karnataka 560045
                   </span>
                 </Link>
               </div>
@@ -288,68 +309,28 @@ function Footer({ theme = "dark", color = "purple" }) {
             </div>
           </div>
 
-          {/* Quick links */}
-          <div className="lg:col-span-2 md:col-span-1">
-            <h4 className={`${currentTheme.text} font-semibold text-lg mb-4`}>
-              Main Links
-            </h4>
-            <ul className="space-y-2">
-              {footerLinks.main.map((link, index) => (
-                <li key={index}>
-                  <Link
-                    to={`/${getRoutePath(link)}`}
-                    onClick={handleLinkClick}
-                    className={`flex items-center gap-2 ${currentTheme.subtext} ${currentColor.hover} transition-colors`}
-                  >
-                    <ChevronRight size={14} />
-                    <span>{link}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Who We Are */}
-          <div className="lg:col-span-3 md:col-span-1">
-            <h4 className={`${currentTheme.text} font-semibold text-lg mb-4`}>
-              Who We Are
-            </h4>
-            <ul className="space-y-2">
-              {footerLinks.whoWeAre.map((link, index) => (
-                <li key={index}>
-                  <Link
-                    to={`/who-we-are/${getRoutePath(link)}`}
-                    onClick={handleLinkClick}
-                    className={`flex items-center gap-2 ${currentTheme.subtext} ${currentColor.hover} transition-colors`}
-                  >
-                    <ChevronRight size={14} />
-                    <span>{link}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Services */}
-          <div className="lg:col-span-3 md:col-span-1">
-            <h4 className={`${currentTheme.text} font-semibold text-lg mb-4`}>
-              Our Services
-            </h4>
-            <ul className="space-y-2">
-              {footerLinks.services.map((service, index) => (
-                <li key={index}>
-                  <Link
-                    to={`/services/${getRoutePath(service)}`}
-                    onClick={handleLinkClick}
-                    className={`flex items-center gap-2 ${currentTheme.subtext} ${currentColor.hover} transition-colors`}
-                  >
-                    <ChevronRight size={14} />
-                    <span>{service}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Link Sections */}
+          {footerLinkSections.map((section) => (
+            <div key={section.title} className={`md:col-span-${section.mdColSpan} lg:col-span-${section.lgColSpan}`}>
+              <h4 className={`${currentTheme.text} font-semibold text-lg mb-4`}>
+                {section.title}
+              </h4>
+              <ul className="space-y-2">
+                {section.links.map((link, index) => (
+                  <li key={index}>
+                    <Link
+                      to={link.path}
+                      onClick={handleLinkClick}
+                      className={`flex items-center gap-2 ${currentTheme.subtext} ${currentColor.hover} transition-colors`}
+                    >
+                      <ChevronRight size={14} />
+                      <span>{link.text}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
         {/* Footer bottom - copyright */}

@@ -1,6 +1,8 @@
 import React from "react";
+import teamWorkingTogetherImage from "../../../assets/images/teamworkingtogether.png"; // Import the image
 
-function OurMissionPage({ theme, color }) { // Renamed component
+function OurMissionPage({ theme, color }) {
+  // Renamed component
   const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
 
   return (
@@ -24,12 +26,12 @@ function OurMissionPage({ theme, color }) { // Renamed component
             <p className="quote-text">
               To empower businesses of all sizes with tailored, secure, and
               innovative software solutions that accelerate growth and transform
-              their digital presence. We specialize in building custom applications,
-              developing robust e-commerce platforms (including Shopify, WooCommerce,
-              and bespoke solutions), and integrating seamless payment gateways
-              through partnerships with leading aggregators like Easebuzz, PayU,
-              Pinelabs, PhonePe, and Razorpay, all designed to meet specific
-              client requirements.
+              their digital presence. We specialize in building custom
+              applications, developing robust e-commerce platforms (including
+              Shopify, WooCommerce, and bespoke solutions), and integrating
+              seamless payment gateways through partnerships with leading
+              aggregators like Easebuzz, PayU, Pinelabs, PhonePe, and Razorpay,
+              all designed to meet specific client requirements.
             </p>
             <div className="quote-mark closing" style={{ color: primaryColor }}>
               ❞
@@ -86,8 +88,9 @@ function OurMissionPage({ theme, color }) { // Renamed component
           <h3 className="pillar-title">Innovation</h3>
           <p className="pillar-text">
             We constantly push boundaries to develop cutting-edge software
-            technologies. By anticipating market needs, we create custom solutions
-            that shape the future of our clients' digital operations and online commerce.
+            technologies. By anticipating market needs, we create custom
+            solutions that shape the future of our clients' digital operations
+            and online commerce.
           </p>
         </div>
 
@@ -151,8 +154,8 @@ function OurMissionPage({ theme, color }) { // Renamed component
           </h2>
           <p className="impact-subtitle">
             We measure our success not just by our business growth, but by the
-            tangible difference we make for businesses and communities
-            within India.
+            tangible difference we make for businesses and communities within
+            India.
           </p>
         </div>
 
@@ -163,8 +166,8 @@ function OurMissionPage({ theme, color }) { // Renamed component
             </div>
             <div className="stat-label">Successful Client Outcomes</div>
             <p className="stat-description">
-              Driving growth and efficiency for businesses across India
-              through our bespoke software solutions.
+              Driving growth and efficiency for businesses across India through
+              our bespoke software solutions.
             </p>
           </div>
 
@@ -196,7 +199,8 @@ function OurMissionPage({ theme, color }) { // Renamed component
             <div className="stat-label">Average Growth</div>
             <p className="stat-description">
               Our clients experience significant business improvements and
-              revenue increases after implementing our custom software solutions.
+              revenue increases after implementing our custom software
+              solutions.
             </p>
           </div>
         </div>
@@ -213,8 +217,8 @@ function OurMissionPage({ theme, color }) { // Renamed component
                 <p className="story-text">
                   "CodeBlaze helped us transition from a single-location store
                   to a nationwide e-commerce operation. Their custom software
-                  solutions and e-commerce platform scaled with us every step
-                  of the way, handling our growth from 50 to 5,000 daily orders
+                  solutions and e-commerce platform scaled with us every step of
+                  the way, handling our growth from 50 to 5,000 daily orders
                   without a hitch."
                 </p>
                 <p className="story-author">— Madhu P, CEO</p>
@@ -229,11 +233,11 @@ function OurMissionPage({ theme, color }) { // Renamed component
               <div className="story-content">
                 <h4 className="story-business">Nomad Travel App</h4>
                 <p className="story-text">
-                  "Nomad Travel App sought to enhance their user engagement within
-                  India. CodeBlaze developed a suite of new features and
-                  integrated local service APIs, helping them significantly boost
-                  activity on their platform and expand their reach to new user
-                  segments across the country."
+                  "Nomad Travel App sought to enhance their user engagement
+                  within India. CodeBlaze developed a suite of new features and
+                  integrated local service APIs, helping them significantly
+                  boost activity on their platform and expand their reach to new
+                  user segments across the country."
                 </p>
                 <p className="story-author">— Syed Roshan, CTO</p>
               </div>
@@ -259,7 +263,7 @@ function OurMissionPage({ theme, color }) { // Renamed component
 
         <div className="commitment-content">
           <div className="commitment-image">
-            <img src="/api/placeholder/500/300" alt="Team working together" />
+            <img src={teamWorkingTogetherImage} alt="Team working together" />
             <div
               className="image-accent"
               style={{ backgroundColor: primaryColor }}
@@ -562,6 +566,7 @@ function OurMissionPage({ theme, color }) { // Renamed component
           left: 0;
           height: 5px;
           width: 100%;
+          display: none;
         }
 
         .commitment-text p {
@@ -595,6 +600,14 @@ function OurMissionPage({ theme, color }) { // Renamed component
 
           .commitment-image {
             margin-bottom: 2rem;
+          }
+        }
+
+        @media (min-width: 769px) {
+          .commitment-image {
+            max-width: 450px; /* Adjust as needed */
+            margin-left: auto;
+            margin-right: auto;
           }
         }
       `}</style>

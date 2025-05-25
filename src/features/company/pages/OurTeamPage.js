@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, User } from "lucide-react"; // Add User icon
 import madhuPLocalImage from "../../../assets/images/team/MadhuP.png";
 import manojGRLocalImage from "../../../assets/images/team/ManojGR.png";
 import rohanPLocalImage from "../../../assets/images/team/RohanP.png";
@@ -60,14 +60,7 @@ function OurTeamPage({ theme = "dark", color = "purple" }) {
       name: "Mallika M",
       role: "Software Engineer",
       bio: "Mallika M is a skilled software engineer with a passion for building scalable applications and system architecture.",
-      image:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face", // Placeholder, as no new image provided
-    },
-    {
-      name: "Madhu P",
-      role: "CEO, Co-Founder & Software Engineer",
-      bio: "With extensive experience in software engineering and product strategy, Madhu P leads our vision to deliver bespoke software solutions for our clients.",
-      image: madhuPLocalImage,
+      image: null, // Set to null to trigger placeholder
     },
   ];
 
@@ -101,11 +94,20 @@ function OurTeamPage({ theme = "dark", color = "purple" }) {
                 <div className="slide" key={index}>
                   <div className="member-card">
                     <div className="member-image-wrapper">
-                      <img
-                        src={member.image}
-                        alt={member.name}
-                        className="member-image"
-                      />
+                      {member.image ? (
+                        <img
+                          src={member.image}
+                          alt={member.name}
+                          className="member-image"
+                        />
+                      ) : (
+                        <div className="member-image-placeholder">
+                          <User
+                            size={64}
+                            color={theme === "dark" ? "#555" : "#bbb"}
+                          />
+                        </div>
+                      )}
                       <div
                         className="image-overlay"
                         style={{
@@ -173,11 +175,20 @@ function OurTeamPage({ theme = "dark", color = "purple" }) {
           {members.map((member, index) => (
             <div className="team-member-desktop" key={index}>
               <div className="member-image-container">
-                <img
-                  src={member.image}
-                  alt={member.name}
-                  className="member-image"
-                />
+                {member.image ? (
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="member-image"
+                  />
+                ) : (
+                  <div className="member-image-placeholder">
+                    <User
+                      size={80}
+                      color={theme === "dark" ? "#555" : "#bbb"}
+                    />
+                  </div>
+                )}
                 <div
                   className="image-accent"
                   style={{ backgroundColor: primaryColor }}
@@ -357,6 +368,15 @@ function OurTeamPage({ theme = "dark", color = "purple" }) {
           transition: transform 0.5s ease;
         }
 
+        .member-image-placeholder {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: ${theme === "dark" ? "#2a2a2a" : "#e9ecef"};
+        }
+
         .image-overlay {
           position: absolute;
           top: 0;
@@ -505,7 +525,6 @@ function OurTeamPage({ theme = "dark", color = "purple" }) {
         }
 
         .join-team-section {
-
           padding: 3rem 1.5rem;
         }
 
