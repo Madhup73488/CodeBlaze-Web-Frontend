@@ -1,5 +1,6 @@
 export const ROUTES = {
   HOME: "/",
+  SERVICES: "/services",
   CAREERS: "/careers",
   ABOUT_US: "/aboutus",
   OUR_TEAM: "/ourteam",
@@ -46,7 +47,9 @@ export const ROUTES = {
   ADMIN_DOCUMENTS: "/admin/documents", // Base for document generation
   ADMIN_DOCUMENTS_OFFER_LETTER: "/admin/documents/offer-letter",
   ADMIN_DOCUMENTS_CERTIFICATE: "/admin/documents/certificate",
-  CERTIFICATE_VERIFICATION: "/internship-certificate-verification/:certificateId", // Public verification route
+  ADMIN_CONTENT_MANAGEMENT: "/admin/content-management", // New route for Banner & Carousel Management
+  CERTIFICATE_VERIFICATION:
+    "/internship-certificate-verification/:certificateId", // Public verification route
   NOT_FOUND: "*", // For catch-all routes
 };
 

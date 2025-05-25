@@ -1,13 +1,14 @@
 import React from "react";
 
-function OurValuesPage({ theme, color }) { // Renamed component
+function OurValuesPage({ theme, color }) {
+  // Renamed component
   const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
 
   const values = [
     {
       title: "Trust",
       description:
-        "We build our relationships on a foundation of reliability, transparency, and integrity. Every transaction, interaction, and decision is guided by our commitment to earning and maintaining our customers' trust.",
+        "We build our relationships on a foundation of reliability, transparency, and integrity. Every project, interaction, and decision is guided by our commitment to earning and maintaining our clients' trust.",
       icon: (
         <svg
           viewBox="0 0 24 24"
@@ -26,7 +27,7 @@ function OurValuesPage({ theme, color }) { // Renamed component
     {
       title: "Innovation",
       description:
-        "We embrace creativity and forward-thinking to pioneer solutions that transform the payments landscape. By challenging conventions and exploring new technologies, we create products that anticipate tomorrow's needs.",
+        "We embrace creativity and forward-thinking to pioneer software solutions that transform our clients' businesses. By challenging conventions and exploring new technologies, we deliver custom solutions that anticipate tomorrow's needs.",
       icon: (
         <svg
           viewBox="0 0 24 24"
@@ -47,7 +48,7 @@ function OurValuesPage({ theme, color }) { // Renamed component
     {
       title: "Accessibility",
       description:
-        "We believe financial technology should empower everyone. We design our products to be understandable, usable, and beneficial to businesses of all sizes across diverse industries and regions.",
+        "We believe technology solutions should empower everyone. We design our services and software to be understandable, usable, and beneficial to businesses of all sizes across diverse industries and regions.",
       icon: (
         <svg
           viewBox="0 0 24 24"
@@ -104,7 +105,7 @@ function OurValuesPage({ theme, color }) { // Renamed component
     {
       title: "Responsibility",
       description:
-        "We recognize our role in the financial ecosystem and the trust placed in us. We operate with strong ethical principles, security-first thinking, and a commitment to sustainable business practices.",
+        "We recognize our role in the technology ecosystem and the trust placed in us by our clients. We operate with strong ethical principles, security-first thinking, and a commitment to sustainable business practices.",
       icon: (
         <svg
           viewBox="0 0 24 24"
@@ -182,9 +183,9 @@ function OurValuesPage({ theme, color }) { // Renamed component
             </div>
             <h3 className="action-item-title">Open Developer Ecosystem</h3>
             <p className="action-item-description">
-              We maintain comprehensive documentation, open-source tools, and
-              developer communities that make our platform accessible to
-              developers with varying levels of expertise.
+              We maintain comprehensive documentation for our solutions, contribute
+              to open-source tools, and engage with developer communities to
+              foster collaboration and knowledge sharing.
             </p>
           </div>
 
@@ -222,12 +223,12 @@ function OurValuesPage({ theme, color }) { // Renamed component
           </div>
           <p className="quote-text">
             Our values aren't aspirational — they're operational. They guide how
-            we build our products, how we interact with our customers, and how
+            we deliver our solutions, how we interact with our clients, and how
             we make difficult decisions. They're the foundation upon which
             CodeBlaze is built.
           </p>
           <div className="quote-attribution">
-            <strong>Alexandra Chen</strong>, CEO & Co-Founder
+            <strong>Madhu P</strong>, Co-Founder
           </div>
         </div>
       </div>

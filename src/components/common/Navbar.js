@@ -2,6 +2,7 @@ import { Sun, Moon, Menu, X, ChevronDown, LogIn, User } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom"; // Import Link
 import { useLoader } from "../../contexts/LoaderContext"; // Import useLoader
+import { useAuth } from "../../contexts/AuthContext"; // Import useAuth
 import codeBlazeLogo from "../../assets/images/codeblazelogoorange.png"; // Import the actual logo
 
 function Navbar({
@@ -15,8 +16,10 @@ function Navbar({
   }, // Prop for navigation (still needed for dropdowns)
   isAuthenticated, // Add isAuthenticated to props
   user, // Add user to props
+  handleLogout, // Add handleLogout to props
 }) {
   const { showLoaderFor } = useLoader(); // Use the loader hook
+  const { logout } = useAuth(); // Use the logout function from AuthContext
   const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -120,6 +123,7 @@ function Navbar({
 
   useEffect(() => {
     const handleResize = () => {
+      console.log("Window innerWidth:", window.innerWidth); // Add this log
       if (window.innerWidth > 768 && isMenuOpen) {
         setIsMenuOpen(false);
         setActiveDropdown(null);
@@ -196,14 +200,14 @@ function Navbar({
           <div className={`nav-slide-wrapper ${isMenuOpen ? "open" : ""}`}>
             <div className="nav-links">
               <Link
-                to="/"
+                to="/services"
                 className="link hover-effect"
                 onClick={() => {
                   closeAllMenus(); // Close menu on click
                   showLoaderFor(1500);
                 }}
               >
-                <span>Home</span>
+                <span>Services</span>
                 <div className="link-underline"></div>
               </Link>
 
@@ -386,7 +390,10 @@ function Navbar({
                       >
                         <div className="dropdown-icon">💼</div>
                         <div>
-                          <h3 className="dropdown-title">Internships</h3>
+                          <h3 className="dropdown-title">
+                            Internship at Codeblaze
+                          </h3>
+                          <div style={{ color: "green" }}> Popular</div>
                           <p className="dropdown-desc">
                             Explore real-world internship opportunities
                           </p>
@@ -674,14 +681,13 @@ function Navbar({
                           tabIndex={0}
                           onClick={(e) => {
                             e.stopPropagation();
-                            // handleLogout(); // Removed, logout should be handled by parent
+                            logout(); // Call the logout function from AuthContext
+                            closeAllMenus(); // Close menu after logout
+                            handleNavigation("/"); // Navigate to home after logout
                           }}
                           onKeyPress={(e) =>
                             e.key === "Enter" &&
-                            // handleLogout() // Removed, logout should be handled by parent
-                            console.log(
-                              "Logout action triggered (handled by parent)"
-                            )
+                            (logout(), closeAllMenus(), handleNavigation("/"))
                           }
                         >
                           <span>🚪</span>
@@ -752,7 +758,7 @@ function Navbar({
           justify-content: space-between;
           align-items: center;
           padding: 0.875rem 5%;
-          max-width: 1400px;
+          max-width: 1680px;
           margin: 0 auto;
           position: relative;
         }
@@ -1384,7 +1390,7 @@ function Navbar({
           }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1018px) {
           .navbar-container {
             padding: 0.75rem 4%;
           }

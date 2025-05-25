@@ -22,9 +22,14 @@ function OurMissionPage({ theme, color }) { // Renamed component
               ❝
             </div>
             <p className="quote-text">
-              To empower businesses of all sizes with seamless, secure, and
-              innovative payment solutions that accelerate growth and transform
-              digital commerce.
+              To empower businesses of all sizes with tailored, secure, and
+              innovative software solutions that accelerate growth and transform
+              their digital presence. We specialize in building custom applications,
+              developing robust e-commerce platforms (including Shopify, WooCommerce,
+              and bespoke solutions), and integrating seamless payment gateways
+              through partnerships with leading aggregators like Easebuzz, PayU,
+              Pinelabs, PhonePe, and Razorpay, all designed to meet specific
+              client requirements.
             </p>
             <div className="quote-mark closing" style={{ color: primaryColor }}>
               ❞
@@ -80,9 +85,9 @@ function OurMissionPage({ theme, color }) { // Renamed component
           </div>
           <h3 className="pillar-title">Innovation</h3>
           <p className="pillar-text">
-            We constantly push boundaries to develop cutting-edge payment
-            technologies. By anticipating market needs, we create solutions that
-            shape the future of digital transactions.
+            We constantly push boundaries to develop cutting-edge software
+            technologies. By anticipating market needs, we create custom solutions
+            that shape the future of our clients' digital operations and online commerce.
           </p>
         </div>
 
@@ -107,9 +112,10 @@ function OurMissionPage({ theme, color }) { // Renamed component
           </div>
           <h3 className="pillar-title">Inclusion</h3>
           <p className="pillar-text">
-            We believe financial technology should be accessible to all. Our
-            solutions are designed to bridge gaps and create opportunities for
-            businesses regardless of size or geography.
+            We believe technology solutions should be accessible to all. Our
+            services are designed to bridge gaps and create opportunities for
+            businesses regardless of size or geography, enabling them to thrive
+            in the digital landscape.
           </p>
         </div>
 
@@ -132,8 +138,8 @@ function OurMissionPage({ theme, color }) { // Renamed component
           <h3 className="pillar-title">Security</h3>
           <p className="pillar-text">
             Trust is our foundation. We implement the highest security standards
-            to protect sensitive information and provide peace of mind in every
-            transaction.
+            to protect sensitive information and ensure the integrity and
+            reliability of the software solutions we build for our clients.
           </p>
         </div>
       </section>
@@ -146,25 +152,25 @@ function OurMissionPage({ theme, color }) { // Renamed component
           <p className="impact-subtitle">
             We measure our success not just by our business growth, but by the
             tangible difference we make for businesses and communities
-            worldwide.
+            within India.
           </p>
         </div>
 
         <div className="impact-stats">
           <div className="impact-stat">
             <div className="stat-number" style={{ color: primaryColor }}>
-              $5B+
+              50+
             </div>
-            <div className="stat-label">Processed Annually</div>
+            <div className="stat-label">Successful Client Outcomes</div>
             <p className="stat-description">
-              Facilitating commerce and growth for businesses across 30+
-              countries.
+              Driving growth and efficiency for businesses across India
+              through our bespoke software solutions.
             </p>
           </div>
 
           <div className="impact-stat">
             <div className="stat-number" style={{ color: primaryColor }}>
-              15,000+
+              20+
             </div>
             <div className="stat-label">Businesses Empowered</div>
             <p className="stat-description">
@@ -189,8 +195,8 @@ function OurMissionPage({ theme, color }) { // Renamed component
             </div>
             <div className="stat-label">Average Growth</div>
             <p className="stat-description">
-              Our clients experience significant revenue increases after
-              implementation.
+              Our clients experience significant business improvements and
+              revenue increases after implementing our custom software solutions.
             </p>
           </div>
         </div>
@@ -206,12 +212,12 @@ function OurMissionPage({ theme, color }) { // Renamed component
                 <h4 className="story-business">GreenGrocer Market</h4>
                 <p className="story-text">
                   "CodeBlaze helped us transition from a single-location store
-                  to a nationwide e-commerce operation. Their payment
-                  infrastructure scaled with us every step of the way, handling
-                  our growth from 50 to 5,000 daily transactions without a
-                  hitch."
+                  to a nationwide e-commerce operation. Their custom software
+                  solutions and e-commerce platform scaled with us every step
+                  of the way, handling our growth from 50 to 5,000 daily orders
+                  without a hitch."
                 </p>
-                <p className="story-author">— Jamie Chen, CEO</p>
+                <p className="story-author">— Madhu P, CEO</p>
               </div>
               <div
                 className="story-accent"
@@ -223,12 +229,13 @@ function OurMissionPage({ theme, color }) { // Renamed component
               <div className="story-content">
                 <h4 className="story-business">Nomad Travel App</h4>
                 <p className="story-text">
-                  "Expanding to international markets seemed daunting until we
-                  found CodeBlaze. Their multi-currency support and local
-                  payment methods integration helped us enter 12 new markets in
-                  just 6 months, doubling our user base."
+                  "Nomad Travel App sought to enhance their user engagement within
+                  India. CodeBlaze developed a suite of new features and
+                  integrated local service APIs, helping them significantly boost
+                  activity on their platform and expand their reach to new user
+                  segments across the country."
                 </p>
-                <p className="story-author">— Sofia Rodriguez, CTO</p>
+                <p className="story-author">— Syed Roshan, CTO</p>
               </div>
               <div
                 className="story-accent"
@@ -261,28 +268,28 @@ function OurMissionPage({ theme, color }) { // Renamed component
           <div className="commitment-text">
             <p>
               As we look to the future, we remain steadfast in our commitment to
-              revolutionizing digital payments. We're investing in emerging
-              technologies like blockchain, AI-powered fraud detection, and
-              seamless omnichannel experiences.
+              delivering transformative digital solutions. We're investing in
+              emerging technologies, advanced analytics, AI-driven insights, and
+              seamless omnichannel experiences to benefit our clients.
             </p>
             <p>
               Beyond technology, we're committed to responsible business
               practices. Through our CodeBlaze Foundation, we're working to
-              increase financial literacy and expand access to digital financial
-              tools in underserved communities.
+              increase digital literacy and expand access to technology
+              solutions in underserved communities.
             </p>
             <p>
               Our mission extends beyond profit – we aim to create a more
-              inclusive, efficient, and secure financial ecosystem that benefits
-              businesses and consumers alike.
+              inclusive, efficient, and secure digital ecosystem that benefits
+              businesses and their customers alike.
             </p>
-            <a
+            {/* <a
               href="/about/initiatives"
               className="learn-more-btn"
               style={{ backgroundColor: primaryColor }}
             >
               Learn About Our Initiatives
-            </a>
+            </a> */}
           </div>
         </div>
       </section>

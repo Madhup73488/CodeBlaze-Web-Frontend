@@ -1,4 +1,5 @@
 import React from "react";
+import aboutUsImage from '../../../assets/images/codeblaze_about_us.png';
 
 function AboutUsPage({ theme, color }) { // Renamed component
   const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
@@ -28,54 +29,54 @@ function AboutUsPage({ theme, color }) { // Renamed component
           <h2>
             Pioneering{" "}
             <span style={{ color: primaryColor }}>Digital Solutions</span> Since
-            2018
+            2025
           </h2>
 
           <p>
-            CodeBlaze was founded with a singular vision: to transform how
-            businesses interact with technology. Starting as a small team of
-            passionate developers in a garage, we've grown into a global
-            technology partner trusted by startups and Fortune 500 companies
-            alike.
+            CodeBlaze was founded in 2025 with a singular vision: to transform how
+            businesses in India interact with technology. Starting as a passionate
+            team, we are dedicated to becoming a trusted technology partner for
+            startups and established companies across the nation.
           </p>
 
           <p>
             Our journey began when our founders recognized a critical gap in the
-            market – the need for payment solutions that were both powerful and
-            intuitive. What started as a simple API has evolved into a
-            comprehensive suite of digital tools that power thousands of
-            businesses worldwide.
+            market – the need for bespoke software solutions tailored to unique
+            business challenges. What started as a commitment to client success
+            has evolved into a comprehensive suite of software development
+            services and custom digital tools that empower businesses across India.
           </p>
 
           <p>
             Today, CodeBlaze stands at the intersection of innovation and
-            reliability. We've processed over $2 billion in transactions,
-            supported businesses across 35 countries, and built a team of 120+
-            talented individuals who share our commitment to excellence.
+            reliability. We are focused on delivering impactful software
+            projects for our clients across various industries within India,
+            supported by our dedicated team of 30+ talented individuals who share
+            our commitment to excellence.
           </p>
 
           <div className="stats-container">
             <div className="stat-box">
               <span className="stat-number" style={{ color: primaryColor }}>
-                120+
+                30+
               </span>
               <span className="stat-label">Team Members</span>
             </div>
             <div className="stat-box">
               <span className="stat-number" style={{ color: primaryColor }}>
-                35
+                India
               </span>
-              <span className="stat-label">Countries</span>
+              <span className="stat-label">Primary Market</span>
             </div>
             <div className="stat-box">
               <span className="stat-number" style={{ color: primaryColor }}>
-                $2B+
+                50+
               </span>
-              <span className="stat-label">Processed</span>
+              <span className="stat-label">Projects Delivered</span>
             </div>
             <div className="stat-box">
               <span className="stat-number" style={{ color: primaryColor }}>
-                5000+
+                20+
               </span>
               <span className="stat-label">Clients</span>
             </div>
@@ -95,87 +96,19 @@ function AboutUsPage({ theme, color }) { // Renamed component
               style={{ backgroundColor: primaryColor }}
             ></div>
             <div className="timeline-content">
-              <h3>2018</h3>
-              <p>Founded in San Francisco with a team of 5 developers</p>
-            </div>
-          </div>
-
-          <div className="timeline-item">
-            <div
-              className="timeline-dot"
-              style={{ backgroundColor: primaryColor }}
-            ></div>
-            <div className="timeline-content">
-              <h3>2019</h3>
-              <p>Launched our first Payment API and secured seed funding</p>
-            </div>
-          </div>
-
-          <div className="timeline-item">
-            <div
-              className="timeline-dot"
-              style={{ backgroundColor: primaryColor }}
-            ></div>
-            <div className="timeline-content">
-              <h3>2020</h3>
-              <p>Expanded to Europe and reached 100 business clients</p>
-            </div>
-          </div>
-
-          <div className="timeline-item">
-            <div
-              className="timeline-dot"
-              style={{ backgroundColor: primaryColor }}
-            ></div>
-            <div className="timeline-content">
-              <h3>2021</h3>
-              <p>Introduced HyperCheckout and grew team to 50 members</p>
-            </div>
-          </div>
-
-          <div className="timeline-item">
-            <div
-              className="timeline-dot"
-              style={{ backgroundColor: primaryColor }}
-            ></div>
-            <div className="timeline-content">
-              <h3>2022</h3>
-              <p>Expanded to Asia Pacific and launched UPI Stack solutions</p>
-            </div>
-          </div>
-
-          <div className="timeline-item">
-            <div
-              className="timeline-dot"
-              style={{ backgroundColor: primaryColor }}
-            ></div>
-            <div className="timeline-content">
-              <h3>2023</h3>
-              <p>Reached $1B in processed transactions and 3000 clients</p>
-            </div>
-          </div>
-
-          <div className="timeline-item">
-            <div
-              className="timeline-dot"
-              style={{ backgroundColor: primaryColor }}
-            ></div>
-            <div className="timeline-content">
-              <h3>2024</h3>
-              <p>
-                Launched unified Express Checkout and expanded to 35 countries
-              </p>
-            </div>
-          </div>
-
-          <div className="timeline-item">
-            <div
-              className="timeline-dot"
-              style={{ backgroundColor: primaryColor }}
-            ></div>
-            <div className="timeline-content">
               <h3>2025</h3>
-              <p>Continuing to innovate with new payment solutions worldwide</p>
+              <p>CodeBlaze is founded in India with a mission to deliver exceptional software solutions to local businesses. Our initial team is formed, focusing on client success from day one.</p>
+            </div>
+          </div>
+
+          <div className="timeline-item">
+            <div
+              className="timeline-dot"
+              style={{ backgroundColor: primaryColor }}
+            ></div>
+            <div className="timeline-content">
+              <h3>Ongoing</h3>
+              <p>We are actively working with our initial clients, delivering bespoke software, e-commerce solutions, and payment gateway integrations. Our team is growing, and we're focused on building a strong reputation for quality and innovation within the Indian market.</p>
             </div>
           </div>
         </div>
@@ -231,7 +164,7 @@ function AboutUsPage({ theme, color }) { // Renamed component
         .about-image {
           width: 100%;
           height: 100%;
-          background-image: url("/api/placeholder/600/400");
+          background-image: url(${aboutUsImage});
           background-size: cover;
           background-position: center;
           border-radius: 8px;

@@ -143,7 +143,7 @@ function NotFound({ theme = "light", color = "purple" }) {
     flexContainer: {
       display: "flex",
       flexDirection: "column",
-      "@media (min-width: 768px)": {
+      "@media (minWidth: 768px)": {
         flexDirection: "row",
       },
     },
@@ -183,13 +183,13 @@ function NotFound({ theme = "light", color = "purple" }) {
     rightSide: {
       flex: "1 1 50%",
       padding: "2rem",
-      "@media (min-width: 1024px)": {
+      "@media (minWidth: 1024px)": {
         padding: "3rem",
       },
     },
     contentContainer: {
       textAlign: "center",
-      "@media (min-width: 768px)": {
+      "@media (minWidth: 768px)": {
         textAlign: "left",
       },
     },
@@ -198,7 +198,7 @@ function NotFound({ theme = "light", color = "purple" }) {
       fontWeight: "700",
       marginBottom: "0.75rem",
       color: colors.textPrimary,
-      "@media (min-width: 768px)": {
+      "@media (minWidth: 768px)": {
         fontSize: "2.5rem",
       },
     },
@@ -220,7 +220,7 @@ function NotFound({ theme = "light", color = "purple" }) {
       cursor: "pointer",
       marginBottom: "1.5rem",
       textDecoration: "none",
-      "@media (min-width: 768px)": {
+      "@media (minWidth: 768px)": {
         width: "auto",
       },
     },
@@ -256,7 +256,7 @@ function NotFound({ theme = "light", color = "purple" }) {
       display: "grid",
       gridTemplateColumns: "1fr",
       gap: "1rem",
-      "@media (min-width: 640px)": {
+      "@media (minWidth: 640px)": {
         gridTemplateColumns: "1fr 1fr",
       },
     },
@@ -285,7 +285,7 @@ function NotFound({ theme = "light", color = "purple" }) {
     footer: {
       marginTop: "3rem",
       textAlign: "center",
-      "@media (min-width: 768px)": {
+      "@media (minWidth: 768px)": {
         textAlign: "left",
       },
     },

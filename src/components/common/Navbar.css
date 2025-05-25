@@ -683,7 +683,7 @@
   to { opacity: 1; }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1018px) {
   .navbar-container {
     padding: 0.75rem 4%;
   }
