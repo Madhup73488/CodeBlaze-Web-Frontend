@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
+import codeBlazeLogoOrange from "../../assets/images/codeblazelogoorange.png"; // Corrected filename and import
 
-const FeaturedTechnology = ({ theme = "light", color = "orange" }) => { // Added color prop
+const FeaturedTechnology = ({ theme = "light", color = "orange" }) => {
+  // Added color prop
   const primaryColor = color === "purple" ? "#a855f7" : "#f97316"; // Define primaryColor
   const containerRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -119,7 +121,7 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => { // Added
       className="w-full py-16 lg:py-24" // Removed theme classes from here
       style={{
         backgroundColor: `var(--bg-primary)`, // Use CSS variable
-        color: `var(--text-primary)` // Use CSS variable
+        color: `var(--text-primary)`, // Use CSS variable
       }}
     >
       <div className="container mx-auto px-4">
@@ -139,7 +141,7 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => { // Added
               ${isVisible ? "animate-fade-in-up delay-200" : "opacity-0"}`}
             // Text color will be inherited from parent div's var(--text-primary)
             // If a secondary text color is desired, use var(--text-secondary)
-            style={{ color: `var(--text-secondary)`}} 
+            style={{ color: `var(--text-secondary)` }}
           >
             Optimized solutions built with industry-leading technologies
           </p>
@@ -162,19 +164,18 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => { // Added
                  shadow-xl border`}
                 style={{
                   backgroundColor: `var(--bg-secondary)`, // Use CSS variable for card-like background
-                  borderColor: isDark ? "var(--border-dark, #444444)" : "var(--border-light, #e5e7eb)" // Assuming these vars or use direct values
+                  borderColor: isDark
+                    ? "var(--border-dark, #444444)"
+                    : "var(--border-light, #e5e7eb)", // Assuming these vars or use direct values
                 }}
               >
-                <div className="text-orange-500 mr-3">
-                  <svg
-                    viewBox="0 0 60 60"
+                <div className="text-orange-500">
+                  <img
+                    src={codeBlazeLogoOrange} // Use imported variable
+                    alt="CodeBlaze Logo"
                     className="w-12 h-12 md:w-16 md:h-16"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M30,10 C35,15 40,20 35,30 C30,40 20,45 15,40 C10,35 15,25 20,30 C25,35 30,50 40,40 C50,30 45,20 30,10z"
-                    />
-                  </svg>
+                  />{" "}
+                  {/* Self-closing tag is common practice */}
                 </div>
                 <div className="text-orange-500 font-bold text-2xl md:text-3xl">
                   CodeBlaze
@@ -222,7 +223,9 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => { // Added
                       boxShadow:
                         index === activeIndex ? `0 0 20px ${tech.color}40` : "",
                       ringColor: tech.color,
-                      borderColor: isDark ? "var(--border-dark, #444444)" : "var(--border-light, #e5e7eb)"
+                      borderColor: isDark
+                        ? "var(--border-dark, #444444)"
+                        : "var(--border-light, #e5e7eb)",
                     }}
                   >
                     <svg viewBox="0 0 24 24" className="w-6 h-6">
@@ -241,7 +244,9 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => { // Added
                 ${isVisible ? "animate-fade-in-right" : "opacity-0"}`}
               style={{
                 backgroundColor: `var(--bg-secondary)`, // Use CSS variable
-                borderColor: isDark ? "var(--border-dark, #444444)" : "var(--border-light, #e5e7eb)"
+                borderColor: isDark
+                  ? "var(--border-dark, #444444)"
+                  : "var(--border-light, #e5e7eb)",
               }}
             >
               {/* Active technology information */}
@@ -263,17 +268,14 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => { // Added
                   </h3>
                   <span
                     className="text-sm"
-                    style={{color: `var(--text-secondary)`}}
+                    style={{ color: `var(--text-secondary)` }}
                   >
                     {technologies[activeIndex].category}
                   </span>
                 </div>
               </div>
 
-              <p
-                className="mb-8"
-                style={{color: `var(--text-secondary)`}}
-              >
+              <p className="mb-8" style={{ color: `var(--text-secondary)` }}>
                 {technologies[activeIndex].description}
               </p>
 
@@ -287,8 +289,10 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => { // Added
                         key={category}
                         className="px-3 py-2 rounded-md text-center text-sm font-medium"
                         style={{
-                          backgroundColor: isDark ? "var(--bg-primary-darker, #111827)" : "var(--bg-light-accent, #f3f4f6)", // Assuming these vars or use direct values
-                          color: `var(--text-secondary)`
+                          backgroundColor: isDark
+                            ? "var(--bg-primary-darker, #111827)"
+                            : "var(--bg-light-accent, #f3f4f6)", // Assuming these vars or use direct values
+                          color: `var(--text-secondary)`,
                         }}
                       >
                         {category}
@@ -306,7 +310,12 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => { // Added
                   key={`indicator-${tech.name}`}
                   className={`w-2 h-2 rounded-full transition-all duration-300`}
                   style={{
-                    backgroundColor: index === activeIndex ? primaryColor : (isDark ? 'var(--border-dark, #4b5563)' : 'var(--border-light, #d1d5db)')
+                    backgroundColor:
+                      index === activeIndex
+                        ? primaryColor
+                        : isDark
+                        ? "var(--border-dark, #4b5563)"
+                        : "var(--border-light, #d1d5db)",
                   }}
                   onClick={() => setActiveIndex(index)}
                   aria-label={`Select ${tech.name}`}

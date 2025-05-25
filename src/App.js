@@ -66,6 +66,8 @@ import ApplicationAnalyticsPage from "./admin/pages/analytics/ApplicationAnalyti
 // Admin Documents Pages
 import OfferLetterGeneratorPage from "./admin/pages/documents/OfferLetterGeneratorPage";
 import CertificateGeneratorPage from "./admin/pages/documents/CertificateGeneratorPage";
+// Admin Content Management Page
+import BannerCarouselPage from "./admin/pages/ContentManagement/BannerCarouselPage";
 
 // Auth components
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
@@ -82,6 +84,8 @@ import SeventyQuestionsByNehaMalhotra from "./components/Resources/SeventyQuesti
 import ResumeWritingTips from "./components/Resources/ResumeWritingTips";
 // Import Certificate Verification Page
 import CertificateVerificationPage from "./pages/CertificateVerificationPage";
+import ServicesPage from "./components/Services/ServicesPage"; // Import the new ServicesPage
+import CallbackModal from "./components/common/CallbackModal"; // Import CallbackModal
 import {
   DEFAULT_THEME,
   DEFAULT_COLOR,
@@ -105,7 +109,14 @@ const AppContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isCallbackModalOpen, setIsCallbackModalOpen] = useState(false); // State for CallbackModal
+  const [initialServiceForModal, setInitialServiceForModal] = useState(''); // State for pre-selected service in CallbackModal
   const isAdminRoute = location.pathname.startsWith("/admin");
+
+  const handleOpenCallbackModal = (initialService = '') => {
+    setInitialServiceForModal(initialService);
+    setIsCallbackModalOpen(true);
+  };
 
   const toggleTheme = () => {
     setTheme(theme === THEMES.DARK ? THEMES.LIGHT : THEMES.DARK); // Use theme constants
@@ -129,27 +140,22 @@ const AppContent = () => {
   //   }
   // }, [showLoaderFor]); // Dependency on showLoaderFor is fine as it's stable
 
-  useEffect(() => {
-    if (!authLoading && location.pathname.startsWith("/admin")) {
-      const isAdmin = user?.role === "admin" || user?.role === "superadmin";
-
-      if (!isAuthenticated) {
-        const timer = setTimeout(() => {
-          if (!isAuthenticated) {
-            // Re-check after timeout
-            // If still not authenticated and trying to access admin, redirect or show auth modal
-            if (location.pathname !== "/") {
-              // Avoid redirect loop if already on /
-              navigate("/", { replace: true }); // Or openAuthModal('login');
-            }
-          }
-        }, 500); // Delay to allow auth state to fully propagate
-        return () => clearTimeout(timer);
-      } else if (!isAdmin) {
-        navigate("/", { replace: true });
-      }
-    }
-  }, [isAuthenticated, user, authLoading, navigate, location.pathname]);
+  // Removed the problematic useEffect for admin route redirection
+  // useEffect(() => {
+  //   if (location.pathname.startsWith("/admin")) {
+  //     const isAdmin = user?.role === "admin" || user?.role === "superadmin";
+  //     if (authLoading) {
+  //       return;
+  //     }
+  //     if (!isAuthenticated) {
+  //       if (location.pathname !== "/") {
+  //         navigate("/", { replace: true });
+  //       }
+  //     } else if (!isAdmin) {
+  //       navigate("/", { replace: true });
+  //     }
+  //   }
+  // }, [isAuthenticated, user, authLoading, navigate, location.pathname]);
 
   const openAuthModal = (initialFlowState = "initial") => {
     setAuthFlowState(initialFlowState);
@@ -214,7 +220,11 @@ const AppContent = () => {
       <Routes>
         <Route
           path={ROUTES.HOME}
-          element={<Landing theme={theme} color={color} />}
+          element={<Landing theme={theme} color={color} openCallbackModal={handleOpenCallbackModal} />}
+        />
+        <Route
+          path={ROUTES.SERVICES} // Add new route for Services
+          element={<ServicesPage theme={theme} color={color} openCallbackModal={handleOpenCallbackModal} />}
         />
         <Route
           path={ROUTES.CAREERS}
@@ -379,23 +389,39 @@ const AppContent = () => {
         {/* Admin Routes */}
         <Route
           path={ROUTES.ADMIN}
-          element={
-            isAuthenticated &&
-            (user?.role === "admin" || user?.role === "superadmin") ? (
-              <AdminProvider>
-                {" "}
-                <AdminLayout />{" "}
-              </AdminProvider>
-            ) : (
-              // If not authenticated or not admin, redirect.
-              // Consider showing a "not authorized" message or redirecting to login.
-              <Navigate
-                to={ROUTES.HOME}
-                replace
-                state={{ from: location, openLogin: !isAuthenticated }}
-              />
-            )
-          }
+          element={(() => {
+            console.log("Admin Route Check:");
+            console.log("  authLoading:", authLoading);
+            console.log("  isAuthenticated:", isAuthenticated);
+            console.log("  user:", user);
+            console.log("  user role:", user?.role);
+            const isAdmin =
+              user?.role === "admin" || user?.role === "superadmin";
+            console.log("  isAdmin:", isAdmin);
+
+            if (authLoading) {
+              return (
+                <div className="flex items-center justify-center h-screen">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                </div>
+              );
+            } else if (isAuthenticated && isAdmin) {
+              return (
+                <AdminProvider>
+                  {" "}
+                  <AdminLayout />{" "}
+                </AdminProvider>
+              );
+            } else {
+              return (
+                <Navigate
+                  to={ROUTES.HOME}
+                  replace
+                  state={{ from: location, openLogin: !isAuthenticated }}
+                />
+              );
+            }
+          })()}
         >
           <Route
             index
@@ -516,6 +542,11 @@ const AppContent = () => {
               element={<CertificateGeneratorPage />}
             />
           </Route>
+          {/* NEW: Admin Content Management Route */}
+          <Route
+            path={ROUTES.ADMIN_CONTENT_MANAGEMENT.split("/").pop()}
+            element={<BannerCarouselPage />}
+          />
           <Route path={ROUTES.NOT_FOUND} element={<AdminNotFound />} />
         </Route>
 
@@ -544,6 +575,13 @@ const AppContent = () => {
         theme={theme} // Pass theme to AuthModal
         color={color} // Pass color to AuthModal
         // initialFlowState is managed by useAuth now, modal can subscribe or receive it
+      />
+      <CallbackModal
+        isOpen={isCallbackModalOpen}
+        onClose={() => setIsCallbackModalOpen(false)}
+        servicesList={[]} // Passing empty array for now, can be sourced globally later
+        theme={theme}
+        initialSelectedService={initialServiceForModal}
       />
     </div>
   );

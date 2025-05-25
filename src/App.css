@@ -1,7 +1,7 @@
 .app { /* Changed from .App to .app to match className in App.js */
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  min-height: 100vh;
+  /* min-height: 100vh; */ /* Removed to allow content to flow naturally */
   /* text-align: center; */ /* Removed as it might not be desired globally */
   transition: background-color var(--transition-default), color var(--transition-default);
 }
