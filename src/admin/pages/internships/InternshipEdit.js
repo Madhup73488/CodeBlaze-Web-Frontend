@@ -15,7 +15,6 @@ const InternshipEdit = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   // Form State - ADDED startDate and isPaid to match backend schema requirements
   const [formValues, setFormValues] = useState({
@@ -46,16 +45,6 @@ const InternshipEdit = () => {
   });
 
   const [formErrors, setFormErrors] = useState({});
-
-  // Handle window resize for responsive layout
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   // Load internship data
   useEffect(() => {

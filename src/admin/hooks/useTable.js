@@ -14,11 +14,10 @@ const useTable = (data, columns, options = {}) => {
   const [pageSize, setPageSize] = useState(initialPageSize);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Ensure data is an array
-  const safeData = Array.isArray(data) ? data : [];
-
   // Sort data if sort column is provided
   const sortedData = useMemo(() => {
+    // Ensure data is an array
+    const safeData = Array.isArray(data) ? data : [];
     // Guard against null or undefined data
     if (!safeData.length) return [];
 
@@ -55,7 +54,7 @@ const useTable = (data, columns, options = {}) => {
         return aValue < bValue ? 1 : -1;
       }
     });
-  }, [safeData, sortBy, sortDirection, columns]);
+  }, [data, sortBy, sortDirection, columns]);
 
   // Filter data based on search term
   const filteredData = useMemo(() => {

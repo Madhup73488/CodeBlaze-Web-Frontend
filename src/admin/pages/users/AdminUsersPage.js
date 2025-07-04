@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import CreateAdminUserForm from "../../components/users/CreateAdminUserForm";
 import AdminUsersTable from "../../components/users/AdminUsersTable";
+import RegularUsersTable from "../../components/users/RegularUsersTable"; // Import RegularUsersTable
 import { useAdmin } from "../../contexts/AdminContext"; // Import useAdmin to get theme
 
 function AdminUsersPage() {
@@ -34,12 +35,12 @@ function AdminUsersPage() {
         </p>
       </div>
 
-      <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8 mb-12"> {/* Added mb-12 for spacing */}
         <div className="lg:col-span-1">
           <div className={`shadow-md rounded-lg overflow-hidden border ${cardClasses}`}>
             <div className={`${cardHeaderClasses} py-4 px-6`}>
               <h2 className="text-xl font-semibold">Create New Admin</h2>
-              <p className={`text-sm mt-1`}> {/* Text color inherited from cardHeaderClasses */}
+              <p className={`text-sm mt-1`}>
                 Add a new administrator to the system
               </p>
             </div>
@@ -53,13 +54,36 @@ function AdminUsersPage() {
           <div className={`shadow-md rounded-lg overflow-hidden border ${cardClasses}`}>
             <div className={`${cardHeaderClasses} py-4 px-6`}>
               <h2 className="text-xl font-semibold">Admin Accounts</h2>
-              <p className={`text-sm mt-1`}> {/* Text color inherited from cardHeaderClasses */}
+              <p className={`text-sm mt-1`}>
                 Manage existing administrator accounts
               </p>
             </div>
             <div className={`p-6 ${cardContentBg}`}>
               <AdminUsersTable newAdminUser={newAdminUser} />
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Section for Regular Users */}
+      <div className="mt-12"> {/* Added mt-12 for spacing */}
+        <div className="text-center mb-10">
+          <h1 className={`text-3xl font-bold mb-2 ${titleTextClasses}`}>
+            Application User Management
+          </h1>
+          <p className={`max-w-2xl mx-auto ${subtitleTextClasses}`}>
+            View and manage regular application users, their roles, and status
+          </p>
+        </div>
+        <div className={`shadow-md rounded-lg overflow-hidden border ${cardClasses}`}>
+          <div className={`${cardHeaderClasses} py-4 px-6`}>
+            <h2 className="text-xl font-semibold">Application Users</h2>
+            <p className={`text-sm mt-1`}>
+              Manage existing application users
+            </p>
+          </div>
+          <div className={`p-6 ${cardContentBg}`}>
+            <RegularUsersTable />
           </div>
         </div>
       </div>

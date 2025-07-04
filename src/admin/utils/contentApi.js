@@ -1,7 +1,3 @@
-import api from './api'; // Assuming a base API utility exists
-
-const CONTENT_API_BASE_URL = '/admin/content'; // Define your API endpoint
-
 const contentApi = {
   /**
    * Fetches all banner and carousel data.

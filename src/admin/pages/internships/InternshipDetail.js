@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react"; // Import useCallback
+import React, { useState, useEffect } from "react"; // Removed useCallback
 import { useNavigate, useParams, Link } from "react-router-dom";
 import {
   FiEdit2,
   FiTrash2,
-  FiArrowLeft,
+  // FiArrowLeft, // Removed unused FiArrowLeft
   FiUsers,
   FiCalendar,
   FiMapPin,
@@ -17,10 +17,10 @@ import StatusBadge from "../../components/common/StatusBadge"; // Assuming Statu
 import DataTable from "../../components/common/DataTable"; // Assuming DataTable exists
 import {
   fetchAdminInternshipById,
-  fetchAdminInternshipApplications,
+  fetchAdminApplications, // Changed from fetchAdminInternshipApplications
   deleteInternshipAdmin,
-  updateInternshipAdmin, // This function should handle updating the internship, including status
-} from "../../utils/api"; // Ensure this path is correct and functions are implemented
+  updateInternshipAdmin,
+} from "../../utils/api";
 import useTable from "../../hooks/useTable"; // Assuming useTable hook exists
 import { useAdmin } from "../../contexts/AdminContext"; // Import useAdmin context
 
@@ -30,7 +30,7 @@ const InternshipDetail = () => {
 
   const {
     theme, // Destructure theme from useAdmin
-    hasPermission, // Assuming hasPermission function is available
+    // hasPermission, // Removed unused hasPermission
   } = useAdmin();
 
   const [internship, setInternship] = useState(null); // State for fetched internship details
@@ -112,27 +112,36 @@ const InternshipDetail = () => {
 
       try {
         setApplicationsLoading(true);
-        // Pass internship ID, sorting, and pagination parameters
-        const data = await fetchAdminInternshipApplications(internship._id, {
-          // Use internship._id
+        const filters = {
+          internship_id: internship._id, // Pass internship_id as a filter
+          position_type: "internship", // Specify position_type
           sortField: sorting.field,
           sortDirection: sorting.direction,
           page: pagination.page,
-          pageSize: pagination.pageSize,
-        });
+          limit: pagination.pageSize, // Assuming pageSize is limit
+        };
+        const response = await fetchAdminApplications(filters); // Changed to fetchAdminApplications
 
-        console.log("Fetched applications data:", data); // Debug log
+        console.log("Fetched applications data:", response); // Debug log
 
-        if (data && Array.isArray(data.applications)) {
-          setApplications(data.applications);
-          pagination.setTotalItems(data.total || 0);
+        // New backend response structure: { success, applications, totalPages, currentPage, totalApplications }
+        if (response && response.success) {
+          setApplications(response.applications || []);
+          // pagination.setTotalItems is a function from useTable hook, so we pass the total count
+          if (pagination.setTotalItems) {
+            pagination.setTotalItems(response.totalApplications || 0);
+          }
+          // Note: useTable hook might need adjustment if it doesn't directly use totalPages from API
+          // For now, assuming DataTable component can derive totalPages from totalItems and itemsPerPage
         } else {
           console.warn(
-            "API did not return expected applications data structure:",
-            data
+            "API did not return expected applications data structure or call failed:",
+            response
           );
           setApplications([]);
-          pagination.setTotalItems(0);
+          if (pagination.setTotalItems) {
+            pagination.setTotalItems(0);
+          }
         }
       } catch (error) {
         console.error("Failed to load applications", error);

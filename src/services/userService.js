@@ -1,96 +1,129 @@
 // src/services/userService.js
-import axios from "axios";
-
-const API_URL =
-  `${process.env.REACT_APP_BACKEND_URL}/api` ||
-  "https://codeblaze-web-backend.onrender.com/users";
-
-// Create axios instance with auth token
-const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-  withCredentials: true,
-});
-
-// Add auth token to requests
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+import apiClient, { handleApiError } from "./api"; // Import the centralized apiClient and error handler
 
 // User profile services
 export const userService = {
   // Get current user profile
-  getUserProfile: () => {
-    return api.get("/users/me");
+  getUserProfile: async () => {
+    try {
+      const response = await apiClient.get("/users/me");
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
   },
 
   // Update user profile
-  updateProfile: (profileData) => {
-    return api.put("/users/me", profileData);
+  updateProfile: async (profileData) => {
+    try {
+      const response = await apiClient.put("/users/me", profileData);
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
   },
 
   // Update password
-  updatePassword: (passwordData) => {
-    return api.put("/users/password", passwordData);
+  updatePassword: async (passwordData) => {
+    try {
+      const response = await apiClient.put("/users/password", passwordData);
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
   },
 
   // Upload resume
-  uploadResume: (formData) => {
-    return api.post("/users/resume", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+  uploadResume: async (formData) => {
+    try {
+      const response = await apiClient.post("/users/resume", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
   },
 
   // Upload profile image
-  uploadProfileImage: (formData) => {
-    return api.post("/users/profile-image", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+  uploadProfileImage: async (formData) => {
+    try {
+      const response = await apiClient.post("/users/profile-image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
   },
 
   // Experience CRUD operations
-  addExperience: (experienceData) => {
-    return api.post("/users/experience", experienceData);
+  addExperience: async (experienceData) => {
+    try {
+      const response = await apiClient.post("/users/experience", experienceData);
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
   },
 
-  updateExperience: (expId, experienceData) => {
-    return api.put(`/users/experience/${expId}`, experienceData);
+  updateExperience: async (expId, experienceData) => {
+    try {
+      const response = await apiClient.put(`/users/experience/${expId}`, experienceData);
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
   },
 
-  deleteExperience: (expId) => {
-    return api.delete(`/users/experience/${expId}`);
+  deleteExperience: async (expId) => {
+    try {
+      const response = await apiClient.delete(`/users/experience/${expId}`);
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
   },
 
   // Education CRUD operations
-  addEducation: (educationData) => {
-    return api.post("/users/education", educationData);
+  addEducation: async (educationData) => {
+    try {
+      const response = await apiClient.post("/users/education", educationData);
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
   },
 
-  updateEducation: (eduId, educationData) => {
-    return api.put(`/users/education/${eduId}`, educationData);
+  updateEducation: async (eduId, educationData) => {
+    try {
+      const response = await apiClient.put(`/users/education/${eduId}`, educationData);
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
   },
 
-  deleteEducation: (eduId) => {
-    return api.delete(`/users/education/${eduId}`);
+  deleteEducation: async (eduId) => {
+    try {
+      const response = await apiClient.delete(`/users/education/${eduId}`);
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
   },
 
   // Get public profile
-  getPublicProfile: (userId) => {
-    return api.get(`/users/profile/${userId}`);
+  getPublicProfile: async (userId) => {
+    try {
+      const response = await apiClient.get(`/users/profile/${userId}`);
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
   },
 };

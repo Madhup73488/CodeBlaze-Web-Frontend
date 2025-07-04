@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom"; // Removed unused Link
 
 function DataTable({
   data = [],
@@ -19,7 +19,7 @@ function DataTable({
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(defaultItemsPerPage);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
   // Reset to first page when search term changes
@@ -107,10 +107,10 @@ function DataTable({
     setSortConfig({ key, direction });
   };
 
-  // Handle search
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-  };
+  // Handle search - This function is currently unused as the search input is commented out.
+  // const handleSearch = (e) => {
+  //   setSearchTerm(e.target.value);
+  // };
 
   // Generate pages array for pagination
   const getPageNumbers = () => {
@@ -236,9 +236,9 @@ function DataTable({
               </tr>
             ) : currentItems.length > 0 ? (
               currentItems.map((item, index) => (
-                <tr key={item.id || index}>
+                <tr key={item._id || item.id || index}>
                   {columns.map((column) => (
-                    <td key={`${item.id || index}-${column.accessor}`}>
+                    <td key={`${item._id || item.id || index}-${column.accessor}`}>
                       {column.cell
                         ? column.cell(item)
                         : typeof column.accessor === "function"

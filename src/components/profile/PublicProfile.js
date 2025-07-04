@@ -39,7 +39,7 @@ const PublicProfile = ({ theme = "light", color = "orange" }) => {
     setLoading(true);
     setError(null);
     fetchPublicProfile();
-  }, [id]);
+  }, [id, fetchPublicProfile]);
 
   const fetchPublicProfile = async () => {
     try {

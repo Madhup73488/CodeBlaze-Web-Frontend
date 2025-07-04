@@ -45,7 +45,8 @@ function Footer({ theme = "dark", color = "purple" }) {
     },
     {
       title: "Our Services",
-      links: [ // All these now point to /services
+      links: [
+        // All these now point to /services
         { text: "Software Development", path: "/services" },
         { text: "Digital Transformation", path: "/services" },
         { text: "Cloud Solutions", path: "/services" },
@@ -311,7 +312,10 @@ function Footer({ theme = "dark", color = "purple" }) {
 
           {/* Link Sections */}
           {footerLinkSections.map((section) => (
-            <div key={section.title} className={`md:col-span-${section.mdColSpan} lg:col-span-${section.lgColSpan}`}>
+            <div
+              key={section.title}
+              className={`md:col-span-${section.mdColSpan} lg:col-span-${section.lgColSpan}`}
+            >
               <h4 className={`${currentTheme.text} font-semibold text-lg mb-4`}>
                 {section.title}
               </h4>

@@ -4,7 +4,6 @@ import ProductDevelopment from "../components/landing/ProductDevelopment";
 import Services from "../components/landing/Services";
 import Strategy from "../components/landing/Strategy";
 import FeaturedTechnology from "../components/landing/FeaturedTechnology";
-import BannerCarouselDisplay from "../components/landing/BannerCarouselDisplay"; // Import the new display component
 import contentApi from "../admin/utils/contentApi"; // Import the content API
 
 const Landing = ({ theme, color, openCallbackModal }) => { // Add openCallbackModal to props

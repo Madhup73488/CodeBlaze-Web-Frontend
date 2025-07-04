@@ -32,7 +32,7 @@ const FiltersModal = ({
         return () => clearTimeout(timer);
       }
     }
-  }, [isOpen]);
+  }, [isOpen, animationState]);
 
   // Don't render anything if the modal is fully closed
   if (animationState === "closed" && !isOpen) return null;

@@ -10,7 +10,7 @@ const JobApplicationForm = ({ job, theme, colorStyles }) => {
     phone: '',
     linkedin: '',
     portfolio: '',
-    resume: null,
+    resumeFile: null, // Changed from resume to resumeFile
     coverLetter: '',
     experience: '',
     heardAbout: '',
@@ -49,8 +49,8 @@ const JobApplicationForm = ({ job, theme, colorStyles }) => {
     }
     
     // Resume validation
-    if (!formData.resume) {
-      newErrors.resume = 'Resume is required';
+    if (!formData.resumeFile) { // Changed from resume to resumeFile
+      newErrors.resumeFile = 'Resume is required'; // Changed from resume to resumeFile
     }
     
     // Cover letter validation
@@ -75,7 +75,7 @@ const JobApplicationForm = ({ job, theme, colorStyles }) => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData({ ...formData, resume: file });
+      setFormData({ ...formData, resumeFile: file }); // Changed from resume to resumeFile
     }
   };
   
@@ -104,7 +104,7 @@ const JobApplicationForm = ({ job, theme, colorStyles }) => {
         phone: '',
         linkedin: '',
         portfolio: '',
-        resume: null,
+        resumeFile: null, // Changed from resume to resumeFile
         coverLetter: '',
         experience: '',
         heardAbout: '',
@@ -272,12 +272,12 @@ const JobApplicationForm = ({ job, theme, colorStyles }) => {
           </div>
           
           <div className="md:col-span-2">
-            <label htmlFor="resume" className="block mb-2 font-medium">
+            <label htmlFor="resumeFile" className="block mb-2 font-medium"> {/* Changed from resume to resumeFile */}
               Resume / CV <span className="text-red-500">*</span>
             </label>
             <div
               className={`flex items-center justify-center w-full p-6 border-2 border-dashed rounded-md ${
-                errors.resume ? "border-red-500" : "border-gray-300"
+                errors.resumeFile ? "border-red-500" : "border-gray-300" // Changed from resume to resumeFile
               }`}
               style={{
                 background: theme === "dark" ? "#222" : "#f8f8f8",
@@ -293,7 +293,7 @@ const JobApplicationForm = ({ job, theme, colorStyles }) => {
                     <span className="text-sm"> or drag and drop</span>
                     <input
                       id="file-upload"
-                      name="resume"
+                      name="resumeFile" // Changed from resume to resumeFile
                       type="file"
                       accept=".pdf,.doc,.docx"
                       onChange={handleFileChange}
@@ -302,15 +302,15 @@ const JobApplicationForm = ({ job, theme, colorStyles }) => {
                   </label>
                   <p className="text-xs">PDF, DOC, or DOCX (max. 5MB)</p>
                 </div>
-                {formData.resume && (
+                {formData.resumeFile && ( // Changed from resume to resumeFile
                   <p className="text-sm font-medium" style={{ color: colorStyles.primary }}>
-                    {formData.resume.name} selected
+                    {formData.resumeFile.name} selected {/* Changed from resume to resumeFile */}
                   </p>
                 )}
               </div>
             </div>
-            {errors.resume && (
-              <p className="mt-1 text-red-500 text-sm">{errors.resume}</p>
+            {errors.resumeFile && ( // Changed from resume to resumeFile
+              <p className="mt-1 text-red-500 text-sm">{errors.resumeFile}</p> // Changed from resume to resumeFile
             )}
           </div>
           
