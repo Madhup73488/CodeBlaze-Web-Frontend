@@ -56,9 +56,11 @@ const CertificateVerificationPage = ({ theme = 'light' }) => { // Assuming theme
   }
 
   // Format dates from certificateData
-  const joiningDate = certificateData.joiningDate ? new Date(certificateData.joiningDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/A';
-  const leavingDate = certificateData.leavingDate ? new Date(certificateData.leavingDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/A';
-  const issuedDate = certificateData.issuedDate ? new Date(certificateData.issuedDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/A';
+  const joiningDate = certificateData.joining_date ? new Date(certificateData.joining_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/A';
+  const leavingDate = certificateData.leaving_date ? new Date(certificateData.leaving_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/A';
+  const issuedDate = certificateData.issued_date ? new Date(certificateData.issued_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/A';
+
+  const qrCodeValue = `${process.env.REACT_APP_FRONTEND_URL}/internship-certificate-verification/${certificateData.certificate_id}`;
 
   return (
     <div className={`min-h-screen py-12 px-4 sm:px-6 lg:px-8 ${containerClasses}`}>
@@ -69,17 +71,17 @@ const CertificateVerificationPage = ({ theme = 'light' }) => { // Assuming theme
           <h1 style={{ color: "#003366", fontSize: "2.5em", marginBottom: "10px" }}>Certificate of Internship</h1>
           <p style={{ fontSize: "1.2em", marginBottom: "20px" }}>This certificate is proudly presented to</p>
           <h2 style={{ color: "#d2691e", fontSize: "2em", marginBottom: "20px", fontFamily: "'Brush Script MT', cursive" }}>
-            {certificateData.recipientName}
+            {certificateData.recipient_name}
           </h2>
           <p style={{ fontSize: "1.1em", marginBottom: "10px" }}>for successful completion of an internship as a</p>
           <p style={{ fontSize: "1.3em", fontWeight: "bold", color: "#003366", marginBottom: "20px" }}>
-            {certificateData.internshipRole}
+            {certificateData.internship_role}
           </p>
-          <p style={{ fontSize: "1em", marginBottom: "10px" }}>at <strong>{certificateData.companyName}</strong></p>
+          <p style={{ fontSize: "1em", marginBottom: "10px" }}>at <strong>{certificateData.company_name}</strong></p>
           <p style={{ fontSize: "1em", marginBottom: "20px" }}>from {joiningDate} to {leavingDate}.</p>
-          {certificateData.projectWorkedOn && (
+          {certificateData.project_worked_on && (
             <p style={{ fontSize: "1em", marginBottom: "20px" }}>
-              During this period, they have diligently worked on the project: <strong>{certificateData.projectWorkedOn}</strong>.
+              During this period, they have diligently worked on the project: <strong>{certificateData.project_worked_on}</strong>.
             </p>
           )}
           <p style={{ fontSize: "1em", marginBottom: "30px" }}>
@@ -87,18 +89,18 @@ const CertificateVerificationPage = ({ theme = 'light' }) => { // Assuming theme
           </p>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: "40px", paddingTop: "20px", borderTop: "1px solid #ccc" }}>
             <div style={{ textAlign: "left" }}>
-              <p style={{ margin: 0, fontSize: "0.9em" }}><strong>{certificateData.verifierName || 'Syed Roshan'}</strong></p>
-              <p style={{ margin: 0, fontSize: "0.8em" }}>{certificateData.verifierTitle || 'Founder, CodeBlaze'}</p>
-              <p style={{ margin: 0, fontSize: "0.8em" }}>{certificateData.companyName}</p>
+              <p style={{ margin: 0, fontSize: "0.9em" }}><strong>{certificateData.verifier_name || 'Syed Roshan'}</strong></p>
+              <p style={{ margin: 0, fontSize: "0.8em" }}>{certificateData.verifier_title || 'Founder, CodeBlaze'}</p>
+              <p style={{ margin: 0, fontSize: "0.8em" }}>{certificateData.company_name}</p>
               <p style={{ marginTop: "10px", fontSize: "0.8em" }}>Date of Issue: {issuedDate}</p>
             </div>
             <div style={{ textAlign: "right" }}>
-              {certificateData.qrCodeValue && (
+              {qrCodeValue && (
                 <div style={{ marginBottom: "5px" }}>
-                  <QRCodeSVG value={certificateData.qrCodeValue} size={80} level="H" includeMargin={true} />
+                  <QRCodeSVG value={qrCodeValue} size={80} level="H" includeMargin={true} />
                 </div>
               )}
-              <p style={{ margin: 0, fontSize: "0.8em" }}>Certificate ID: {certificateData.certificateId}</p>
+              <p style={{ margin: 0, fontSize: "0.8em" }}>Certificate ID: {certificateData.certificate_id}</p>
             </div>
           </div>
         </div>
