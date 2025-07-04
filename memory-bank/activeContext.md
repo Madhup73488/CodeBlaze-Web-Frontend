@@ -1,7 +1,83 @@
 # Active Context
 
-- **Current Work Focus**: Initializing the memory bank.
-- **Recent Changes**: Confirmed existence and reviewed initial content of all core memory bank files.
-- **Next Steps**: Memory bank initialization is complete. Ready for new tasks.
-- **Important Patterns and Preferences**: Adhering to the Memory Bank structure and update workflows.
-- **Learnings and Project Insights**: The core memory bank files were already present, indicating a pre-existing project structure.
+- **Current Work Focus**: Understanding and integrating significant backend API and structural changes into the frontend application. The backend has undergone a major refactor, including a database migration from MongoDB/Mongoose to PostgreSQL/Sequelize, and substantial reorganization of API endpoints.
+
+- **Recent Information Received (Backend Changes Summary)**:
+    - **Project Directory Restructure**: Core backend logic (middleware, services, utils, controllers, routes) moved into a main `src/` directory. Controllers and routes are now organized into a feature-based structure (e.g., `src/features/auth/`).
+    - **Database Migration**: Backend migrated from MongoDB (Mongoose) to PostgreSQL (Sequelize). Field names aligned with `initial_schema.sql`.
+    - **Authentication Flow (`/api/auth`)**:
+        - `POST /register`: Initiates OTP verification.
+        - `POST /verify-email` (or similar): Submits OTP to complete registration and get tokens.
+        - `POST /login`: Requires verified email.
+        - `POST /logout`: Handles server-side refresh token invalidation.
+        - `POST /refresh`: Refreshes access tokens.
+        - Google OAuth (`GET /google`, `GET /google/callback`): Callback issues application-specific JWTs.
+    - **User Profile Management (`/api/users`)**:
+        - Resume Upload (`POST /resume`): Expects `resumeFile` (form-data).
+        - Profile Image Upload (`POST /profile-image`): Expects `profileImageFile` (form-data).
+        - CRUD endpoints for user experience and education.
+    - **Job and Internship Management (`/api/jobs`, `/api/internships`)**:
+        - Standard CRUD for employers/admins.
+        - `GET /my-jobs`, `GET /my-internships` for user's own listings.
+        - `GET /:id/applications` for employers/admins.
+    - **Application Process (`/api/applications`)**:
+        - `POST /`: Submits application, integrates resume upload.
+        - Endpoints for viewing user's applications, specific application details, status updates, and withdrawal.
+    - **Admin Panel Endpoints (`/api/admin/...`)**:
+        - Consolidated routes for user management, admin user management, full CRUD for Jobs/Internships, activating/featuring listings, application management, content management (banners/carousels), document generation, and analytics.
+    - **Public Endpoints (`/api/public`)**:
+        - `GET /certificate/:certificateId` for public certificate verification.
+    - **Error Handling**: Global error handler updated for Sequelize.
+    - **Reset Password API (`POST /api/auth/reset-password`)**: Changed to POST, expects token and newPassword in the body. Returns success message, no user/token.
+
+- **Next Steps**:
+    - Review all frontend service files (e.g., `src/services/api.js`, `src/services/AuthApi.js`, `src/services/userService.js`, `src/admin/utils/api.js`) to update API endpoint paths, HTTP methods, and request/response payloads to align with the new backend. (Largely completed, with specific update for resetPassword).
+    - Update the authentication flow in the frontend (components in `src/components/Auth/`) to support the new OTP-based registration.
+    - Verify and update file upload mechanisms (`src/components/profile/FileUploadSection.js`, `src/components/careers/JobApplicationForm.js`) to use the correct form-data field names (`resumeFile`, `profileImageFile`).
+    - Refactor the admin panel (`src/admin/`) to use the new consolidated `/api/admin/...` routes.
+    - Conduct thorough testing of all features that interact with the backend.
+    - Update other relevant Memory Bank files (`progress.md`, `systemPatterns.md`) to reflect these changes and the new tasks.
+
+- **Important Patterns and Preferences**:
+    - Adhering to the Memory Bank structure and update workflows.
+    - Ensuring frontend API calls match the backend contract precisely.
+    - Prioritizing robust error handling and user feedback for API interactions.
+
+- **Learnings and Project Insights**:
+    - The backend has undergone a significant refactoring, moving from MongoDB/Mongoose to PostgreSQL/Sequelize.
+    - API endpoints have been restructured, particularly for authentication and admin functionalities.
+    - File upload handling has specific field name requirements.
+    - A new OTP-based registration flow is in place.
+    - The `resetPassword` API has changed (POST, token in body, no user/token in response).
+    - Frontend logic for handling the password reset URL (`/reset-password?token=...`) has been refined.
+    - **Google OAuth Sign-In Frontend Support Updated**:
+        - `src/components/Auth/SocialLogin.js`: Google button now redirects to `/api/auth/google`.
+        - Backend callback now redirects to `/oauth-callback` with `token` (access token) and `refreshToken` in query parameters.
+        - `src/pages/OAuthCallbackPage.js`: Refactored for robust token processing and navigation.
+        - `src/contexts/AuthContext.js`: Context functions stabilized with `useCallback`/`useMemo`; admin role checking logic updated to use `user.roles` array.
+    - **Navbar Admin Links**:
+        - `src/components/common/Navbar.js`: Updated to correctly check `user.roles` for displaying admin links; `showLoaderFor` temporarily commented out in `handleNavigation`.
+    - **Admin Route Protection**:
+        - `src/App.js` (within `AppContent`): Admin route guard uses a locally derived `isAdmin` check based on `user.roles` from `AuthContext`. Diagnostic logging added.
+        - `src/admin/contexts/AdminContext.js`: Corrected the `checkAdminAccess` function to properly use `user.roles.includes('admin')`.
+    - **Admin Dashboard Stats**:
+        - `src/admin/pages/DashboardHome.js`: Updated `getApplicationStatusCounts` function to process `applicationsByStatus` as an array of `{status, count}` objects. Addressed React key warning.
+    - **Admin Listings (Jobs & Internships) & Applications**:
+        - `src/admin/pages/jobs/JobList.js`: Updated to handle flat pagination response (`response.jobs`, `response.totalJobs`).
+        - `src/admin/pages/internships/InternshipList.js`: Updated to handle flat pagination response.
+        - `src/admin/utils/api.js`: Consolidated application fetching.
+        - `src/admin/pages/applications/JobApplications.js` & `InternshipApplications.js`: Updated for consolidated API and new response structure.
+        - `src/admin/pages/internships/InternshipDetail.js`: Updated for consolidated application API and new response structure. Cleaned up unused imports/variables.
+    - **Admin Analytics**:
+        - `src/admin/pages/analytics/UserAnalyticsPage.js`: Fixed `TypeError`.
+        - `src/admin/pages/analytics/JobAnalyticsPage.js`: Fixed `TypeError`.
+    - **Job & Internship Creation**:
+        - `src/admin/pages/jobs/JobCreate.js`: Improved client-side validation, payload key mapping (camelCase to snake_case), and API response handling (to fix "undefined undefined" console error on success).
+        - `src/admin/pages/internships/InternshipCreate.js`: Improved client-side validation, payload key mapping, API response handling (to fix "undefined undefined" console error on success). Cleaned up unused function and ESLint `useCallback` dependency.
+    - **ESLint Warnings Addressed**:
+        - `src/App.js`: Removed unused `useRef`.
+        - `src/admin/components/common/DataTable.js`: Removed unused `Link` import and `handleSearch` function.
+        - `src/admin/components/common/FormFields.js`: Removed unused `Form` import.
+        - `src/admin/contexts/AdminContext.js`: Addressed `exhaustive-deps` for `contextValue`'s `useMemo` by removing `handleResize` from its dependencies.
+    - **Current Blocker (Backend)**: A database error `"type "enum_app_users_roles[]" does not exist"` is occurring. This needs to be resolved in the backend's database schema and Sequelize model/migrations.
+    - Thorough integration testing will be critical once the backend database issue is resolved.
