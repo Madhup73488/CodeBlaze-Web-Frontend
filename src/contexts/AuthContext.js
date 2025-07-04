@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import authApi from "../services/AuthApi";
 import Cookies from "js-cookie";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -26,37 +26,24 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Single consolidated function to check authentication status
-  const checkAuthStatus = async () => {
+  const checkAuthStatus = useCallback(async () => {
     console.log("Checking authentication status...");
     setLoading(true);
-
-    // Check for token in both localStorage and cookies
     const token = localStorage.getItem("token") || Cookies.get("token");
-
     if (!token) {
-      console.log("No token found");
       setIsAuthenticated(false);
       setUser(null);
       setLoading(false);
       return;
     }
-
-    console.log("Token found, validating...");
-
     try {
-      // Call API to validate token
-      const { isValid, user } = await authApi.validateToken();
-
-      if (isValid && user) {
-        console.log("Token valid, user authenticated:", user);
-        setUser(user);
+      const { isValid, user: userData } = await authApi.validateToken();
+      if (isValid && userData) {
+        setUser(userData); // Expect userData to have a 'roles' array
         setIsAuthenticated(true);
       } else {
-        console.log("Token validation failed");
         setIsAuthenticated(false);
         setUser(null);
-        // Clear invalid tokens
         localStorage.removeItem("token");
         Cookies.remove("token");
       }
@@ -64,92 +51,73 @@ export const AuthProvider = ({ children }) => {
       console.error("Auth validation error:", err);
       setIsAuthenticated(false);
       setUser(null);
-      // Clear tokens on error
       localStorage.removeItem("token");
       Cookies.remove("token");
     } finally {
       setLoading(false);
     }
-  };
+  }, [setLoading, setIsAuthenticated, setUser]);
 
-  // Check authentication status on initial load
   useEffect(() => {
     checkAuthStatus();
-  }, []);
+  }, [checkAuthStatus]);
 
-  // Check for password reset URLs
   useEffect(() => {
-    const pathSegments = location.pathname.split("/");
-    if (pathSegments[1] === "reset-password" && pathSegments[2]) {
-      const token = pathSegments[2];
-      setResetPasswordToken(token);
+    const queryParams = new URLSearchParams(location.search);
+    const tokenFromQuery = queryParams.get("token");
+    if (location.pathname === "/reset-password" && tokenFromQuery) {
+      setResetPasswordToken(tokenFromQuery);
       setAuthFlowState("reset_password_form");
     } else {
-      setResetPasswordToken(null);
-      if (
-        authFlowState === "reset_password_form" &&
-        !location.pathname.includes("reset-password")
-      ) {
+      if (authFlowState === "reset_password_form" && (!tokenFromQuery || location.pathname !== "/reset-password")) {
+        setResetPasswordToken(null);
         setAuthFlowState("initial");
       }
     }
-  }, [location.pathname, authFlowState]);
+  }, [location.pathname, location.search, authFlowState, setAuthFlowState, setResetPasswordToken]);
 
-  // Handle routing based on authentication status
   useEffect(() => {
     if (!loading) {
-      const isAdmin =
-        user && (user.role === "admin" || user.role === "superadmin");
-
-      // Only redirect non-admins away from admin routes
-      if (
-        location.pathname.startsWith("/admin") &&
-        (!isAuthenticated || !isAdmin)
-      ) {
+      const userIsAdmin = user && user.roles && (user.roles.includes('admin') || user.roles.includes('superadmin'));
+      if (location.pathname.startsWith("/admin") && (!isAuthenticated || !userIsAdmin)) {
         navigate("/", { replace: true });
       }
     }
   }, [isAuthenticated, user, loading, navigate, location.pathname]);
 
-  const register = async (userData) => {
+  const register = useCallback(async (userData) => {
     setError(null);
     try {
       const data = await authApi.register(userData);
-      console.log("Registration successful, setting authFlowState to otp_sent");
       setAuthFlowState("otp_sent");
       setUserEmailForOTP(userData.email);
-
       return { success: true, message: data.message };
     } catch (err) {
       console.error("Registration error:", err);
       setError(err.message);
       return { success: false, message: err.message };
     }
-  };
+  }, [setError, setAuthFlowState, setUserEmailForOTP]);
 
-  const verifyOTP = async (email, otp) => {
+  const verifyOTP = useCallback(async (email, otp) => {
     setError(null);
     try {
       const data = await authApi.verifyOTP(email, otp);
-
-      // Store token in both localStorage and cookies
       if (data.token) {
         localStorage.setItem("token", data.token);
         Cookies.set("token", data.token, { expires: 7 });
       }
-
       setIsAuthenticated(true);
-      setUser(data.user);
+      setUser(data.user); // Expect data.user to have 'roles' array
       setAuthFlowState("initial");
-
       return { success: true, message: "Email verified successfully!" };
     } catch (err) {
       setError(err.message);
       return { success: false, message: err.message };
     }
-  };
+  }, [setError, setIsAuthenticated, setUser, setAuthFlowState]);
 
-  const resendOTP = async (email) => {
+  const resendOTP = useCallback(async (email) => {
     setError(null);
     try {
       const data = await authApi.resendOTP(email);
@@ -158,101 +126,120 @@ export const AuthProvider = ({ children }) => {
       setError(err.message);
       return { success: false, message: err.message };
     }
-  };
+  }, [setError]);
 
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     setError(null);
     setLoading(true);
     try {
-      const { success, token, user, message } = await authApi.login(
-        email,
-        password
-      );
-
+      const { success, token, user: userData, message } = await authApi.login(email, password);
       if (success && token) {
-        // Store token in both localStorage and cookies for compatibility
         localStorage.setItem("token", token);
         Cookies.set("token", token, { expires: 7 });
-
-        setUser(user);
+        setUser(userData); // Expect userData to have 'roles' array
         setIsAuthenticated(true);
-
         return { success: true, message: message || "Login successful" };
       }
-
       throw new Error(message || "Login failed");
-    } catch (error) {
+    } catch (err) {
       setUser(null);
       setIsAuthenticated(false);
-      setError(error.message);
-      return { success: false, message: error.message };
+      setError(err.message);
+      return { success: false, message: err.message };
     } finally {
       setLoading(false);
     }
-  };
+  }, [setError, setLoading, setUser, setIsAuthenticated]);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     setError(null);
     try {
       await authApi.logout();
     } catch (err) {
       console.error("Logout API error:", err.message);
-      // Continue with local logout even if API call fails
     } finally {
-      // Always clear tokens regardless of API response
       localStorage.removeItem("token");
       Cookies.remove("token");
-
+      localStorage.removeItem("refreshToken");
+      Cookies.remove("refreshToken");
       setIsAuthenticated(false);
       setUser(null);
       setAuthFlowState("initial");
       navigate("/", { replace: true });
-
       return { success: true, message: "Logout successful!" };
     }
-  };
+  }, [setError, setIsAuthenticated, setUser, setAuthFlowState, navigate]);
 
-  const forgotPassword = async (email) => {
+  const forgotPassword = useCallback(async (email) => {
     setError(null);
     try {
       const data = await authApi.forgotPassword(email);
       setAuthFlowState("forgot_password_requested");
-
-      return {
-        success: true,
-        message: data.message || "Password reset email sent!",
-      };
+      return { success: true, message: data.message || "Password reset email sent!" };
     } catch (err) {
       setError(err.message);
       return { success: false, message: err.message };
     }
-  };
+  }, [setError, setAuthFlowState]);
 
-  const resetPassword = async (token, password) => {
+  const resetPassword = useCallback(async (token, newPassword) => {
     setError(null);
     try {
-      const data = await authApi.resetPassword(token, password);
-
-      // If reset returns a token, store it
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-        Cookies.set("token", data.token, { expires: 7 });
-
-        setIsAuthenticated(true);
-        setUser(data.user);
-      }
-
+      const data = await authApi.resetPassword(token, newPassword);
       setAuthFlowState("initial");
       setResetPasswordToken(null);
-
-      return { success: true, message: "Password reset successful!" };
+      return { success: data.success, message: data.message || "Password reset successful!" };
     } catch (err) {
       setError(err.message);
       return { success: false, message: err.message };
     }
-  };
+  }, [setError, setAuthFlowState, setResetPasswordToken]);
 
-  const contextValue = {
+  const loginWithTokens = useCallback(async (accessToken, refreshToken) => {
+    setError(null);
+    setLoading(true);
+    try {
+      if (!accessToken) {
+        throw new Error("Access token not provided for OAuth login.");
+      }
+      localStorage.setItem("token", accessToken);
+      Cookies.set("token", accessToken, { expires: 7 });
+      if (refreshToken) {
+        localStorage.setItem("refreshToken", refreshToken);
+        Cookies.set("refreshToken", refreshToken, { expires: 30 });
+      }
+      const { isValid, user: userData } = await authApi.validateToken();
+      if (isValid && userData) {
+        setUser(userData); // Expect userData to have 'roles' array
+        setIsAuthenticated(true);
+        setAuthFlowState("initial");
+        return { success: true, message: "Logged in successfully with Google." };
+      } else {
+        localStorage.removeItem("token");
+        Cookies.remove("token");
+        if (refreshToken) {
+          localStorage.removeItem("refreshToken");
+          Cookies.remove("refreshToken");
+        }
+        throw new Error("Failed to validate tokens after Google Sign-In.");
+      }
+    } catch (err) {
+      localStorage.removeItem("token");
+      Cookies.remove("token");
+      if (refreshToken) {
+        localStorage.removeItem("refreshToken");
+        Cookies.remove("refreshToken");
+      }
+      setUser(null);
+      setIsAuthenticated(false);
+      setError(err.message);
+      return { success: false, message: err.message };
+    } finally {
+      setLoading(false);
+    }
+  }, [setError, setLoading, setUser, setIsAuthenticated, setAuthFlowState]);
+
+  const memoizedContextValue = useMemo(() => ({
     user,
     isAuthenticated,
     loading,
@@ -260,22 +247,45 @@ export const AuthProvider = ({ children }) => {
     authFlowState,
     userEmailForOTP,
     resetPasswordToken,
-    setError,
-    setAuthFlowState,
-    register,
+    setError, 
+    setAuthFlowState, 
+    register, 
     verifyOTP,
     resendOTP,
     login,
     logout,
     forgotPassword,
     resetPassword,
-    checkAuthStatus, // Export this to allow manual refresh when needed
-  };
+    checkAuthStatus, 
+    loginWithTokens,
+    // Updated role checks
+    isAdmin: user && user.roles && (user.roles.includes('admin') || user.roles.includes('superadmin')),
+    isSuperAdmin: user && user.roles && user.roles.includes('superadmin'),
+    hasRole: (...checkRoles) => user && user.roles && checkRoles.some(role => user.roles.includes(role)),
+  }), [
+    user, 
+    isAuthenticated, 
+    loading, 
+    error, 
+    authFlowState, 
+    userEmailForOTP, 
+    resetPasswordToken, 
+    setError, 
+    setAuthFlowState, 
+    register, 
+    verifyOTP, 
+    resendOTP, 
+    login,     
+    logout,    
+    forgotPassword, 
+    resetPassword,  
+    checkAuthStatus, 
+    loginWithTokens
+  ]);
 
   return (
-    <AuthContext.Provider value={contextValue}>
+    <AuthContext.Provider value={memoizedContextValue}>
       {children}
-      {/* {!loading ? children : <div>Loading authentication status...</div>} */}
     </AuthContext.Provider>
   );
 };

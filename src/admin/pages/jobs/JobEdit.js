@@ -30,7 +30,7 @@ const JobEdit = () => {
         clearError("jobPostings");
       }
     };
-  }, [jobId, jobPostings.length, fetchJobPostings]);
+  }, [jobId, jobPostings.length, fetchJobPostings, clearError, errors.jobPostings]);
 
   // Prepare initial values (either from the found job or with default values)
   const initialValues = jobToEdit
@@ -104,7 +104,6 @@ const JobEdit = () => {
     handleChange,
     handleBlur,
     handleSubmit,
-    setFieldValue,
     setValues,
   } = useForm({
     initialValues,

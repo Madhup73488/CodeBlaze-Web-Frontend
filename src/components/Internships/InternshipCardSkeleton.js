@@ -2,7 +2,6 @@
 import React from "react";
 
 function InternshipCardSkeleton({ theme }) {
-  const baseColor = theme === "dark" ? "#1f1f1f" : "#f0f0f0"; // Slightly different dark
   const highlightColor = theme === "dark" ? "#2a2a2a" : "#e0e0e0"; // Slightly different dark
 
   return (

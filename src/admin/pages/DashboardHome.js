@@ -63,8 +63,11 @@ const DashboardHome = () => {
   }, [fetchDashboardStats]);
 
   const getApplicationStatusCounts = () => {
-    if (!dashboardStats?.applicationsByStatus) return { labels: [], data: [], backgroundColors: [] };
-    const labels = dashboardStats.applicationsByStatus.map(item => item._id.charAt(0).toUpperCase() + item._id.slice(1));
+    if (!dashboardStats?.applicationsByStatus || !Array.isArray(dashboardStats.applicationsByStatus)) {
+      return { labels: [], data: [], backgroundColors: [] };
+    }
+    // New structure: applicationsByStatus is an array like [{ status: 'pending', count: 5 }, ...]
+    const labels = dashboardStats.applicationsByStatus.map(item => item.status.charAt(0).toUpperCase() + item.status.slice(1));
     const data = dashboardStats.applicationsByStatus.map(item => item.count);
     const backgroundColors = [
       "#4F46E5", "#F59E0B", "#10B981", "#3B82F6", "#EF4444", "#6B7280",
@@ -201,8 +204,8 @@ const DashboardHome = () => {
           <div className="chart-content">
             <div className="activities-list">
               {dashboardStats?.recentApplications?.length > 0 ? (
-                dashboardStats.recentApplications.map((app) => (
-                  <div key={app._id} className="activity-item">
+                dashboardStats.recentApplications.map((app, index) => ( // Added index for a more robust fallback key if needed
+                  <div key={app._id ? String(app._id) : `app-${index}`} className="activity-item">
                     <div className={`activity-icon application`}>{getActivityIcon("application")}</div>
                     <div className="activity-content">
                       <p><strong>{app.userId?.name || 'N/A'}</strong> applied for <strong> {app.jobId?.title || app.internshipId?.title || 'N/A'}</strong>
@@ -222,8 +225,8 @@ const DashboardHome = () => {
           <div className="chart-content">
             <div className="activities-list">
               {dashboardStats?.recentUsers?.length > 0 ? (
-                dashboardStats.recentUsers.map((user) => (
-                  <div key={user._id} className="activity-item">
+                dashboardStats.recentUsers.map((user, index) => ( // Added index for a more robust fallback key if needed
+                  <div key={user._id ? String(user._id) : `user-${index}`} className="activity-item">
                     <div className={`activity-icon user`}>{getActivityIcon("user")}</div>
                     <div className="activity-content">
                       <p><strong>{user.name}</strong> ({user.email}) registered.</p>

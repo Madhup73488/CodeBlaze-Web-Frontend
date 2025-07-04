@@ -40,7 +40,10 @@ function UserAnalyticsPage() {
   if (!analyticsData) return <div className={`p-4 ${textClasses}`}>No user analytics data available.</div>;
 
   // Corrected destructuring: analyticsData is already the inner data object
-  const { trends, roleDistribution, loginMethods } = analyticsData || { trends: [], roleDistribution: [], loginMethods: [] };
+  // Ensure each destructured property defaults to an empty array if not present or not an array in analyticsData
+  const trends = analyticsData?.trends && Array.isArray(analyticsData.trends) ? analyticsData.trends : [];
+  const roleDistribution = analyticsData?.roleDistribution && Array.isArray(analyticsData.roleDistribution) ? analyticsData.roleDistribution : [];
+  const loginMethods = analyticsData?.loginMethods && Array.isArray(analyticsData.loginMethods) ? analyticsData.loginMethods : [];
 
   const lineChartOptions = {
     responsive: true,

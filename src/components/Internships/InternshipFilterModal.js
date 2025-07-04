@@ -40,7 +40,7 @@ const InternshipFilterModal = ({
       clearTimeout(openTimer);
       clearTimeout(closeTimer);
     };
-  }, [isOpen]); // DEPENDENCY CHANGE: Only re-run this effect when isOpen changes.
+  }, [isOpen, animationState]); // DEPENDENCY CHANGE: Only re-run this effect when isOpen changes.
 
   // This prevents rendering the modal when it's fully closed and not transitioning
   if (animationState === "closed" && !isOpen) {

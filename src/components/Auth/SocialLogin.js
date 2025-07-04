@@ -1,14 +1,23 @@
 // SocialLogin.js
 import React from "react";
 
+import apiClient from "../../services/api"; // Import apiClient to construct the URL
+
 function SocialLogin() {
+  const handleGoogleLogin = () => {
+    // Construct the full URL to the backend's Google auth endpoint
+    const googleAuthUrl = `${apiClient.defaults.baseURL}/auth/google`;
+    // Redirect the user to this URL
+    window.location.href = googleAuthUrl;
+  };
+
   return (
     <div className="social-login">
       <div className="divider">
         <span>Or continue with</span>
       </div>
       <div className="social-buttons">
-        <button className="social-button google">
+        <button className="social-button google" onClick={handleGoogleLogin}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="18"

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 function PremiumPrivacyPolicy({ theme = "light", color = "purple" }) {
   const [activeSection, setActiveSection] = useState("");
@@ -291,7 +291,7 @@ function PremiumPrivacyPolicy({ theme = "light", color = "purple" }) {
     },
   };
 
-  const sections = [
+  const sections = useMemo(() => [
     {
       id: "information-collection",
       title: "Information Collection",
@@ -420,7 +420,7 @@ function PremiumPrivacyPolicy({ theme = "light", color = "purple" }) {
         <p>We encourage you to review our Privacy Policy periodically to stay informed about our data practices.</p>
       `,
     },
-  ];
+  ], []);
 
   // Process HTML content to apply styles
   const processContent = (content) => {

@@ -1,6 +1,6 @@
 // ForgetPasswordForm.js
 import React from "react";
-import { Mail, AlertCircle } from "lucide-react";
+import { Mail } from "lucide-react";
 import Loader from "./Loader";
 import ErrorMessage from "./ErrorMessage";
 

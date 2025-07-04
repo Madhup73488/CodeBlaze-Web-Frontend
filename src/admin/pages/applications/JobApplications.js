@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
-  fetchAdminJobApplications,
+  fetchAdminApplications, // Changed from fetchAdminJobApplications
   updateApplicationStatus,
 } from "../../utils/api";
 import DataTable from "../../components/common/DataTable";
@@ -34,13 +34,21 @@ const JobApplications = () => {
     setLoading(true);
     setError(null);
     try {
-      const params = { ...currentFilters, page: currentPage, limit: currentLimit };
-      const response = await fetchAdminJobApplications(params);
-      if (response && response.data && response.pagination) {
-        setApplications(response.data);
-        setPagination(response.pagination);
+      // Add position_type to filters for the consolidated endpoint
+      const params = { ...currentFilters, position_type: 'job', page: currentPage, limit: currentLimit };
+      const response = await fetchAdminApplications(params); // Changed to fetchAdminApplications
+
+      // New backend response structure: { success, applications, totalPages, currentPage, totalApplications }
+      if (response && response.success) {
+        setApplications(response.applications || []);
+        setPagination({
+          total: response.totalApplications || 0,
+          page: response.currentPage || 1,
+          limit: currentLimit, // limit is from local state
+          pages: response.totalPages || 0,
+        });
       } else {
-        throw new Error("Invalid API response structure for job applications");
+        throw new Error(response?.message || "Invalid API response structure for job applications");
       }
     } catch (err) {
       console.error("Failed to fetch job applications:", err);

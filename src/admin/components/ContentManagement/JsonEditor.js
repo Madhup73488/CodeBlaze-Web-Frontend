@@ -128,7 +128,7 @@ function JsonEditor({ initialData, onSave, schema }) {
       default:
         return <input type="text" {...commonProps} />;
     }
-  }, [handleStructuredChange, schema]);
+  }, [handleStructuredChange]);
 
   return (
     <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 mb-8">

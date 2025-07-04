@@ -103,13 +103,16 @@ export const AdminProvider = ({ children }) => {
   const [state, dispatch] = useReducer(adminReducer, initialState);
   const { user, isAuthenticated: mainIsAuthenticated, loading: authLoading } = useAuth();
 
-  const clearError = useCallback((key) => dispatch({ type: actionTypes.CLEAR_ERROR, payload: key }), []); // Removed dispatch
+  const clearError = useCallback((key) => dispatch({ type: actionTypes.CLEAR_ERROR, payload: key }), []);
 
   const checkAdminAccess = useCallback(async () => {
     dispatch({ type: actionTypes.SET_ADMIN_CHECKING, payload: true });
     try {
       if (authLoading) {
         console.log("Auth still loading, checkAdminAccess will wait for next effect run.");
+        // Do not proceed if auth is still loading, wait for user object to be potentially populated
+        dispatch({ type: actionTypes.SET_ADMIN_CHECKING, payload: false }); // Release checking lock
+        return; 
       }
 
       if (!mainIsAuthenticated || !user) {
@@ -118,10 +121,12 @@ export const AdminProvider = ({ children }) => {
           { type: actionTypes.SET_ADMIN_ACCESS_ERROR, payload: "Authentication required for admin access." },
         ]});
       } else {
-        const hasAccess = ["admin", "superadmin"].includes(user.role);
+        // Corrected check: user.roles should be an array
+        const hasAccess = user && user.roles && Array.isArray(user.roles) && 
+                          (user.roles.includes('admin') || user.roles.includes('superadmin'));
         dispatch({ type: actionTypes.SET_ADMIN_ACCESS, payload: hasAccess });
         if (!hasAccess) {
-          dispatch({ type: actionTypes.SET_ADMIN_ACCESS_ERROR, payload: `User role "${user.role}" does not have admin privileges.` });
+          dispatch({ type: actionTypes.SET_ADMIN_ACCESS_ERROR, payload: `User roles (${JSON.stringify(user.roles)}) do not grant admin privileges.` });
         } else {
           dispatch({ type: actionTypes.CLEAR_ERROR, payload: 'adminAccess' });
         }
@@ -135,34 +140,39 @@ export const AdminProvider = ({ children }) => {
     } finally {
       dispatch({ type: actionTypes.SET_ADMIN_CHECKING, payload: false });
     }
-  }, [user, mainIsAuthenticated, authLoading]); // Removed dispatch, it's stable
+  }, [user, mainIsAuthenticated, authLoading, dispatch]); // Added dispatch to dependencies
 
-  useEffect(() => { checkAdminAccess(); }, [checkAdminAccess]);
+  useEffect(() => { 
+    // Only run checkAdminAccess if auth is not loading, to ensure user object is available
+    if (!authLoading) {
+      checkAdminAccess(); 
+    }
+  }, [checkAdminAccess, authLoading]); // Depend on authLoading
   
   const handleResize = useCallback(() => {
       const mobile = window.innerWidth < 768;
       dispatch({ type: actionTypes.SET_MOBILE, payload: mobile });
-      if (!mobile && state.isMobile && state.sidebarCollapsed) { // Example: if resizing from mobile to desktop and sidebar was "mobile-collapsed"
-          // Potentially adjust sidebar state if needed, though AdminLayout handles most of this
+      if (!mobile && state.isMobile && state.sidebarCollapsed) {
+          // Potentially adjust sidebar state
       }
-  }, [state.isMobile, state.sidebarCollapsed]); // Removed dispatch
+  }, [state.isMobile, state.sidebarCollapsed, dispatch]); // Added dispatch
 
   useEffect(() => {
-    handleResize(); // Initial check
+    handleResize(); 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [handleResize]);
 
-  const fetchNotifications = useCallback(async () => { /* ... */ }, []); // Removed dispatch
-  const markNotificationAsRead = useCallback((id) => { /* ... */ }, []); // Removed dispatch
+  const fetchNotifications = useCallback(async () => { /* ... */ }, []); 
+  const markNotificationAsRead = useCallback((id) => { /* ... */ }, []); 
   
   const setTheme = useCallback((theme) => {
     const newTheme = theme === "dark" ? "dark" : "light";
     localStorage.setItem("adminTheme", newTheme);
     dispatch({ type: actionTypes.SET_THEME, payload: newTheme });
-  }, []); // Removed dispatch
+  }, [dispatch]); // Added dispatch
 
-  const toggleSidebar = useCallback(() => dispatch({ type: actionTypes.TOGGLE_SIDEBAR }), []); // Removed dispatch
+  const toggleSidebar = useCallback(() => dispatch({ type: actionTypes.TOGGLE_SIDEBAR }), [dispatch]); // Added dispatch
 
   const loadDashboardStats = useCallback(async () => {
     dispatch({ type: actionTypes.SET_SPECIFIC_LOADING, payload: { key: 'dashboardStats', value: true } });
@@ -175,7 +185,7 @@ export const AdminProvider = ({ children }) => {
     } finally {
       dispatch({ type: actionTypes.SET_SPECIFIC_LOADING, payload: { key: 'dashboardStats', value: false } });
     }
-  }, []); // Removed dispatch
+  }, [dispatch]); // Added dispatch
 
   const wrappedFetchUserAnalytics = useCallback(async () => {
     dispatch({ type: actionTypes.SET_SPECIFIC_LOADING, payload: { key: 'userAnalytics', value: true } });
@@ -189,7 +199,7 @@ export const AdminProvider = ({ children }) => {
     } finally {
       dispatch({ type: actionTypes.SET_SPECIFIC_LOADING, payload: { key: 'userAnalytics', value: false } });
     }
-  }, []); // Removed dispatch
+  }, [dispatch]); // Added dispatch
 
   const wrappedFetchJobAnalytics = useCallback(async () => {
     dispatch({ type: actionTypes.SET_SPECIFIC_LOADING, payload: { key: 'jobAnalytics', value: true } });
@@ -203,7 +213,7 @@ export const AdminProvider = ({ children }) => {
     } finally {
       dispatch({ type: actionTypes.SET_SPECIFIC_LOADING, payload: { key: 'jobAnalytics', value: false } });
     }
-  }, []); // Removed dispatch
+  }, [dispatch]); // Added dispatch
 
   const wrappedFetchApplicationAnalytics = useCallback(async () => {
     dispatch({ type: actionTypes.SET_SPECIFIC_LOADING, payload: { key: 'applicationAnalytics', value: true } });
@@ -217,15 +227,16 @@ export const AdminProvider = ({ children }) => {
     } finally {
       dispatch({ type: actionTypes.SET_SPECIFIC_LOADING, payload: { key: 'applicationAnalytics', value: false } });
     }
-  }, []); // Removed dispatch
+  }, [dispatch]); // Added dispatch
 
   const contextValue = useMemo(() => ({
     currentUser: user,
     isAuthenticated: mainIsAuthenticated && state.hasAdminAccess,
-    isAdmin: user?.role === "admin",
-    isSuperAdmin: user?.role === "superadmin",
-    hasRole: (...roles) => user && roles.includes(user.role),
-    hasAdminAccess: state.hasAdminAccess,
+    // isAdmin and isSuperAdmin from AuthContext are more reliable as they use user.roles
+    // isAdmin: user?.role === "admin", // This was from AuthContext, but AdminContext should rely on its own hasAdminAccess
+    // isSuperAdmin: user?.role === "superadmin", // Same as above
+    // hasRole: (...roles) => user && roles.includes(user.role), // Same as above
+    hasAdminAccess: state.hasAdminAccess, // This is the key flag from AdminContext
     adminAccessError: state.adminAccessError,
     isAdminChecking: state.isAdminChecking,
     theme: state.theme,
@@ -235,7 +246,7 @@ export const AdminProvider = ({ children }) => {
     notifications: state.notifications,
     unreadNotificationCount: state.unreadNotificationCount,
     dashboardStats: state.dashboardStats,
-    users: state.users,
+    users: state.users, // These are regular users, fetched by adminApi.default.fetchUsers
     jobPostings: state.jobPostings,
     internshipPostings: state.internshipPostings,
     jobApplications: state.jobApplications,
@@ -256,14 +267,14 @@ export const AdminProvider = ({ children }) => {
     fetchUserAnalytics: wrappedFetchUserAnalytics,
     fetchJobAnalytics: wrappedFetchJobAnalytics,
     fetchApplicationAnalytics: wrappedFetchApplicationAnalytics,
-    fetchUsers: adminApi.default.fetchUsers,
+    fetchUsers: adminApi.default.fetchUsers, // For regular users
     fetchJobPostings: adminApi.default.fetchAdminJobs,
     fetchInternshipPostings: adminApi.default.fetchAdminInternships,
     fetchJobApplications: adminApi.default.fetchAdminJobApplications,
     fetchInternshipApplications: adminApi.default.fetchAdminInternshipApplications,
     fetchSettings: adminApi.default.fetchAdminSettings,
-    updateUser: adminApi.default.updateUser,
-    deleteUser: adminApi.default.deleteUser,
+    updateUser: adminApi.default.updateUser, // For regular users
+    deleteUser: adminApi.default.deleteUser, // For regular users
     createJobAdmin: adminApi.default.createJobAdmin,
     updateJobAdmin: adminApi.default.updateJobAdmin,
     deleteJobAdmin: adminApi.default.deleteJobAdmin,
@@ -274,7 +285,7 @@ export const AdminProvider = ({ children }) => {
     fetchNotifications,
     markNotificationAsRead,
     clearError,
-  }), [user, mainIsAuthenticated, authLoading, state, setTheme, toggleSidebar, clearError, checkAdminAccess, fetchNotifications, markNotificationAsRead, loadDashboardStats, wrappedFetchUserAnalytics, wrappedFetchJobAnalytics, wrappedFetchApplicationAnalytics, handleResize]); // Added handleResize to useMemo deps
+  }), [user, mainIsAuthenticated, authLoading, state, setTheme, toggleSidebar, clearError, checkAdminAccess, fetchNotifications, markNotificationAsRead, loadDashboardStats, wrappedFetchUserAnalytics, wrappedFetchJobAnalytics, wrappedFetchApplicationAnalytics, dispatch]); // Removed handleResize from deps as contextValue doesn't directly use it
 
   return <AdminContext.Provider value={contextValue}>{children}</AdminContext.Provider>;
 };

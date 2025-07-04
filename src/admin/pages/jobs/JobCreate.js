@@ -1,5 +1,5 @@
 // src/admin/pages/jobs/JobCreate.jsx
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiSave, FiX } from "react-icons/fi";
 import { useAdmin } from "../../contexts/AdminContext";
@@ -98,46 +98,47 @@ const JobCreate = () => {
   };
 
   // Debounced logo search function
-  const debouncedFetchLogo = useCallback(
-    debounce(async (query) => {
-      if (!query || query.length < 2) {
-        setLogoSuggestions([]);
-        setLogoLoading(false);
-        setShowLogoDropdown(false); // Hide if query is too short
-        return;
-      }
+  const debouncedFetchLogo = useMemo(
+    () =>
+      debounce(async (query) => {
+        if (!query || query.length < 2) {
+          setLogoSuggestions([]);
+          setLogoLoading(false);
+          setShowLogoDropdown(false); // Hide if query is too short
+          return;
+        }
 
-      setLogoLoading(true);
-      try {
-        const response = await fetch(
-          `${LOGO_DEV_API_URL}?q=${encodeURIComponent(query)}`,
-          {
-            headers: {
-              Authorization: `Bearer: ${LOGO_DEV_API_KEY}`,
-            },
-          }
-        );
+        setLogoLoading(true);
+        try {
+          const response = await fetch(
+            `${LOGO_DEV_API_URL}?q=${encodeURIComponent(query)}`,
+            {
+              headers: {
+                Authorization: `Bearer: ${LOGO_DEV_API_KEY}`,
+              },
+            }
+          );
 
-        if (response.ok) {
-          const data = await response.json();
-          setLogoSuggestions(data);
-          if (isInputFocused) {
-            // Only show if input is still focused
-            setShowLogoDropdown(true);
+          if (response.ok) {
+            const data = await response.json();
+            setLogoSuggestions(data);
+            if (isInputFocused) {
+              // Only show if input is still focused
+              setShowLogoDropdown(true);
+            }
+          } else {
+            console.error("Logo search failed:", response.status);
+            setLogoSuggestions([]);
+            setShowLogoDropdown(false);
           }
-        } else {
-          console.error("Logo search failed:", response.status);
+        } catch (error) {
+          console.error("Error fetching logo suggestions:", error);
           setLogoSuggestions([]);
           setShowLogoDropdown(false);
+        } finally {
+          setLogoLoading(false);
         }
-      } catch (error) {
-        console.error("Error fetching logo suggestions:", error);
-        setLogoSuggestions([]);
-        setShowLogoDropdown(false);
-      } finally {
-        setLogoLoading(false);
-      }
-    }, 300), // Reduced debounce time
+      }, 300), // Reduced debounce time
     [isInputFocused] // Added isInputFocused to dependencies
   );
 
@@ -197,60 +198,86 @@ const JobCreate = () => {
       !formData.title ||
       !formData.company ||
       !formData.location ||
-      !formData.description
+      !formData.description ||
+      !formData.workType ||       // Added workType check
+      !formData.employmentType   // Added employmentType check
+      // Consider if skills array should not be empty, or if applicationUrl is required
+      // For now, focusing on explicitly available form fields.
     ) {
-      setError("Please fill in all required fields.");
+      setError("Please fill in all required fields (Title, Company, Location, Description, Work Type, Employment Type).");
       setLoading(false);
       return;
     }
 
-    // Prepare data for API call
+    // Prepare data for API call, mapping to snake_case where backend expects it
     const jobData = {
-      ...formData,
-      // Split skills by comma and filter empty strings
+      title: formData.title,
+      company: formData.company,
+      company_logo_url: formData.companyLogoUrl, // snake_case
+      location: formData.location,
+      work_type: formData.workType,
+      employment_type: formData.employmentType,
+      description: formData.description,
+      application_url: formData.applicationUrl, // snake_case
       skills: formData.skills
         .split(",")
         .map((skill) => skill.trim())
         .filter((skill) => skill.length > 0),
-      // Parse salary min/max to numbers, use undefined if empty
+      // Assuming backend expects salary fields potentially snake_cased if nested,
+      // or flat. If flat: salary_min, salary_max etc.
+      // For now, keeping nested structure but ensuring keys inside are consistent if possible,
+      // or assuming backend handles camelCase for this specific nested object.
+      // If backend expects flat salary fields, this needs more significant change.
+      // Let's assume backend expects a salary object, and keys within it are also snake_case.
       salary: {
-        ...formData.salary,
-        min:
+        min_salary: // Renaming to salary_min or min_salary based on backend
           formData.salary.min !== ""
             ? parseFloat(formData.salary.min)
             : undefined,
-        max:
+        max_salary: // Renaming to salary_max or max_salary
           formData.salary.max !== ""
             ? parseFloat(formData.salary.max)
             : undefined,
+        currency: formData.salary.currency, // Assuming 'currency' is fine
+        is_negotiable: Boolean(formData.salary.isNegotiable), // snake_case
       },
-      // Ensure boolean fields are boolean (they should be with type="checkbox")
       featured: Boolean(formData.featured),
-      isActive: Boolean(formData.isActive),
+      is_active: Boolean(formData.isActive), // snake_case
+      // Ensure all other relevant fields from formData are included if needed by backend
+      // e.g., if there were fields like 'experienceLevel', 'educationRequirement' etc.
+      // they would need to be added here, potentially mapped to snake_case.
     };
 
-    // Remove salary.min/max if they are undefined
-    if (jobData.salary.min === undefined) delete jobData.salary.min;
-    if (jobData.salary.max === undefined) delete jobData.salary.max;
+    // Clean up undefined optional fields to avoid sending them as null
+    if (jobData.company_logo_url === "") delete jobData.company_logo_url;
+    if (jobData.application_url === "") delete jobData.application_url;
+    if (jobData.salary.min_salary === undefined) delete jobData.salary.min_salary;
+    if (jobData.salary.max_salary === undefined) delete jobData.salary.max_salary;
+    // If salary object becomes empty of min/max, consider removing it or sending null based on backend requirement
+    if (jobData.salary.min_salary === undefined && jobData.salary.max_salary === undefined) {
+        // Option 1: Send empty salary object if backend allows/expects it
+        // Option 2: delete jobData.salary; // If backend prefers salary field to be absent
+        // Option 3: jobData.salary = null; // If backend expects null
+        // For now, let's send it with currency and is_negotiable even if min/max are not set.
+    }
+
 
     try {
-      // Assuming api.createJobAdmin exists and handles the API call
+      // api.createJobAdmin returns the response.data from apiClient
+      // So, 'response' here is the object like { success: true, data: { job_object } }
       const response = await api.createJobAdmin(jobData);
 
-      // Adjusting success check based on typical API response structure
-      // Assuming success is indicated by a non-error response and maybe an ID
-      if (response && response._id) {
-        // Check if response exists and has an ID
-        console.log("Job created successfully:", response);
+      if (response && response.success && response.data && (response.data.id || response.data._id)) {
+        console.log("Job created successfully:", response.data);
         navigate("/admin/jobs");
       } else {
+        // This block will now correctly handle backend's { success: false, message: "..." }
         console.error(
-          "Backend reported error creating job:",
-          response.message,
-          response.errors
+          "Backend reported error or unexpected response structure creating job:",
+          response?.message, // Use optional chaining for safety
+          response?.errors   // Use optional chaining for safety
         );
-        // Display specific errors from backend if available
-        if (response.errors && Array.isArray(response.errors)) {
+        if (response?.errors && Array.isArray(response.errors)) {
           setError(
             "Failed to create job: " +
               response.errors
@@ -258,7 +285,7 @@ const JobCreate = () => {
                 .join(", ")
           );
         } else {
-          setError(response.message || "Failed to create job.");
+          setError(response?.message || "Failed to create job. Unexpected response from server.");
         }
       }
     } catch (error) {

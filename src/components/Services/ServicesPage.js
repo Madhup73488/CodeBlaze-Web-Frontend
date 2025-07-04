@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Code,
   Smartphone,
@@ -10,23 +10,15 @@ import {
   Users,
   ArrowRight,
   CheckCircle,
-  Star,
-  Globe,
   Zap,
   Shield,
-  TrendingUp,
-  Cloud,
   Settings,
-  Layers,
-  Target,
-  Award,
   Briefcase,
-  ChevronRight,
   Heart,
   MessageSquare,
   Phone,
+  Target,
 } from "lucide-react";
-import CallbackModal from "../common/CallbackModal"; // Import CallbackModal
 
 // Services Hero Component
 const ServicesHero = ({ theme }) => {
@@ -534,7 +526,7 @@ const ProcessSection = ({ theme }) => {
       step: "01",
       title: "Discovery",
       description: "Understanding your requirements and objectives",
-      icon: Target,
+      icon: Users,
     },
     {
       step: "02",
@@ -656,9 +648,6 @@ const CTASection = ({ theme, openCallbackModal }) => {
 
 // Main Services Component
 const ServicesPage = ({ theme = "light", color = "orange", openCallbackModal }) => { // Add openCallbackModal prop
-  // const [isCallbackModalOpen, setIsCallbackModalOpen] = useState(false); // Remove local state
-  // const [initialServiceForModal, setInitialServiceForModal] = useState(""); // Remove local state
-  const [activeService, setActiveService] = useState(null);
   const [hoveredService, setHoveredService] = useState(null);
 
   const services = [

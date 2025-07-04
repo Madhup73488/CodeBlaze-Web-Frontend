@@ -55,20 +55,22 @@ const JobList = () => {
 
       // Call the backend API function from api.js
       // The backend fetchAdminJobs expects filters as query parameters
-      const response = await api.fetchAdminJobs(filters); // Use the imported api function
+      const response = await api.fetchAdminJobs(filters); // This returns response.data from apiClient
 
-      // Assuming backend response structure is { success, count, pagination: { total, page, limit, pages }, data }
+      // New backend response structure: { success, jobs, totalPages, currentPage, totalJobs }
       if (response && response.success) {
-        setJobs(response.data); // Set the array of job documents
-        setTotalItems(response.pagination.total); // Set the total count for pagination
-        // setCurrentPage and setItemsPerPage are already managed by state, can confirm from response if needed
+        setJobs(response.jobs || []); // Use response.jobs
+        setTotalItems(response.totalJobs || 0); // Use response.totalJobs
+        // response.totalPages and response.currentPage are available if DataTable needs them directly
+        // For now, DataTable uses totalItems, itemsPerPage, and currentPage from local state.
       } else {
-        // Handle backend reported errors
+        // Handle backend reported errors or if response.success is false
         console.error(
-          "[JobList] Backend reported error fetching jobs:",
-          response?.message || "Unknown error"
+          "[JobList] Error fetching jobs or backend reported failure:",
+          response?.message || "Unknown error or unsuccessful response"
         );
-        // Optionally show an error message to the user
+        setJobs([]);
+        setTotalItems(0);
       }
     } catch (error) {
       console.error("[JobList] Error fetching jobs:", error);

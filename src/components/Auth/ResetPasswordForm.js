@@ -1,6 +1,6 @@
 // ResetPasswordForm.js
 import React from "react";
-import { Lock, Eye, EyeOff, ArrowRight, AlertCircle } from "lucide-react";
+import { Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import Loader from "./Loader";
 import ErrorMessage from "./ErrorMessage";
 

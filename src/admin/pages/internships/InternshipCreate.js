@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiSave, FiX } from "react-icons/fi";
 import { useAdmin } from "../../contexts/AdminContext";
@@ -98,41 +98,48 @@ const InternshipCreate = () => {
   };
 
   // Debounced logo search function
-  const debouncedFetchLogo = useCallback(
-    debounce(async (query) => {
-      if (!query || query.length < 2) {
-        setLogoSuggestions([]);
-        setLogoLoading(false);
-        return;
-      }
-
-      setLogoLoading(true);
-      try {
-        const response = await fetch(
-          `${LOGO_DEV_API_URL}?q=${encodeURIComponent(query)}`,
-          {
-            headers: {
-              Authorization: `Bearer: ${LOGO_DEV_API_KEY}`,
-            },
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          setLogoSuggestions(data);
-          setShowLogoDropdown(true);
-        } else {
-          console.error("Logo search failed:", response.status);
+  const debouncedFetchLogo = useMemo(
+    () =>
+      debounce(async (query) => {
+        if (!query || query.length < 2) {
           setLogoSuggestions([]);
+          setLogoLoading(false);
+          setShowLogoDropdown(false); // Hide if query is too short
+          return;
         }
-      } catch (error) {
-        console.error("Error fetching logo suggestions:", error);
-        setLogoSuggestions([]);
-      } finally {
-        setLogoLoading(false);
-      }
-    }, 300), // Reduced debounce time from 500ms to 300ms
-    []
+
+        setLogoLoading(true);
+        try {
+          const response = await fetch(
+            `${LOGO_DEV_API_URL}?q=${encodeURIComponent(query)}`,
+            {
+              headers: {
+                Authorization: `Bearer: ${LOGO_DEV_API_KEY}`,
+              },
+            }
+          );
+
+          if (response.ok) {
+            const data = await response.json();
+            setLogoSuggestions(data);
+            if (isInputFocused) {
+              // Only show if input is still focused
+              setShowLogoDropdown(true);
+            }
+          } else {
+            console.error("Logo search failed:", response.status);
+            setLogoSuggestions([]);
+            setShowLogoDropdown(false);
+          }
+        } catch (error) {
+          console.error("Error fetching logo suggestions:", error);
+          setLogoSuggestions([]);
+          setShowLogoDropdown(false);
+        } finally {
+          setLogoLoading(false);
+        }
+      }, 300),
+    [isInputFocused] // Added isInputFocused to dependencies
   );
 
   // Clean up the debounced function on component unmount
@@ -153,19 +160,19 @@ const InternshipCreate = () => {
     setShowLogoDropdown(false);
   };
 
-  const extractCompanyName = (input) => {
-    // Remove protocol (http://, https://, etc.)
-    let cleanInput = input.replace(/^https?:\/\//, "");
-
-    // Remove www. if present
-    cleanInput = cleanInput.replace(/^www\./, "");
-
-    // Remove paths, query parameters, and port numbers
-    cleanInput = cleanInput.split("/")[0].split("?")[0].split(":")[0];
-
-    // Return the cleaned input (preserving dots in domain)
-    return cleanInput;
-  };
+  // const extractCompanyName = (input) => { // Removed unused function
+  //   // Remove protocol (http://, https://, etc.)
+  //   let cleanInput = input.replace(/^https?:\/\//, "");
+  //
+  //   // Remove www. if present
+  //   cleanInput = cleanInput.replace(/^www\./, "");
+  //
+  //   // Remove paths, query parameters, and port numbers
+  //   cleanInput = cleanInput.split("/")[0].split("?")[0].split(":")[0];
+  //
+  //   // Return the cleaned input (preserving dots in domain)
+  //   return cleanInput;
+  // };
 
   // Handle blur and focus events for the company name input
   const handleCompanyNameBlur = () => {
@@ -207,9 +214,10 @@ const InternshipCreate = () => {
       !formData.description ||
       !formData.responsibilities ||
       !formData.requirements ||
-      !formData.duration
+      !formData.duration ||
+      !formData.workType // Added workType check
     ) {
-      setError("Please fill in all required fields.");
+      setError("Please fill in all required fields (Title, Company, Location, Description, Responsibilities, Requirements, Duration, Work Type).");
       setLoading(false);
       return;
     }
@@ -219,7 +227,20 @@ const InternshipCreate = () => {
 
     // Prepare data for API call (keep this logic)
     const internshipData = {
-      ...formData,
+      ...formData, // Spread existing formData
+      title: formData.title,
+      company: formData.company,
+      companyLogo: formData.companyLogo,
+      location: formData.location,
+      work_type: formData.workType, // Map to snake_case
+      description: formData.description,
+      duration: formData.duration,
+      educationLevel: formData.educationLevel,
+      applicationDeadline: formData.applicationDeadline
+        ? new Date(formData.applicationDeadline)
+        : undefined,
+      featured: Boolean(formData.featured),
+      isActive: Boolean(formData.isActive),
       skills: formData.skills
         .split(",")
         .map((skill) => skill.trim())
@@ -237,32 +258,35 @@ const InternshipCreate = () => {
         .map((benefit) => benefit.trim())
         .filter((benefit) => benefit.length > 0),
       internshipFee: {
-        ...formData.internshipFee,
         amount:
           formData.internshipFee.amount !== ""
             ? parseFloat(formData.internshipFee.amount)
-            : undefined, // Use undefined if empty
+            : undefined,
+        currency: formData.internshipFee.currency,
       },
-      applicationDeadline: formData.applicationDeadline
-        ? new Date(formData.applicationDeadline)
-        : undefined, // Use undefined if empty
     };
+
+    // Remove keys that were mapped or are not part of the direct payload expected by backend
+    delete internshipData.workType;
+    if (internshipData.internshipFee.amount === undefined) delete internshipData.internshipFee.amount;
+
 
     try {
       console.log("Submitting data to API:", internshipData);
+      // createInternshipAdmin returns response.data from apiClient
+      // So, 'response' here is the object like { success: true, data: { internship_object } }
       const response = await createInternshipAdmin(internshipData);
 
-      if (response && response._id) {
-        console.log("Internship created successfully:", response);
+      if (response && response.success && response.data && (response.data.id || response.data._id)) {
+        console.log("Internship created successfully:", response.data);
         navigate("/admin/internships");
       } else {
         console.error(
-          "Backend reported error creating internship:",
-          response.message,
-          response.errors
+          "Backend reported error or unexpected response structure creating internship:",
+          response?.message,
+          response?.errors
         );
-        // Display specific errors from backend if available
-        if (response.errors && Array.isArray(response.errors)) {
+        if (response?.errors && Array.isArray(response.errors)) {
           setError(
             "Failed to create internship: " +
               response.errors
@@ -270,7 +294,7 @@ const InternshipCreate = () => {
                 .join(", ")
           );
         } else {
-          setError(response.message || "Failed to create internship.");
+          setError(response?.message || "Failed to create internship. Unexpected response from server.");
         }
       }
     } catch (error) {

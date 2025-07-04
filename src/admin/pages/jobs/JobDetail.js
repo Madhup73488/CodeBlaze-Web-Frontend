@@ -7,14 +7,12 @@ import api from "../../utils/api"; // Import the api functions
 import {
   FiEdit2,
   FiTrash2,
-  FiArrowLeft,
   FiUsers,
   FiCalendar,
   FiMapPin,
   FiClock,
   FiDollarSign,
   FiBriefcase,
-  FiBookOpen,
 } from "react-icons/fi"; // Import icons
 // Removed unused import: import { Underline } from "lucide-react";
 

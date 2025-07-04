@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 function TermsOfService({ theme = "light", color = "purple" }) {
   const [activeSection, setActiveSection] = useState("");
@@ -251,7 +251,7 @@ function TermsOfService({ theme = "light", color = "purple" }) {
     },
   };
 
-  const sections = [
+  const sections = useMemo(() => [
     {
       id: "acceptance",
       title: "Acceptance of Terms",
@@ -384,7 +384,7 @@ function TermsOfService({ theme = "light", color = "purple" }) {
         <p>It is your responsibility to review these Terms periodically to stay informed of updates.</p>
       `,
     },
-  ];
+  ], []);
 
   // Process HTML content to apply styles
   const processContent = (content) => {

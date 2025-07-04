@@ -40,7 +40,6 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
     password: "",
     confirmPassword: "",
   });
-  const [otpForm, setOtpForm] = useState({ otp: "" });
   const [forgotPasswordForm, setForgotPasswordForm] = useState({ email: "" });
   const [resetPasswordForm, setResetPasswordForm] = useState({
     newPassword: "",
@@ -79,13 +78,6 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
     if (error) setError(null);
   };
 
-  // Removed unused handleOtpChange
-  // const handleOtpChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setOtpForm({ ...otpForm, [name]: value });
-  //   if (error) setError(null);
-  // };
-
   const handleOtpInputChange = (index, value) => {
     if (value && !/^\d+$/.test(value)) return;
 
@@ -96,9 +88,6 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
     if (value && index < 5) {
       document.getElementById(`otp-input-${index + 1}`).focus();
     }
-
-    const combined = newOtpInputs.join("");
-    setOtpForm({ otp: combined });
 
     if (error) setError(null);
   };
@@ -128,7 +117,6 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
     setTimeout(async () => {
       const result = await loginUser(loginForm.email, loginForm.password);
       if (result.success) {
-        // onLoginSuccess will be called via the useEffect hook
         onClose();
       }
       setIsButtonLoading(false);
@@ -140,30 +128,22 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
     e.stopPropagation();
     setIsButtonLoading(true);
     setTimeout(async () => {
-      // Using setTimeout for demo loading effect
       if (registerForm.password !== registerForm.confirmPassword) {
         setError({ type: "error", message: "Passwords do not match" });
         setIsButtonLoading(false);
         return;
       }
-
       if (!registerForm.name || !registerForm.email || !registerForm.password) {
         setError({ type: "error", message: "All fields are required" });
         setIsButtonLoading(false);
         return;
       }
-
       const result = await registerUser(registerForm);
       if (result.success) {
-        console.log(
-          "AuthModal: registerUser returned success. Context should handle state change."
-        );
-        setOtpInputs(["", "", "", "", "", ""]); // Clear OTP inputs on success
-      } else {
-        console.error("AuthModal: registerUser returned failure.");
+        setOtpInputs(["", "", "", "", "", ""]);
       }
-      setIsButtonLoading(false); // Set local loading state back to false
-    }, 2000); // Simulate network delay
+      setIsButtonLoading(false);
+    }, 2000);
   };
 
   const handleVerifyOTPSubmit = async (e) => {
@@ -177,26 +157,19 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
       });
       return;
     }
-
-    // setIsButtonLoading(true); // Uncomment if you want loading state here
     const result = await verifyUserOTP(userEmailForOTP, enteredOtp);
     if (result.success) {
-      setOtpInputs(["", "", "", "", "", ""]); // Clear OTP inputs on success
+      setOtpInputs(["", "", "", "", "", ""]);
       onClose();
-    } else {
-      console.error("AuthModal: verifyUserOTP returned failure.");
     }
-    // setIsButtonLoading(false); // Uncomment if you want loading state here
   };
 
   const handleResendOTP = async () => {
-    // setIsButtonLoading(true); // Uncomment if you want loading state here
     try {
       const result = await resendUserOTP(userEmailForOTP);
       if (result.success) {
-        // Use a success state for the message
         setError({ type: "success", message: "OTP resent successfully." });
-        setOtpInputs(["", "", "", "", "", ""]); // Clear OTP inputs on resend
+        setOtpInputs(["", "", "", "", "", ""]);
       } else {
         setError({
           type: "error",
@@ -209,7 +182,6 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
         message: "Failed to resend OTP. Please try again.",
       });
     }
-    // setIsButtonLoading(false); // Uncomment if you want loading state here
   };
 
   const handleForgotPasswordSubmit = async (e) => {
@@ -217,13 +189,12 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
     e.stopPropagation();
     setIsButtonLoading(true);
     setTimeout(async () => {
-      // Using setTimeout for demo loading effect
       const result = await requestForgotPassword(forgotPasswordForm.email);
       if (result.success) {
         setForgotPasswordForm({ email: "" });
       }
-      setIsButtonLoading(false); // Set local loading state back to false
-    }, 2000); // Simulate network delay
+      setIsButtonLoading(false);
+    }, 2000);
   };
 
   const handleResetPasswordSubmit = async (e) => {
@@ -231,7 +202,6 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
     e.stopPropagation();
     setIsButtonLoading(true);
     setTimeout(async () => {
-      // Using setTimeout for demo loading effect
       if (
         resetPasswordForm.newPassword !== resetPasswordForm.confirmNewPassword
       ) {
@@ -245,35 +215,34 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
       );
       if (result.success) {
         setResetPasswordForm({ newPassword: "", confirmNewPassword: "" });
-        onClose(); // Close modal on successful password reset
+        onClose();
       }
-      setIsButtonLoading(false); // Set local loading state back to false
-    }, 2000); // Simulate network delay
+      setIsButtonLoading(false);
+    }, 2000);
   };
 
   const handleForgotPasswordClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setAuthFlowState("forgot_password_form");
-    setLoginForm({ email: "", password: "" }); // Clear login form when switching
-    setError(null); // Clear any previous errors
+    setLoginForm({ email: "", password: "" });
+    setError(null);
   };
 
   const handleBackToLogin = () => {
     setAuthFlowState("initial");
     setActiveTab("login");
-    // Reset all forms and state
     setOtpInputs(["", "", "", "", "", ""]);
     setForgotPasswordForm({ email: "" });
     setResetPasswordForm({ newPassword: "", confirmNewPassword: "" });
-    setLoginForm({ email: "", password: "" }); // Ensure login form is also reset
+    setLoginForm({ email: "", password: "" });
     setError(null);
   };
 
   const toggleAdminMode = () => {
     setIsAdmin(!isAdmin);
-    setLoginForm({ email: "", password: "" }); // Clear login form on mode toggle
-    setError(null); // Clear errors
+    setLoginForm({ email: "", password: "" });
+    setError(null);
   };
 
   useEffect(() => {
@@ -291,43 +260,30 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
         confirmPassword: "",
       });
       setOtpInputs(["", "", "", "", "", ""]);
-      setOtpForm({ otp: "" });
       setForgotPasswordForm({ email: "" });
       setResetPasswordForm({ newPassword: "", confirmNewPassword: "" });
       setError(null);
 
-      // Reset authFlowState unless it's in a state that might persist outside the modal (like reset_password_form)
-      if (
-        authFlowState !== "reset_password_form" &&
-        authFlowState !== "otp_sent" // Keep otp_sent state if modal closes during OTP flow? Or should it reset? Assuming reset for now.
-      ) {
+      // If the modal is closing (isOpen is false):
+      // Reset authFlowState if it's 'otp_sent' or 'forgot_password_requested' (interrupted flows).
+      // Do not reset 'reset_password_form' here, as AuthContext manages its lifecycle based on the URL.
+      if (authFlowState === "otp_sent" || authFlowState === "forgot_password_requested") {
         setAuthFlowState("initial");
       }
-      // Special handling for reset_password_form: if the modal closes, the state should probably reset unless the link is clicked again.
-      // If reset_password_form is meant to open the modal directly via a token URL, this reset might need adjustment.
-      // For now, let's assume closing the modal from *any* state resets it.
-      setAuthFlowState("initial");
     } else {
-      // When modal opens, potentially adjust state based on authFlowState
+      // When modal opens (isOpen becomes true), potentially adjust state based on authFlowState
       if (authFlowState === "reset_password_form") {
         setResetPasswordForm({ newPassword: "", confirmNewPassword: "" });
-        // No need to clear otpInputs here, as they are unrelated to reset_password
       }
       if (authFlowState === "otp_sent") {
         // Keep otpInputs potentially filled, or clear if a fresh start is desired
-        // setOtpInputs(["", "", "", "", "", ""]); // Decide whether to clear or keep previous input
       }
     }
-    // Clean up function for effects
     return () => {
       // Any cleanup needed when modal is unmounted or state changes trigger re-run
     };
-  }, [isOpen, setAuthFlowState, setError, authFlowState]); // Added authFlowState to dependencies
+  }, [isOpen, authFlowState, setAuthFlowState, setError]); // Updated dependencies
 
-  // If the modal is not open and we are not specifically in the reset password flow (which might open the modal
-  // independently via a link), don't render anything.
-  // Adjust this logic if the reset_password_form state is only ever reached *within* an already open modal.
-  // Assuming `reset_password_form` and potentially `otp_sent` *could* be initial states when the modal opens.
   if (
     !isOpen &&
     authFlowState !== "reset_password_form" &&
@@ -336,7 +292,6 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
     return null;
   }
 
-  // Ensure modal is hidden if isOpen is false AND authFlowState is not one that requires the modal to be open
   if (!isOpen && !["reset_password_form", "otp_sent"].includes(authFlowState)) {
     return null;
   }
@@ -397,7 +352,6 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
         </div>
       </div>
 
-      {/* Keep the styles in AuthModal.js or move them to a separate CSS file */}
       <style jsx>{`
         .auth-modal-overlay {
           position: fixed;
@@ -578,9 +532,6 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
           flex-shrink: 0; /* Prevent branding from shrinking on desktop */
         }
 
-        /* Hide branding on mobile - this is already handled by conditional rendering */
-        /* .mobile-modal .auth-branding { display: none; } */
-
         .dark .auth-branding {
           background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
         }
@@ -691,24 +642,20 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
         }
 
         .auth-content {
-          width: 60%; /* Maintain width for desktop */
+          width: 60%;
           padding: 3rem;
           display: flex;
           flex-direction: column;
-          flex-grow: 1; /* Allow content to grow in flex container */
+          flex-grow: 1;
         }
 
-        /* Adjust auth content for mobile modal */
         .mobile-modal .auth-content {
-          width: 100%; /* Take full width on mobile */
+          width: 100%;
           padding: 2rem 1.5rem;
         }
 
         .dark .auth-content {
-          /* Ensures text color within auth-content is appropriate for dark theme */
-          /* This might not be strictly necessary if all child elements are individually themed,
-             but acts as a fallback. */
-          color: #f9fafb; /* Default light text color for dark theme */
+          color: #f9fafb;
         }
 
         .auth-tabs {
@@ -755,7 +702,6 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
         }
 
         .tab.active:after {
-          /* content: ""; Removed the dot under active tab as per original code */
           position: absolute;
           bottom: -3px;
           left: 50%;
@@ -905,13 +851,13 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
           outline: none;
           border-color: #4f46e5;
           box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
-          background-color: #fff; /* Ensure background stays white on focus */
+          background-color: #fff;
         }
 
         .dark .form-input:focus {
           border-color: #818cf8;
           box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.15);
-          background-color: #1f2937; /* Ensure background stays dark on focus */
+          background-color: #1f2937;
         }
 
         .form-input:focus + .input-icon {
@@ -923,12 +869,12 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
         }
 
         .dark .form-input::placeholder {
-          color: #9ca3af; /* Light grey for placeholders in dark mode */
-        }
-        .dark .form-input:-ms-input-placeholder { /* Edge */
           color: #9ca3af;
         }
-        .dark .form-input::-ms-input-placeholder { /* IE 10-11 */
+        .dark .form-input:-ms-input-placeholder {
+          color: #9ca3af;
+        }
+        .dark .form-input::-ms-input-placeholder {
           color: #9ca3af;
         }
 
@@ -993,7 +939,7 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
           border-color: #818cf8;
           box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.15);
         }
-        .dark .otp-input::placeholder { /* If OTP inputs ever use placeholders */
+        .dark .otp-input::placeholder {
           color: #9ca3af;
         }
         .dark .otp-input:-ms-input-placeholder {
@@ -1053,7 +999,7 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
           background-color: #9ca3af;
           cursor: not-allowed;
           box-shadow: none;
-          opacity: 0.6; /* Add opacity for disabled state */
+          opacity: 0.6;
         }
 
         .admin-button {
@@ -1097,7 +1043,7 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
 
         .dark .divider span {
           color: #9ca3af;
-          background-color: #212124; /* Match modal background */
+          background-color: #212124;
         }
 
         .social-buttons {
@@ -1223,7 +1169,7 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
           margin-bottom: 1.75rem;
           animation: shake 0.5s ease-in-out;
           border-left: 4px solid #ef4444;
-          word-break: break-word; /* Prevent overflow on small screens */
+          word-break: break-word;
         }
 
         @keyframes shake {
@@ -1268,7 +1214,7 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
           margin-bottom: 1.75rem;
           animation: slideDown 0.5s ease-out;
           border-left: 4px solid #10b981;
-          word-break: break-word; /* Prevent overflow on small screens */
+          word-break: break-word;
         }
 
         @keyframes slideDown {
@@ -1293,43 +1239,6 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
           flex-shrink: 0;
         }
 
-        /* Original Media Query - kept for completeness but mobile styles override */
-        /* @media (max-width: 768px) {
-          .auth-container {
-            flex-direction: column;
-          }
-
-          .auth-branding {
-            width: 100%;
-            padding: 2rem 1.5rem;
-            order: 2;
-            display: none; Hide branding on smaller screens
-          }
-
-          .auth-content {
-            width: 100%;
-            padding: 2rem 1.5rem;
-            order: 1;
-          }
-
-          .auth-modal {
-            max-height: 90vh;
-            overflow-y: auto;
-          }
-
-          .tab {
-            font-size: 1rem;
-          }
-
-          .auth-title {
-            font-size: 1.5rem;
-          }
-
-          .auth-subtitle {
-            font-size: 1rem;
-          }
-        } */
-
         .theme-light {
           color-scheme: light;
         }
@@ -1338,7 +1247,6 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
           color-scheme: dark;
         }
 
-        /* Loader styles */
         .button-loader {
           display: flex;
           justify-content: center;

@@ -40,7 +40,11 @@ function JobAnalyticsPage() {
   if (!analyticsData) return <div className={`p-4 ${textClasses}`}>No job analytics data available.</div>;
 
   // Corrected destructuring: analyticsData is already the inner data object
-  const { statusDistribution, workTypeDistribution, employmentTypeDistribution, popularSkills } = analyticsData || {};
+  // Ensure each destructured property defaults to an appropriate type if not present in analyticsData
+  const statusDistribution = analyticsData?.statusDistribution || {}; // Expects an object
+  const workTypeDistribution = analyticsData?.workTypeDistribution && Array.isArray(analyticsData.workTypeDistribution) ? analyticsData.workTypeDistribution : [];
+  const employmentTypeDistribution = analyticsData?.employmentTypeDistribution && Array.isArray(analyticsData.employmentTypeDistribution) ? analyticsData.employmentTypeDistribution : [];
+  const popularSkills = analyticsData?.popularSkills && Array.isArray(analyticsData.popularSkills) ? analyticsData.popularSkills : [];
 
   const chartOptions = {
     responsive: true,
