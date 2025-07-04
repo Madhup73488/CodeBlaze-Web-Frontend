@@ -345,7 +345,7 @@ export const validateJobForm = (formData) => {
   return validateForm(jobFormSchema, formData);
 };
 
-export default {
+const validationUtils = {
   isNotEmpty,
   isValidEmail,
   isValidUrl,
@@ -365,3 +365,5 @@ export default {
   internshipFormSchema,
   loginFormSchema,
 };
+
+export default validationUtils;

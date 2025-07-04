@@ -30,7 +30,8 @@ function Navbar({
   const profileDropdownRef = useRef(null);
   const navRef = useRef(null);
 
-  const isAdmin = user && (user.role === "admin" || user.role === "superadmin");
+  // Corrected admin check to use user.roles array
+  const isAdmin = user && user.roles && (user.roles.includes('admin') || user.roles.includes('superadmin'));
 
   const closeAllMenus = useCallback(() => {
     setIsMenuOpen(false);
@@ -40,10 +41,10 @@ function Navbar({
   const handleNavigation = useCallback(
     (to) => {
       closeAllMenus();
-      showLoaderFor(1500); // Show loader for 1.5 seconds on navigation
+      // showLoaderFor(1500); // Temporarily commented out to test navigation
       onNavigate(to); // Use the onNavigate prop
     },
-    [closeAllMenus, onNavigate, showLoaderFor]
+    [closeAllMenus, onNavigate] // Removed showLoaderFor from dependencies for now
   );
 
   const toggleMobileMenu = useCallback(() => {

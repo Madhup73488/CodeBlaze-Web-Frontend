@@ -106,7 +106,7 @@ const FileUploadSection = ({
     }
 
     const formData = new FormData();
-    formData.append("resume", resumeFile);
+    formData.append("resumeFile", resumeFile); // Changed "resume" to "resumeFile"
 
     setParentSubmitting(true);
     setActiveUpload("resume");

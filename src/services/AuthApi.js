@@ -1,14 +1,11 @@
 import apiClient, { handleApiError } from "./api"; // Import the centralized apiClient and error handler
 
-// Updated to return both token and user data
+// Updated to reflect OTP initiation: expects a message, not tokens.
 const register = async (userData) => {
   try {
     const response = await apiClient.post("/auth/register", userData);
-    return {
-      token: response.data.token,
-      user: response.data.user,
-      message: response.data.message,
-    };
+    // Assuming response.data contains { success: true, message: "OTP sent..." }
+    return response.data;
   } catch (error) {
     handleApiError(error);
   }
@@ -17,7 +14,7 @@ const register = async (userData) => {
 // Updated to return both token and user data
 const verifyOTP = async (email, otp) => {
   try {
-    const response = await apiClient.post("/auth/verify-otp", { email, otp });
+    const response = await apiClient.post("/auth/verify-email", { email, otp });
     return {
       token: response.data.token,
       user: response.data.user,
@@ -69,11 +66,10 @@ const login = async (email, password) => {
   }
 };
 // Updated to clear client-side token
+// Updated to use POST and clear client-side token
 const logout = async () => {
   try {
-    // Note: The logout endpoint might not need /auth prefix if it's a general session clear on backend
-    // However, to keep consistency with other auth routes, using /auth/logout
-    const response = await apiClient.get("/auth/logout");
+    const response = await apiClient.post("/auth/logout"); // Changed to POST
     console.log("Logout response:", response.data); // Debug log
     return response.data;
   } catch (error) {
@@ -90,15 +86,17 @@ const forgotPassword = async (email) => {
   }
 };
 
-const resetPassword = async (token, password) => {
+const resetPassword = async (token, newPassword) => {
+  // Changed 'password' to 'newPassword' for clarity
   try {
-    const response = await apiClient.put(`/auth/reset-password/${token}`, { password });
-    return {
-      success: true,
-      token: response.data.token,
-      user: response.data.user,
-      message: response.data.message,
-    };
+    // Changed to POST, token is now in the body
+    const response = await apiClient.post("/auth/reset-password", {
+      token,
+      newPassword,
+    });
+    // Backend now returns: { success: true, message: "Password has been reset successfully." }
+    // No token or user data is returned directly from this endpoint anymore.
+    return response.data;
   } catch (error) {
     handleApiError(error);
   }
@@ -119,6 +117,17 @@ const validateToken = async () => {
     };
   }
 };
+
+const refreshToken = async () => {
+  try {
+    const response = await apiClient.post("/auth/refresh");
+    // Assuming the backend returns new tokens and potentially user info
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
 const authApi = {
   register,
   verifyOTP,
@@ -127,7 +136,8 @@ const authApi = {
   logout,
   forgotPassword,
   resetPassword,
-  validateToken, // Add the new method
+  validateToken,
+  refreshToken, // Add the new method
 };
 
 export default authApi;

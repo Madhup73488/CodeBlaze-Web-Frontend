@@ -5,7 +5,6 @@ import FiltersModal from "./FilterModal";
 import JobCard from "./JobCard"; // We will update this next
 import Pagination from "./Pagination";
 import NoResults from "./NoResults";
-import Loading from "./Loading";
 import Error from "./Error";
 import JobCardSkeleton from "./JobCardSkeleton";
 

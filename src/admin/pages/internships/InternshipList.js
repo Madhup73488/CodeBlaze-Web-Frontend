@@ -60,29 +60,16 @@ const InternshipList = () => {
 
       console.log("Fetching internships with filters:", filters);
 
-      const response = await fetchAdminInternships(filters);
+      const response = await fetchAdminInternships(filters); // This returns response.data from apiClient
 
-      if (response && Array.isArray(response.data)) {
-        console.log("Fetched internships data:", response.data);
-        setInternships(response.data);
-        setTotalItems(
-          response.total ||
-            (response.pagination
-              ? response.pagination.total
-              : response.data.length)
-        );
-      } else if (response && response.success && Array.isArray(response.data)) {
-        console.log("Fetched internships data (alt structure):", response.data);
-        setInternships(response.data);
-        setTotalItems(
-          response.count ||
-            (response.pagination
-              ? response.pagination.total
-              : response.data.length)
-        );
+      // New backend response structure: { success, internships, totalPages, currentPage, totalInternships }
+      if (response && response.success) {
+        setInternships(response.internships || []); // Use response.internships
+        setTotalItems(response.totalInternships || 0); // Use response.totalInternships
+        // response.totalPages and response.currentPage are available if DataTable needs them
       } else {
-        console.error("API did not return expected data structure:", response);
-        setError("Received unexpected data format from the server.");
+        console.error("API did not return expected data structure or call failed:", response);
+        setError(response?.message || "Received unexpected data format or error from the server.");
         setInternships([]);
         setTotalItems(0);
       }

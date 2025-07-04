@@ -537,38 +537,25 @@ const useForm = (options = {}) => {
     // Handle nested fields when getting value, error, touched
     const keys = name.split(".");
     let currentValue = values;
-    let currentErrors = errors;
-    let currentTouched = touched;
     let value;
-    let error;
-    let isTouched;
     let valueExists = true;
 
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       if (
         currentValue === undefined ||
-        currentValue === null ||
-        currentErrors === undefined ||
-        currentTouched === undefined
+        currentValue === null
       ) {
-        valueExists = false; // Path doesn't exist in values, errors, or touched
+        valueExists = false; // Path doesn't exist in values
         break;
       }
       if (i < keys.length - 1) {
         currentValue = currentValue[key];
-        currentErrors = currentErrors[key]; // Move deeper into errors/touched (assuming they mirror values structure)
-        currentTouched = currentTouched[key];
       } else {
         // At the final key
         value = currentValue[key];
-        error = currentErrors ? currentErrors[key] : undefined; // Get error at final key
-        isTouched = currentTouched ? currentTouched[key] : undefined; // Get touched at final key
       }
     }
-
-    // Handle touched state for nested fields - Assuming touched state is flat with dot notation strings
-    isTouched = touched[name]; // Get touched state using the full name string
 
     return {
       name,
@@ -611,7 +598,6 @@ const useForm = (options = {}) => {
     // Form status
     isDirty: Object.keys(touched).length > 0, // Simple dirty check based on touched fields
     isValid: Object.keys(errors).length === 0, // Simple validity check based on no errors
-    // More robust isValid check would be Object.keys(errors).every(key => !errors[key])
   };
 };
 

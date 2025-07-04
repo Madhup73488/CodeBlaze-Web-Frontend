@@ -1,119 +1,319 @@
 // src/admin/utils/api.js
+import apiClient, { handleApiError } from "../../services/api"; // Use centralized apiClient
 
-const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
-
-const getHeaders = () => {
-  const headers = { "Content-Type": "application/json" };
-  const authToken = localStorage.getItem("token");
-  if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
-  return headers;
-};
-
-const apiRequest = async (endpoint, method = "GET", data = null, customHeaders = {}) => {
-  try {
-    const url = `${API_BASE_URL}${endpoint.startsWith("/") ? endpoint : "/" + endpoint}`;
-    const options = { method, headers: { ...getHeaders(), ...customHeaders } };
-    if (data !== null && (method === "POST" || method === "PUT" || method === "PATCH")) {
-      options.body = JSON.stringify(data);
-    }
-    const response = await fetch(url, options);
-    const contentType = response.headers.get("content-type");
-    const isJson = contentType && contentType.includes("application/json");
-    let result = null;
-    if (response.status !== 204) result = isJson ? await response.json() : await response.text();
-    if (!response.ok) {
-      const errorDetail = isJson && result && result.message ? result.message : result || "API request failed";
-      const error = new Error(errorDetail);
-      error.response = response;
-      error.data = result;
-      throw error;
-    }
-    return result;
-  } catch (error) {
-    console.error("API Request Error:", error);
-    throw error;
-  }
+const constructQueryString = (filters = {}) => {
+  const queryParams = new URLSearchParams(
+    Object.entries(filters).filter(([, value]) => value !== undefined && value !== null && value !== "")
+  );
+  const queryString = queryParams.toString();
+  return queryString ? `?${queryString}` : "";
 };
 
 // --- Admin Panel Specific APIs ---
-export const fetchDashboardStats = async () => apiRequest("/api/admin/dashboard");
+export const fetchDashboardStats = async () => {
+  try {
+    const response = await apiClient.get("/admin/dashboard");
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
 
 export const fetchUsers = async (filters = {}) => {
-  const queryParams = new URLSearchParams(Object.entries(filters).filter(([, value]) => value !== undefined && value !== null && value !== ""));
-  return apiRequest(`/api/admin/users${queryParams.toString() ? `?${queryParams.toString()}` : ""}`);
+  try {
+    const queryString = constructQueryString(filters);
+    const response = await apiClient.get(`/admin/users${queryString}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
 };
-export const fetchUserById = async (id) => apiRequest(`/api/admin/users/${id}`);
-export const updateUser = async (id, userData) => apiRequest(`/api/admin/users/${id}`, "PUT", userData);
-export const deleteUser = async (id) => apiRequest(`/api/admin/users/${id}`, "DELETE");
+
+export const fetchUserById = async (id) => {
+  try {
+    const response = await apiClient.get(`/admin/users/${id}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const updateUser = async (id, userData) => {
+  try {
+    const response = await apiClient.put(`/admin/users/${id}`, userData);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const deleteUser = async (id) => {
+  try {
+    const response = await apiClient.delete(`/admin/users/${id}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
 
 export const fetchAdminAccounts = async (filters = {}) => {
-  const queryParams = new URLSearchParams(Object.entries(filters).filter(([, value]) => value !== undefined && value !== null && value !== ""));
-  return apiRequest(`/api/admin/admin-users${queryParams.toString() ? `?${queryParams.toString()}` : ""}`);
+  try {
+    const queryString = constructQueryString(filters);
+    const response = await apiClient.get(`/admin/admin-users${queryString}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
 };
-export const createAdminAccount = async (adminUserData) => apiRequest("/api/admin/admin-users", "POST", adminUserData);
-export const updateAdminAccount = async (id, adminUserData) => apiRequest(`/api/admin/admin-users/${id}`, "PUT", adminUserData);
-export const deleteAdminAccount = async (id) => apiRequest(`/api/admin/admin-users/${id}`, "DELETE");
+
+export const createAdminAccount = async (adminUserData) => {
+  try {
+    const response = await apiClient.post("/admin/admin-users", adminUserData);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const updateAdminAccount = async (id, adminUserData) => {
+  try {
+    const response = await apiClient.put(`/admin/admin-users/${id}`, adminUserData);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const deleteAdminAccount = async (id) => {
+  try {
+    const response = await apiClient.delete(`/admin/admin-users/${id}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
 
 export const fetchAdminJobs = async (filters = {}) => {
-  const queryParams = new URLSearchParams(Object.entries(filters).filter(([, value]) => value !== undefined && value !== null && value !== ""));
-  return apiRequest(`/api/admin/jobs${queryParams.toString() ? `?${queryParams.toString()}` : ""}`);
+  try {
+    const queryString = constructQueryString(filters);
+    const response = await apiClient.get(`/admin/jobs${queryString}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
 };
-export const fetchAdminJobById = async (id) => apiRequest(`/api/admin/jobs/${id}`);
-export const createJobAdmin = async (jobData) => apiRequest("/api/admin/jobs/create", "POST", jobData);
-export const updateJobAdmin = async (id, jobData) => apiRequest(`/api/admin/jobs/${id}`, "PUT", jobData);
-export const deleteJobAdmin = async (id) => apiRequest(`/api/admin/jobs/${id}`, "DELETE");
-export const featureJob = async (id, featuredStatus) => apiRequest(`/api/admin/jobs/${id}/feature`, "PUT", { featured: featuredStatus });
+
+export const fetchAdminJobById = async (id) => {
+  try {
+    const response = await apiClient.get(`/admin/jobs/${id}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const createJobAdmin = async (jobData) => {
+  try {
+    // Changed path from /jobs/create to /jobs for POST
+    const response = await apiClient.post("/admin/jobs", jobData);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const updateJobAdmin = async (id, jobData) => {
+  try {
+    const response = await apiClient.put(`/admin/jobs/${id}`, jobData);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const deleteJobAdmin = async (id) => {
+  try {
+    const response = await apiClient.delete(`/admin/jobs/${id}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const featureJob = async (id, featuredStatus) => {
+  try {
+    const response = await apiClient.put(`/admin/jobs/${id}/feature`, { featured: featuredStatus });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
 
 export const fetchAdminInternships = async (filters = {}) => {
-  const queryParams = new URLSearchParams(Object.entries(filters).filter(([, value]) => value !== undefined && value !== null && value !== ""));
-  return apiRequest(`/api/admin/internships${queryParams.toString() ? `?${queryParams.toString()}` : ""}`);
+  try {
+    const queryString = constructQueryString(filters);
+    const response = await apiClient.get(`/admin/internships${queryString}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
 };
-export const fetchAdminInternshipById = async (id) => apiRequest(`/api/admin/internships/${id}`);
-export const createInternshipAdmin = async (internshipData) => apiRequest("/api/admin/internships/create", "POST", internshipData);
-export const updateInternshipAdmin = async (id, internshipData) => apiRequest(`/api/admin/internships/${id}`, "PUT", internshipData);
-export const deleteInternshipAdmin = async (id) => apiRequest(`/api/admin/internships/${id}`, "DELETE");
-export const featureInternship = async (id, featuredStatus) => apiRequest(`/api/admin/internships/${id}/feature`, "PUT", { featured: featuredStatus });
 
-export const fetchAdminJobApplications = async (filters = {}) => {
-  const queryParams = new URLSearchParams(Object.entries(filters).filter(([, value]) => value !== undefined && value !== null && value !== ""));
-  return apiRequest(`/api/admin/job-applications${queryParams.toString() ? `?${queryParams.toString()}` : ""}`);
+export const fetchAdminInternshipById = async (id) => {
+  try {
+    const response = await apiClient.get(`/admin/internships/${id}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
 };
-export const fetchAdminInternshipApplications = async (filters = {}) => {
-  const queryParams = new URLSearchParams(Object.entries(filters).filter(([, value]) => value !== undefined && value !== null && value !== ""));
-  return apiRequest(`/api/admin/internship-applications${queryParams.toString() ? `?${queryParams.toString()}` : ""}`);
+
+export const createInternshipAdmin = async (internshipData) => {
+  try {
+    // Changed path from /internships/create to /internships for POST
+    const response = await apiClient.post("/admin/internships", internshipData);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
 };
-export const updateApplicationStatus = async (id, status) => apiRequest(`/api/admin/applications/${id}/status`, "PUT", { status });
 
-export const fetchUserAnalytics = async () => apiRequest("/api/admin/analytics/users");
-export const fetchJobAnalytics = async () => apiRequest("/api/admin/analytics/jobs");
-export const fetchApplicationAnalytics = async () => apiRequest("/api/admin/analytics/applications");
+export const updateInternshipAdmin = async (id, internshipData) => {
+  try {
+    const response = await apiClient.put(`/admin/internships/${id}`, internshipData);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
 
-export const fetchAdminSettings = async () => apiRequest("/api/admin/settings");
-export const updateAdminSettings = async (settingsData) => apiRequest("/api/admin/settings", "PUT", settingsData);
+export const deleteInternshipAdmin = async (id) => {
+  try {
+    const response = await apiClient.delete(`/admin/internships/${id}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
 
-// Document Generation APIs
+export const featureInternship = async (id, featuredStatus) => {
+  try {
+    const response = await apiClient.put(`/admin/internships/${id}/feature`, { featured: featuredStatus });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+// New consolidated function for fetching applications
+export const fetchAdminApplications = async (filters = {}) => {
+  // Expected filters: position_type ('job' or 'internship'), job_id, internship_id, status, etc.
+  try {
+    const queryString = constructQueryString(filters);
+    const response = await apiClient.get(`/admin/applications${queryString}`);
+    return response.data; // Assuming this returns { success, applications, totalPages, currentPage, totalApplications }
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+// Deprecating old functions - they should be replaced by calls to fetchAdminApplications
+// export const fetchAdminJobApplications = async (filters = {}) => { ... };
+// export const fetchAdminInternshipApplications = async (filters = {}) => { ... };
+
+export const updateApplicationStatus = async (id, status) => {
+  try {
+    const response = await apiClient.put(`/admin/applications/${id}/status`, { status });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const fetchUserAnalytics = async () => {
+  try {
+    const response = await apiClient.get("/admin/analytics/users");
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const fetchJobAnalytics = async () => {
+  try {
+    const response = await apiClient.get("/admin/analytics/jobs");
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const fetchApplicationAnalytics = async () => {
+  try {
+    const response = await apiClient.get("/admin/analytics/applications");
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const fetchAdminSettings = async () => {
+  try {
+    const response = await apiClient.get("/admin/settings");
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const updateAdminSettings = async (settingsData) => {
+  try {
+    const response = await apiClient.put("/admin/settings", settingsData);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
 export const generateOfferLetter = async (offerLetterData) => {
-  return apiRequest("/api/admin/documents/offer-letter/generate", "POST", offerLetterData);
+  try {
+    const response = await apiClient.post("/admin/documents/offer-letter/generate", offerLetterData);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
 };
 
 export const generateCertificate = async (certificateData) => {
-  return apiRequest("/api/admin/documents/certificate/generate", "POST", certificateData);
+  try {
+    const response = await apiClient.post("/admin/documents/certificate/generate", certificateData);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
 };
 
-// Public Certificate Verification API (might be in a different file if non-admin)
 export const verifyCertificatePublic = async (certificateId) => {
-  // Note: This uses API_BASE_URL which might be /api/admin. 
-  // If public API is different, adjust base URL or use a separate utility.
-  return apiRequest(`/api/public/certificate/${certificateId}`, "GET");
+  try {
+    // Uses apiClient, path will be /api/public/certificate/:certificateId
+    const response = await apiClient.get(`/public/certificate/${certificateId}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
 };
 
-
-export default {
+// Consolidate exports
+const adminApi = {
   fetchDashboardStats,
   fetchUsers,
   fetchUserById,
   updateUser,
   deleteUser,
+  fetchAdminAccounts,
+  createAdminAccount,
+  updateAdminAccount,
+  deleteAdminAccount,
   fetchAdminJobs,
   fetchAdminJobById,
   createJobAdmin,
@@ -126,19 +326,18 @@ export default {
   updateInternshipAdmin,
   deleteInternshipAdmin,
   featureInternship,
-  fetchAdminJobApplications,
-  fetchAdminInternshipApplications,
+  fetchAdminApplications, // Use new consolidated function
+  // fetchAdminJobApplications, // Deprecated
+  // fetchAdminInternshipApplications, // Deprecated
   updateApplicationStatus,
   fetchUserAnalytics,
   fetchJobAnalytics,
   fetchApplicationAnalytics,
   fetchAdminSettings,
   updateAdminSettings,
-  fetchAdminAccounts,
-  createAdminAccount,
-  updateAdminAccount,
-  deleteAdminAccount,
-  generateOfferLetter, // Added
-  generateCertificate, // Added
-  verifyCertificatePublic, // Added
+  generateOfferLetter,
+  generateCertificate,
+  verifyCertificatePublic,
 };
+
+export default adminApi;

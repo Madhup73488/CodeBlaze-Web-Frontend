@@ -46,11 +46,11 @@ function AuthBranding({ primaryColor }) {
       <div className="brand-footer">
         <p>
           By continuing, you agree to our{" "}
-          <a href="#" className="external-link">
+          <a href="/terms-of-service" className="external-link">
             Terms of Service <ExternalLink size={12} />
           </a>{" "}
           and{" "}
-          <a href="#" className="external-link">
+          <a href="/privacy-policy" className="external-link">
             Privacy Policy <ExternalLink size={12} />
           </a>
         </p>

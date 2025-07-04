@@ -22,7 +22,6 @@ function InternshipPortal({ theme = "light", initialColor = "orange" }) {
       : "#f97316"
   );
 
-  const [allInternships, setAllInternships] = useState([]);
   const [displayedInternships, setDisplayedInternships] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -102,7 +101,6 @@ function InternshipPortal({ theme = "light", initialColor = "orange" }) {
       }
       const data = await response.json();
       if (data.success && data.internships) {
-        setAllInternships(data.internships); // Not used for direct display with backend pagination
         setDisplayedInternships(data.internships);
         setTotalInternships(data.totalInternships || 0);
         setTotalPages(data.totalPages || 1);
@@ -115,14 +113,13 @@ function InternshipPortal({ theme = "light", initialColor = "orange" }) {
     } catch (err) {
       console.error("Error fetching internships:", err);
       setError(err.message);
-      setAllInternships([]);
       setDisplayedInternships([]);
       setTotalInternships(0);
       setTotalPages(1);
     } finally {
       setTimeout(() => setLoading(false), 500);
     }
-  }, []);
+  }, [API_URL]);
 
   useEffect(() => {
     fetchInternships(currentPage);

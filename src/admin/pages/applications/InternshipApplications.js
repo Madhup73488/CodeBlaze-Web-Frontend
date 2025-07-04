@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
-  fetchAdminInternshipApplications,
+  fetchAdminApplications, // Changed from fetchAdminInternshipApplications
   updateApplicationStatus,
 } from "../../utils/api";
 import DataTable from "../../components/common/DataTable";
@@ -33,13 +33,21 @@ const InternshipApplications = () => {
     setLoading(true);
     setError(null);
     try {
-      const params = { ...currentFilters, page: currentPage, limit: currentLimit };
-      const response = await fetchAdminInternshipApplications(params);
-      if (response && response.data && response.pagination) {
-        setApplications(response.data);
-        setPagination(response.pagination);
+      // Add position_type to filters for the consolidated endpoint
+      const params = { ...currentFilters, position_type: 'internship', page: currentPage, limit: currentLimit };
+      const response = await fetchAdminApplications(params); // Changed to fetchAdminApplications
+
+      // New backend response structure: { success, applications, totalPages, currentPage, totalApplications }
+      if (response && response.success) {
+        setApplications(response.applications || []);
+        setPagination({
+          total: response.totalApplications || 0,
+          page: response.currentPage || 1,
+          limit: currentLimit, // limit is from local state
+          pages: response.totalPages || 0,
+        });
       } else {
-        throw new Error("Invalid API response structure");
+        throw new Error(response?.message || "Invalid API response structure for internship applications");
       }
     } catch (err) {
       console.error("Failed to fetch internship applications:", err);
@@ -72,10 +80,18 @@ const InternshipApplications = () => {
     setUpdatingStatus((prev) => ({ ...prev, [id]: true }));
     try {
       const response = await updateApplicationStatus(id, newStatus);
-      setApplications((prevApps) => prevApps.map((app) => (app._id === id ? response.data : app)));
+      if (response && response.success && response.application) {
+        setApplications((prevApps) =>
+          prevApps.map((app) => (app.id === id ? response.application : app))
+        );
+      } else {
+        throw new Error(response?.message || "Failed to update status due to unexpected response.");
+      }
     } catch (err) {
       console.error("Failed to update application status:", err);
-      alert(`Failed to update status: ${err.message}`);
+      // Using a more integrated error display rather than alert
+      setError(`Failed to update status: ${err.message}`);
+      // Optionally, revert optimistic UI changes here if any were made
     } finally {
       setUpdatingStatus((prev) => ({ ...prev, [id]: false }));
     }
@@ -89,27 +105,27 @@ const InternshipApplications = () => {
   const toggleFilters = () => setIsFilterVisible(!isFilterVisible);
 
   const renderActionButtons = (row) => {
-    const isUpdating = updatingStatus[row._id];
+    const isUpdating = updatingStatus[row.id];
     // Similar to JobApplications, but can be simplified if actions are identical
     return (
       <>
-        {row.status !== "approved" && row.status !== "rejected" && row.status !== "hired" && (
-          <button onClick={() => handleStatusChange(row._id, "approved")} disabled={isUpdating} className="action-button approve-button">
-            {isUpdating ? <LoadingDot /> : <FiCheckCircle />} <span className="button-text-desktop">Approve</span>
+        {row.status !== "accepted" && row.status !== "rejected" && (
+          <button onClick={() => handleStatusChange(row.id, "accepted")} disabled={isUpdating} className="action-button approve-button">
+            {isUpdating ? <LoadingDot /> : <FiCheckCircle />} <span className="button-text-desktop">Accept</span>
           </button>
         )}
-        {row.status !== "rejected" && row.status !== "hired" && (
-          <button onClick={() => handleStatusChange(row._id, "rejected")} disabled={isUpdating} className="action-button reject-button">
+        {row.status !== "rejected" && (
+          <button onClick={() => handleStatusChange(row.id, "rejected")} disabled={isUpdating} className="action-button reject-button">
             {isUpdating ? <LoadingDot /> : <FiXCircle />} <span className="button-text-desktop">Reject</span>
           </button>
         )}
         {row.status === "pending" && (
-           <button onClick={() => handleStatusChange(row._id, "reviewing")} disabled={isUpdating} className="action-button review-button">
+           <button onClick={() => handleStatusChange(row.id, "reviewing")} disabled={isUpdating} className="action-button review-button">
             {isUpdating ? <LoadingDot /> : <FiClock />} <span className="button-text-desktop">Review</span>
           </button>
         )}
-         {(row.status === "approved" || row.status === "rejected" || row.status === "hired") && (
-          <button onClick={() => handleStatusChange(row._id, "pending")} disabled={isUpdating} className="action-button reset-button">
+         {(row.status === "accepted" || row.status === "rejected") && (
+          <button onClick={() => handleStatusChange(row.id, "pending")} disabled={isUpdating} className="action-button reset-button">
             {isUpdating ? <LoadingDot /> : <FiRefreshCw />} <span className="button-text-desktop">Reset</span>
           </button>
         )}
@@ -124,21 +140,21 @@ const InternshipApplications = () => {
       {
         id: "actions", header: "Actions", accessor: (row) => (
           <div className={`actions-container ${isMobile ? "mobile-actions" : ""}`}>
-            <button className="action-button view-button" onClick={() => console.log("View", row._id)} disabled={updatingStatus[row._id]}>
+            <button className="action-button view-button" onClick={() => console.log("View", row.id)} disabled={updatingStatus[row.id]}>
               <FiEye /> <span className="button-text-desktop">View</span>
             </button>
             {isMobile ? (
               <select 
                 className="action-select" 
-                onChange={(e) => { if (e.target.value) handleStatusChange(row._id, e.target.value); e.target.value = "";}} 
-                disabled={updatingStatus[row._id]}
+                onChange={(e) => { if (e.target.value) handleStatusChange(row.id, e.target.value); e.target.value = "";}} 
+                disabled={updatingStatus[row.id]}
                 defaultValue=""
               >
                 <option value="" disabled>Change Status</option>
-                {row.status !== "approved" && row.status !== "rejected" && row.status !== "hired" && <option value="approved">Approve</option>}
-                {row.status !== "rejected" && row.status !== "hired" && <option value="rejected">Reject</option>}
+                {row.status !== "accepted" && row.status !== "rejected" && <option value="accepted">Accept</option>}
+                {row.status !== "rejected" && <option value="rejected">Reject</option>}
                 {row.status === "pending" && <option value="reviewing">Review</option>}
-                {(row.status === "approved" || row.status === "rejected" || row.status === "hired") && <option value="pending">Reset to Pending</option>}
+                {(row.status === "accepted" || row.status === "rejected") && <option value="pending">Reset to Pending</option>}
               </select>
             ) : renderActionButtons(row)}
           </div>
@@ -147,7 +163,7 @@ const InternshipApplications = () => {
     ];
     if (!isMobile) {
       return [
-        { id: "_id", header: "ID", accessor: (row) => row._id.substring(0, 8) + "..." },
+        { id: "id", header: "ID", accessor: (row) => (row.id ? row.id.substring(0, 8) : "N/A") + "..." },
         ...baseColumns.slice(0,1), // Applicant Name
         { id: "internshipTitle", header: "Internship", accessor: (row) => row.internshipId?.title || "N/A" },
         ...baseColumns.slice(1,2), // Status
@@ -163,20 +179,20 @@ const InternshipApplications = () => {
                 <div className="text-xs text-gray-400 dark:text-gray-500">On: {new Date(row.createdAt).toLocaleDateString()}</div>
                 <div className="mt-2"><StatusBadge status={row.status} /></div>
                 <div className={`actions-container mobile-actions mt-2`}>
-                    <button className="action-button view-button" onClick={() => console.log("View", row._id)} disabled={updatingStatus[row._id]}>
+                    <button className="action-button view-button" onClick={() => console.log("View", row.id)} disabled={updatingStatus[row.id]}>
                         <FiEye /> <span className="button-text-mobile">View</span>
                     </button>
                      <select 
                         className="action-select" 
-                        onChange={(e) => { if (e.target.value) handleStatusChange(row._id, e.target.value); e.target.value = "";}} 
-                        disabled={updatingStatus[row._id]}
+                        onChange={(e) => { if (e.target.value) handleStatusChange(row.id, e.target.value); e.target.value = "";}} 
+                        disabled={updatingStatus[row.id]}
                         defaultValue=""
                     >
                         <option value="" disabled>Status</option>
-                        {row.status !== "approved" && row.status !== "rejected" && row.status !== "hired" && <option value="approved">Approve</option>}
-                        {row.status !== "rejected" && row.status !== "hired" && <option value="rejected">Reject</option>}
+                        {row.status !== "accepted" && row.status !== "rejected" && <option value="accepted">Accept</option>}
+                        {row.status !== "rejected" && <option value="rejected">Reject</option>}
                         {row.status === "pending" && <option value="reviewing">Review</option>}
-                         {(row.status === "approved" || row.status === "rejected" || row.status === "hired") && <option value="pending">Reset</option>}
+                         {(row.status === "accepted" || row.status === "rejected") && <option value="pending">Reset</option>}
                     </select>
                 </div>
             </div>
@@ -199,10 +215,10 @@ const InternshipApplications = () => {
             <option value="pending">Pending</option>
             <option value="reviewing">Reviewing</option>
             <option value="shortlisted">Shortlisted</option>
-            <option value="interviewed">Interviewed</option>
-            <option value="offered">Offered</option>
-            <option value="hired">Hired</option>
+            <option value="interview">Interview</option>
+            <option value="accepted">Accepted</option>
             <option value="rejected">Rejected</option>
+            <option value="withdrawn">Withdrawn</option>
           </select>
           <input type="text" name="search" placeholder="Search..." value={filters.search} onChange={handleFilterChange} className="search-input"/>
         </div>

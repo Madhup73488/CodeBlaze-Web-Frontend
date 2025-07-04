@@ -1,6 +1,6 @@
 // OtpForm.js
 import React from "react";
-import { CheckCircle, RotateCcw, AlertCircle } from "lucide-react";
+import { CheckCircle, RotateCcw } from "lucide-react";
 import Loader from "./Loader";
 import ErrorMessage from "./ErrorMessage";
 
