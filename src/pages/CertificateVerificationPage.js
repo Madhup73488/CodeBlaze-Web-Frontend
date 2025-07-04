@@ -1,14 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import adminApi from '../admin/utils/api'; // Path to admin API utils
 import { QRCodeSVG } from 'qrcode.react';
 import companyLogo from '../assets/images/codeblazelogoorange.png'; // Adjust path as needed
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
-const CertificateVerificationPage = ({ theme = 'light' }) => {
+const CertificateVerificationPage = ({ theme = 'light' }) => { // Assuming theme might be passed or from a context
   const { certificateId } = useParams();
   const [certificateData, setCertificateData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const certificateRef = useRef(null);
+
+  const handleDownloadPdf = () => {
+    const input = certificateRef.current;
+    html2canvas(input, { scale: 2 }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('l', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+      const ratio = canvasWidth / canvasHeight;
+      const width = pdfWidth;
+      const height = width / ratio;
+      pdf.addImage(imgData, 'PNG', 0, (pdfHeight - height) / 2, width, height);
+      pdf.save(`certificate-${certificateData.certificate_id}.pdf`);
+    });
+  };
 
   useEffect(() => {
     const fetchCertificate = async () => {
@@ -198,7 +218,7 @@ const CertificateVerificationPage = ({ theme = 'light' }) => {
               {/* Certificate Container with responsive scaling */}
               <div className="overflow-hidden rounded-lg shadow-inner bg-gray-50">
                 <div className="transform scale-50 sm:scale-75 lg:scale-90 xl:scale-100 origin-top-left">
-                  <div style={{ 
+                  <div ref={certificateRef} style={{ 
                     fontFamily: "'Georgia', serif", 
                     border: "10px solid #003366", 
                     padding: "50px", 
@@ -305,7 +325,7 @@ const CertificateVerificationPage = ({ theme = 'light' }) => {
       {/* Footer Actions */}
       <div className="max-w-7xl mx-auto mt-8 text-center">
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button className="inline-flex items-center px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition duration-200">
+          <button onClick={handleDownloadPdf} className="inline-flex items-center px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition duration-200">
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
