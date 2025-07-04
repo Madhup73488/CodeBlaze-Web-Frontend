@@ -58,6 +58,9 @@ const CertificateVerificationPage = ({ theme = 'light' }) => { // Assuming theme
   const isDark = theme === 'dark';
   const containerClasses = isDark ? 'bg-gray-900 text-gray-100' : 'bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-800';
   const cardClasses = isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200';
+  const certificateTextColor = isDark ? '#FFFFFF' : '#333333';
+  const certificatePrimaryColor = isDark ? '#A78BFA' : '#003366';
+  const certificateSecondaryColor = isDark ? '#FB923C' : '#d2691e';
 
   // Loading State
   if (loading) {
@@ -130,10 +133,10 @@ const CertificateVerificationPage = ({ theme = 'light' }) => { // Assuming theme
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+          <h1 className={`text-3xl sm:text-4xl font-bold ${isDark ? 'text-white' : 'text-gray-900'} mb-2`}>
             Certificate Verified
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-600'} max-w-2xl mx-auto`}>
             This certificate has been successfully verified and is authentic. Below are the verified details.
           </p>
         </div>
@@ -146,7 +149,7 @@ const CertificateVerificationPage = ({ theme = 'light' }) => { // Assuming theme
           {/* Certificate Details Card */}
           <div className="lg:col-span-1 order-2 lg:order-1">
             <div className={`${cardClasses} border rounded-xl shadow-lg p-6`}>
-              <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+              <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'} mb-6 flex items-center`}>
                 <svg className="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -156,7 +159,7 @@ const CertificateVerificationPage = ({ theme = 'light' }) => { // Assuming theme
               <div className="space-y-4">
                 <div className="border-b border-gray-200 pb-3">
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Recipient</h3>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">{certificateData.recipient_name}</p>
+                  <p className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'} mt-1`}>{certificateData.recipient_name}</p>
                 </div>
                 
                 <div className="border-b border-gray-200 pb-3">
@@ -166,29 +169,29 @@ const CertificateVerificationPage = ({ theme = 'light' }) => { // Assuming theme
                 
                 <div className="border-b border-gray-200 pb-3">
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Company</h3>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">{certificateData.company_name}</p>
+                  <p className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'} mt-1`}>{certificateData.company_name}</p>
                 </div>
                 
                 <div className="border-b border-gray-200 pb-3">
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Duration</h3>
-                  <p className="text-md text-gray-900 mt-1">{joiningDate} to {leavingDate}</p>
+                  <p className={`text-md ${isDark ? 'text-white' : 'text-gray-900'} mt-1`}>{joiningDate} to {leavingDate}</p>
                 </div>
                 
                 {certificateData.project_worked_on && (
                   <div className="border-b border-gray-200 pb-3">
                     <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Project</h3>
-                    <p className="text-md text-gray-900 mt-1">{certificateData.project_worked_on}</p>
+                    <p className={`text-md ${isDark ? 'text-white' : 'text-gray-900'} mt-1`}>{certificateData.project_worked_on}</p>
                   </div>
                 )}
                 
                 <div className="border-b border-gray-200 pb-3">
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Issued Date</h3>
-                  <p className="text-md text-gray-900 mt-1">{issuedDate}</p>
+                  <p className={`text-md ${isDark ? 'text-white' : 'text-gray-900'} mt-1`}>{issuedDate}</p>
                 </div>
                 
                 <div className="border-b border-gray-200 pb-3">
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Certificate ID</h3>
-                  <p className="text-md font-mono text-gray-900 mt-1 bg-gray-100 p-2 rounded text-sm break-all">
+                  <p className={`text-md font-mono ${isDark ? 'text-white bg-gray-700' : 'text-gray-900 bg-gray-100'} p-2 rounded text-sm break-all`}>
                     {certificateData.certificate_id}
                   </p>
                 </div>
@@ -208,7 +211,7 @@ const CertificateVerificationPage = ({ theme = 'light' }) => { // Assuming theme
           {/* Certificate Preview */}
           <div className="lg:col-span-2 order-1 lg:order-2">
             <div className={`${cardClasses} border rounded-xl shadow-lg p-4 sm:p-6`}>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+              <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'} mb-4 flex items-center`}>
                 <svg className="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -216,15 +219,14 @@ const CertificateVerificationPage = ({ theme = 'light' }) => { // Assuming theme
               </h2>
               
               {/* Certificate Container with responsive scaling */}
-              <div className="overflow-hidden rounded-lg shadow-inner bg-gray-50">
-                <div className="transform scale-50 sm:scale-75 lg:scale-90 xl:scale-100 origin-top-left">
-                  <div ref={certificateRef} style={{ 
+              <div className="overflow-auto rounded-lg shadow-inner bg-gray-50">
+                <div ref={certificateRef} style={{ 
                     fontFamily: "'Georgia', serif", 
-                    border: "10px solid #003366", 
+                    border: `10px solid ${certificatePrimaryColor}`, 
                     padding: "50px", 
                     textAlign: "center", 
-                    backgroundColor: "#f0f8ff", 
-                    color: "#333",
+                    backgroundColor: isDark ? "#111827" : "#f0f8ff", 
+                    color: certificateTextColor,
                     width: "800px",
                     height: "600px",
                     position: "relative"
@@ -240,14 +242,14 @@ const CertificateVerificationPage = ({ theme = 'light' }) => { // Assuming theme
                         marginRight: 'auto' 
                       }} 
                     />
-                    <h1 style={{ color: "#003366", fontSize: "2.5em", marginBottom: "10px" }}>
+                    <h1 style={{ color: certificatePrimaryColor, fontSize: "2.5em", marginBottom: "10px" }}>
                       Certificate of Internship
                     </h1>
                     <p style={{ fontSize: "1.2em", marginBottom: "20px" }}>
                       This certificate is proudly presented to
                     </p>
                     <h2 style={{ 
-                      color: "#d2691e", 
+                      color: certificateSecondaryColor, 
                       fontSize: "2em", 
                       marginBottom: "20px", 
                       fontFamily: "'Brush Script MT', cursive" 
@@ -260,7 +262,7 @@ const CertificateVerificationPage = ({ theme = 'light' }) => { // Assuming theme
                     <p style={{ 
                       fontSize: "1.3em", 
                       fontWeight: "bold", 
-                      color: "#003366", 
+                      color: certificatePrimaryColor, 
                       marginBottom: "20px" 
                     }}>
                       {certificateData.internship_role}
@@ -315,7 +317,6 @@ const CertificateVerificationPage = ({ theme = 'light' }) => { // Assuming theme
                       </div>
                     </div>
                   </div>
-                </div>
               </div>
             </div>
           </div>
