@@ -1,6 +1,6 @@
 // InternshipCard.js
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
 const InternshipCard = ({
   internship,
@@ -16,11 +16,6 @@ const InternshipCard = ({
 
   const isSaved = savedInternships.includes(internship.id);
   const isApplied = appliedInternships.includes(internship.id);
-
-  const handleViewDetails = () => {
-    // Navigate to the detail page for this specific internship
-    navigate(`/internship/${internship.id}`);
-  };
 
   return (
     <div className={`internship-card ${theme}`}>
@@ -94,13 +89,13 @@ const InternshipCard = ({
 
       <div className="card-footer">
         {/* Changed the "Apply" button to "View Details" */}
-        <button
+        <Link
+          to={`/internship/${internship.id}`}
           className="view-details-button"
-          onClick={handleViewDetails}
           style={{ backgroundColor: primaryColor }}
         >
           View Details
-        </button>
+        </Link>
         {isApplied && (
           <span className="applied-label" style={{ color: primaryColor }}>
             Applied
