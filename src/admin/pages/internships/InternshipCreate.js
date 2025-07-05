@@ -160,6 +160,16 @@ const InternshipCreate = () => {
     setShowLogoDropdown(false);
   };
 
+  const handleCodeBlazeSelect = () => {
+    setFormData((prev) => ({
+      ...prev,
+      company: "CodeBlaze",
+      companyLogo: "/src/assets/images/codeblazelogoorange.png",
+    }));
+    setCompanyNameInput("CodeBlaze");
+    setShowLogoDropdown(false);
+  };
+
   // const extractCompanyName = (input) => { // Removed unused function
   //   // Remove protocol (http://, https://, etc.)
   //   let cleanInput = input.replace(/^https?:\/\//, "");
@@ -397,6 +407,19 @@ const InternshipCreate = () => {
                   {/* Logo suggestions dropdown */}
                   {showLogoDropdown && isInputFocused && (
                     <div className="logo-suggestions-dropdown">
+                      <div
+                        className="logo-suggestion-item"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={handleCodeBlazeSelect}
+                      >
+                        <img
+                          src="/src/assets/images/codeblazelogoorange.png"
+                          alt="CodeBlaze Logo"
+                        />
+                        <div className="logo-info">
+                          <div className="logo-name">CodeBlaze</div>
+                        </div>
+                      </div>
                       {logoLoading ? (
                         <div className="loading-message">
                           Searching for logos...
