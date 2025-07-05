@@ -1,0 +1,33 @@
+.enrollment-success-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 40px;
+}
+
+.enrollment-success-content h2 {
+  font-size: 2rem;
+  margin-bottom: 16px;
+  color: #28a745;
+}
+
+.enrollment-success-content p {
+  font-size: 1.2rem;
+  margin-bottom: 24px;
+}
+
+.close-modal-button {
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: #343a40;
+  color: #fff;
+}
+
+.dark .close-modal-button {
+  background-color: #f8f9fa;
+  color: #343a40;
+}

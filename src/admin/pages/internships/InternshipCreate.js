@@ -10,6 +10,7 @@ import {
 } from "../../components/common/FormFields";
 import { createInternshipAdmin } from "../../utils/api";
 import debounce from "lodash.debounce";
+import codeblazeLogo from "../../../assets/images/codeblazelogoorange.png";
 
 const LOGO_DEV_API_KEY = "sk_MtiQij_oTbi09LZRSFdj5A"; // Replace with your actual key
 const LOGO_DEV_API_URL = "https://api.logo.dev/search";
@@ -127,12 +128,12 @@ const InternshipCreate = () => {
               setShowLogoDropdown(true);
             }
           } else {
-            console.error("Logo search failed:", response.status);
+            // console.error("Logo search failed:", response.status);
             setLogoSuggestions([]);
             setShowLogoDropdown(false);
           }
         } catch (error) {
-          console.error("Error fetching logo suggestions:", error);
+          // console.error("Error fetching logo suggestions:", error);
           setLogoSuggestions([]);
           setShowLogoDropdown(false);
         } finally {
@@ -164,7 +165,7 @@ const InternshipCreate = () => {
     setFormData((prev) => ({
       ...prev,
       company: "CodeBlaze",
-      companyLogo: "/src/assets/images/codeblazelogoorange.png",
+      companyLogo: codeblazeLogo,
     }));
     setCompanyNameInput("CodeBlaze");
     setShowLogoDropdown(false);
@@ -227,13 +228,15 @@ const InternshipCreate = () => {
       !formData.duration ||
       !formData.workType // Added workType check
     ) {
-      setError("Please fill in all required fields (Title, Company, Location, Description, Responsibilities, Requirements, Duration, Work Type).");
+      setError(
+        "Please fill in all required fields (Title, Company, Location, Description, Responsibilities, Requirements, Duration, Work Type)."
+      );
       setLoading(false);
       return;
     }
 
     // Log formData just before submission
-    console.log("Submitting formData:", formData);
+    // console.log("Submitting formData:", formData);
 
     // Prepare data for API call (keep this logic)
     const internshipData = {
@@ -278,17 +281,22 @@ const InternshipCreate = () => {
 
     // Remove keys that were mapped or are not part of the direct payload expected by backend
     delete internshipData.workType;
-    if (internshipData.internshipFee.amount === undefined) delete internshipData.internshipFee.amount;
-
+    if (internshipData.internshipFee.amount === undefined)
+      delete internshipData.internshipFee.amount;
 
     try {
-      console.log("Submitting data to API:", internshipData);
+      // console.log("Submitting data to API:", internshipData);
       // createInternshipAdmin returns response.data from apiClient
       // So, 'response' here is the object like { success: true, data: { internship_object } }
       const response = await createInternshipAdmin(internshipData);
 
-      if (response && response.success && response.data && (response.data.id || response.data._id)) {
-        console.log("Internship created successfully:", response.data);
+      if (
+        response &&
+        response.success &&
+        response.data &&
+        (response.data.id || response.data._id)
+      ) {
+        // console.log("Internship created successfully:", response.data);
         navigate("/admin/internships");
       } else {
         console.error(
@@ -304,7 +312,10 @@ const InternshipCreate = () => {
                 .join(", ")
           );
         } else {
-          setError(response?.message || "Failed to create internship. Unexpected response from server.");
+          setError(
+            response?.message ||
+              "Failed to create internship. Unexpected response from server."
+          );
         }
       }
     } catch (error) {
@@ -341,11 +352,6 @@ const InternshipCreate = () => {
     { value: "CAD", label: "CAD" },
     { value: "AUD", label: "AUD" },
   ];
-
-  // Log companyLogo state whenever it changes (useful for debugging preview)
-  useEffect(() => {
-    console.log("companyLogo state changed:", formData.companyLogo);
-  }, [formData.companyLogo]);
 
   return (
     <div className={`internship-form-container ${theme}`}>
@@ -412,10 +418,7 @@ const InternshipCreate = () => {
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={handleCodeBlazeSelect}
                       >
-                        <img
-                          src="/src/assets/images/codeblazelogoorange.png"
-                          alt="CodeBlaze Logo"
-                        />
+                        <img src={codeblazeLogo} alt="CodeBlaze Logo" />
                         <div className="logo-info">
                           <div className="logo-name">CodeBlaze</div>
                         </div>
@@ -485,10 +488,10 @@ const InternshipCreate = () => {
                   {/* Logo Preview */}
                   {formData.companyLogo && (
                     <>
-                      {console.log(
+                      {/* {console.log(
                         "Rendering logo preview for:",
                         formData.companyLogo
-                      )}
+                      )} */}
                       <img
                         src={formData.companyLogo}
                         alt="Company Logo Preview"

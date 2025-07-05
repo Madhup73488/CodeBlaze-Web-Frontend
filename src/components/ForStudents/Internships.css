@@ -1,0 +1,757 @@
+.internships-container {
+  padding: 2rem 5%;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.internships-container.dark {
+  background-color: #1a1a1a;
+  color: #f0f0f0;
+}
+
+.internships-container.light {
+  background-color: #ffffff;
+  color: #0a0a0a;
+}
+
+.internships-header {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.internships-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.accent-line {
+  height: 4px;
+  width: 80px;
+  border-radius: 2px;
+  margin: 0 auto 1.5rem;
+}
+
+.internships-subtitle {
+  font-size: 1.3rem;
+  max-width: 800px;
+  margin: 0 auto;
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+.search-section {
+  margin-bottom: 3rem;
+}
+
+.search-container {
+  display: flex;
+  max-width: 700px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.search-input {
+  flex-grow: 1;
+  padding: 1.2rem 1.5rem;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  border: 1px solid orange;
+}
+
+.search-input:focus {
+  outline: none;
+}
+
+.search-button {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.search-button:hover {
+  opacity: 0.9;
+}
+
+.search-button svg {
+  width: 22px;
+  height: 22px;
+}
+
+.internship-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
+.category-button {
+  padding: 0.8rem 1.8rem;
+  border-radius: 30px;
+  background: transparent;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.category-button.active {
+  font-weight: 600;
+}
+
+.internships-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2.5rem;
+}
+
+.new-internship-card {
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.internships-container.light .new-internship-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e5e5;
+  color: #0a0a0a;
+}
+
+.internships-container.dark .new-internship-card {
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  color: #f0f0f0;
+}
+
+.new-internship-card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.new-internship-card-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.internships-container.dark .new-internship-card-content {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+}
+
+.new-internship-card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+.new-internship-card-company {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  opacity: 0.8;
+  margin-bottom: 1rem;
+}
+
+.new-internship-card-company img {
+  width: 20px;
+  height: 20px;
+}
+
+.new-internship-card-description {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.new-internship-card-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+}
+
+.new-internship-card-price {
+  margin-bottom: 1.5rem;
+}
+
+.new-internship-card-price .price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-right: 0.5rem;
+}
+
+.new-internship-card-price .original-price {
+  font-size: 1rem;
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.new-internship-card-rating .star-icon {
+  width: 16px;
+  height: 16px;
+  color: #fbbf24;
+}
+
+.new-internship-card-rating .star-icon.filled {
+  fill: #fbbf24;
+}
+
+.new-internship-card-footer {
+  display: flex;
+  gap: 1rem;
+  margin-top: auto;
+}
+
+.new-internship-card-button {
+  padding: 0.8rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.internships-container.light .new-internship-card-button {
+  border: 1px solid #0a0a0a;
+  background: transparent;
+  color: #0a0a0a;
+}
+
+.internships-container.dark .new-internship-card-button {
+  border: 1px solid white;
+  background: transparent;
+  color: white;
+}
+
+.internships-container.light .new-internship-card-button:hover {
+  background-color: #0a0a0a;
+  color: white;
+}
+
+.internships-container.dark .new-internship-card-button:hover {
+  background-color: white;
+  color: black;
+}
+
+.internship-header {
+  padding: 2rem;
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+}
+
+.company-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  margin-right: 1.5rem;
+  flex-shrink: 0;
+}
+
+.internship-title-info {
+  flex: 1;
+}
+
+.internship-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  line-height: 1.3;
+}
+
+.company-name {
+  font-size: 1.1rem;
+  opacity: 0.8;
+  margin-bottom: 0.8rem;
+}
+
+.rating-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.star-icon {
+  width: 16px;
+  height: 16px;
+  fill: #fbbf24;
+}
+
+.reviews {
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
+
+.level-badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.discount-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.quick-info {
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.info-icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.7;
+}
+
+.description {
+  padding: 0 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.description p {
+  line-height: 1.6;
+  opacity: 0.9;
+  font-size: 1rem;
+}
+
+.highlights {
+  padding: 0 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.highlights h4 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.highlights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 0.8rem;
+}
+
+.highlight-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.9rem;
+}
+
+.highlight-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tech-stack {
+  padding: 0 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.tech-stack h4 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tech-tag {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.requirements {
+  padding: 0 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.requirements h4 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.requirements ul {
+  list-style: none;
+  padding: 0;
+}
+
+.requirements li {
+  padding: 0.3rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.requirements li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+
+.curriculum {
+  padding: 0 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.curriculum h4 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.curriculum-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.curriculum-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.9rem;
+}
+
+.curriculum-number {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.curriculum-more {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.pricing-section {
+  padding: 1.5rem 2rem;
+  margin-bottom: 0;
+}
+
+.pricing {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.price-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.current-price {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.price {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.original-price {
+  font-size: 1.2rem;
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.payment-plan {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.benefit-icon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.7;
+}
+
+.internship-footer {
+  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.dates {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.date-item {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.date-label {
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.date-value {
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.outline-button {
+  padding: 0.8rem 1.5rem;
+  background: transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.apply-button {
+  padding: 0.8rem 2rem;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.apply-button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .internships-list {
+    grid-template-columns: 1fr;
+  }
+
+  .internships-title {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .internships-list {
+    grid-template-columns: 1fr;
+  }
+
+  .internships-title {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .internships-container {
+    padding: 1rem 2%;
+  }
+
+  .internship-card {
+    border-radius: 15px;
+  }
+
+  .internship-header {
+    padding: 1.5rem;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .company-logo {
+    margin-bottom: 1rem;
+  }
+
+  .internship-title-info {
+    text-align: center;
+  }
+
+  .rating-section {
+    justify-content: center;
+  }
+
+  .discount-badge {
+    position: static;
+    margin-top: 1rem;
+  }
+
+  .quick-info,
+  .description,
+  .highlights,
+  .tech-stack,
+  .requirements,
+  .curriculum {
+    padding: 0 1.5rem;
+  }
+
+  .pricing-section {
+    padding: 1.5rem;
+  }
+
+  .pricing {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .internship-footer {
+    padding: 1.5rem;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .outline-button,
+  .apply-button {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 360px) {
+  .internships-title {
+    font-size: 1.5rem;
+  }
+
+  .internships-subtitle {
+    font-size: 1rem;
+  }
+
+  .new-internship-card-title {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .internships-container {
+    padding: 1rem 2%;
+  }
+
+  .internship-card {
+    border-radius: 15px;
+  }
+
+  .internship-header {
+    padding: 1.5rem;
+  }
+
+  .quick-info,
+  .description,
+  .highlights,
+  .tech-stack,
+  .requirements,
+  .curriculum {
+    padding: 0 1.5rem;
+  }
+
+  .pricing-section {
+    padding: 1.5rem;
+  }
+
+  .internship-footer {
+    padding: 1.5rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .outline-button,
+  .apply-button {
+    width: 100%;
+  }
+}

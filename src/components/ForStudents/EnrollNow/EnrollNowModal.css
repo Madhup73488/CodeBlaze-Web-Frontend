@@ -1,0 +1,152 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 999;
+}
+
+.modal-content {
+  background-color: #fff;
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  text-align: center;
+  animation: slide-up 0.3s ease-out;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 768px) {
+  .modal-overlay {
+    align-items: center;
+  }
+
+  .modal-content {
+    animation: none;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  margin: 0;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  text-align: left;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: #ff8033;
+  color: #fff;
+}
+
+.dark .submit-button {
+  background-color: #ff8033;
+  color: #343a40;
+}
+
+/* Dark Mode Styles */
+.dark .modal-content {
+  background-color: #1a1a1a;
+  color: #fff;
+}
+
+.dark .modal-header {
+  border-bottom: 1px solid #555;
+}
+
+.dark .close-button {
+  color: #fff;
+}
+
+.dark .form-group input {
+  background-color: #555;
+  border: 1px solid #777;
+  color: #fff;
+}
+
+.dark .form-group input::placeholder {
+  color: #bbb;
+}
+
+.loader {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 2s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Fix for Webkit autofill background color */
+.dark .form-group input:-webkit-autofill,
+.dark .form-group input:-webkit-autofill:hover,
+.dark .form-group input:-webkit-autofill:focus,
+.dark .form-group input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #555 inset !important;
+  -webkit-text-fill-color: #fff !important;
+}

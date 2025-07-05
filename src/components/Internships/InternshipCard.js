@@ -1,6 +1,5 @@
-// InternshipCard.js
 import React from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import { Link, useNavigate } from "react-router-dom";
 
 const InternshipCard = ({
   internship,
@@ -9,28 +8,20 @@ const InternshipCard = ({
   savedInternships,
   appliedInternships,
   toggleSaveInternship,
-  // getCompanyLogo, // We can now potentially use internship.company_logo_url directly
-  formatDate, // Still needed for formatting the date string
+  formatDate,
 }) => {
-  const navigate = useNavigate(); // Initialize useNavigate hook
+  const navigate = useNavigate();
 
   const isSaved = savedInternships.includes(internship.id);
   const isApplied = appliedInternships.includes(internship.id);
 
-  const handleViewDetails = () => {
-    // Navigate to the detail page for this specific internship
-    navigate(`/internship/${internship.id}`);
-  };
-
-  // Determine display location: "WFH" if work_type is remote, else original location
   const displayLocation =
     internship.work_type &&
     typeof internship.work_type === "string" &&
-    internship.work_type.toLowerCase().includes("remote") // Check for 'remote' in work_type
+    internship.work_type.toLowerCase().includes("remote")
       ? "WFH"
       : internship.location;
 
-  // Render company logo: use URL from backend, or a placeholder if not available
   const renderCompanyLogo = () => {
     if (internship.company_logo_url) {
       return (
@@ -38,24 +29,18 @@ const InternshipCard = ({
           src={internship.company_logo_url}
           alt={`${internship.company} logo`}
           className="company-logo-img"
-          // Add onerror to handle broken image links
           onError={(e) => {
-            e.target.onerror = null; // Prevents infinite loop
+            e.target.onerror = null;
             e.target.src = `https://placehold.co/48x48/${
               theme === "dark" ? "333" : "f0f0f0"
-            }/${
-              theme === "dark" ? "f0f0f0" : "333"
-            }?text=${internship.company.charAt(0)}`;
+            }/${theme === "dark" ? "f0f0f0" : "333"}?text=${internship.company.charAt(0)}`;
           }}
         />
       );
     }
-    // Fallback to a simple initial if no logo URL
     return (
       <span className="company-logo-initial">
-        {internship.company
-          ? internship.company.charAt(0).toUpperCase()
-          : "N/A"}
+        {internship.company ? internship.company.charAt(0).toUpperCase() : "N/A"}
       </span>
     );
   };
@@ -64,16 +49,15 @@ const InternshipCard = ({
     <div className={`internship-card ${theme}`}>
       <div className="card-header">
         <div className="company-info">
-          <div className="company-logo-container">
-            {renderCompanyLogo()} {/* Use the new renderCompanyLogo helper */}
-          </div>
+          <div className="company-logo-container">{renderCompanyLogo()}</div>
           <div className="company-details">
             <h3 className="company-name">{internship.company}</h3>
             <p className="location-type">
-              {displayLocation} ({internship.work_type}) {/* Use work_type */}
+              {displayLocation} ({internship.work_type})
             </p>
           </div>
         </div>
+
         <button
           className={`save-button ${isSaved ? "saved" : ""}`}
           onClick={() => toggleSaveInternship(internship.id)}
@@ -97,34 +81,39 @@ const InternshipCard = ({
       <h2 className="internship-title">{internship.title}</h2>
 
       <div className="details-grid">
-        {/* Using internship_fee_amount for cost */}
+        <div className="detail-item">
+          <span className="detail-label">Stipend:</span>
+          <span className="detail-value">
+            {internship.internshipFee?.amount
+              ? `₹${internship.internshipFee.amount}/month`
+              : "Unpaid"}
+          </span>
+        </div>
+
         <div className="detail-item">
           <span className="detail-label">Cost:</span>
           <span className="detail-value">
             {internship.internship_fee_amount &&
             parseFloat(internship.internship_fee_amount) > 0
-              ? `₹${parseFloat(internship.internship_fee_amount).toFixed(2)}` // Format to 2 decimal places
+              ? `₹${parseFloat(internship.internship_fee_amount).toFixed(2)}`
               : "Free"}
           </span>
         </div>
-        {/* Duration is already correct */}
+
         <div className="detail-item">
           <span className="detail-label">Duration:</span>
           <span className="detail-value">
             {internship.duration || "Not specified"}
           </span>
         </div>
-        {/* Using application_deadline for Apply By */}
+
         <div className="detail-item">
           <span className="detail-label">Apply By:</span>
-          <span className="detail-value">
-            {formatDate(internship.application_deadline)}
-          </span>
+          <span className="detail-value">{formatDate(internship.applicationDeadline)}</span>
         </div>
       </div>
 
       <div className="skills-tags">
-        {/* Using skills for techstack */}
         {internship.skills &&
           internship.skills.slice(0, 3).map((skill, index) => (
             <span
@@ -152,13 +141,15 @@ const InternshipCard = ({
       </div>
 
       <div className="card-footer">
-        <button
-          className="view-details-button"
-          onClick={handleViewDetails}
-          style={{ backgroundColor: primaryColor }}
-        >
-          View Details
-        </button>
+        <Link to={`/internship/${internship.id}`}>
+          <button
+            className="view-details-button"
+            style={{ backgroundColor: primaryColor }}
+          >
+            View Details
+          </button>
+        </Link>
+
         {isApplied && (
           <span className="applied-label" style={{ color: primaryColor }}>
             Applied
@@ -166,6 +157,7 @@ const InternshipCard = ({
         )}
       </div>
 
+      {/* Style */}
       <style jsx>{`
         .internship-card {
           background-color: #ffffff;
@@ -187,6 +179,7 @@ const InternshipCard = ({
           transform: translateY(-5px);
           box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
+
         .internship-card.dark:hover {
           box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
@@ -213,28 +206,27 @@ const InternshipCard = ({
           justify-content: center;
           overflow: hidden;
           flex-shrink: 0;
-          background-color: #f0f0f0; /* Default background for logos */
+          background-color: #f0f0f0;
         }
+
         .internship-card.dark .company-logo-container {
           background-color: #333;
         }
+
         .company-logo-img {
           width: 100%;
           height: 100%;
-          object-fit: contain; /* Ensures the image fits within the container */
+          object-fit: contain;
         }
+
         .company-logo-initial {
           font-size: 1.5rem;
           font-weight: bold;
-          color: #555; /* Adjust color as needed */
-        }
-        .internship-card.dark .company-logo-initial {
-          color: #ccc;
+          color: #555;
         }
 
-        .company-details {
-          display: flex;
-          flex-direction: column;
+        .internship-card.dark .company-logo-initial {
+          color: #ccc;
         }
 
         .company-name {
@@ -295,7 +287,6 @@ const InternshipCard = ({
         .detail-label {
           font-size: 0.75rem;
           color: ${theme === "dark" ? "#b0b0b0" : "#777"};
-          font-weight: 500;
           text-transform: uppercase;
         }
 
@@ -321,7 +312,7 @@ const InternshipCard = ({
         }
 
         .card-footer {
-          margin-top: auto; /* Pushes footer to the bottom */
+          margin-top: auto;
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -331,7 +322,7 @@ const InternshipCard = ({
         }
 
         .view-details-button {
-          flex-grow: 1; /* Allows button to take available space */
+          flex-grow: 1;
           padding: 0.75rem 1.25rem;
           border-radius: 8px;
           border: none;

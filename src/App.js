@@ -27,7 +27,7 @@ import Webinars from "./components/ForStudents/Webinars";
 import SkillsAndRoles from "./components/ForStudents/SkillsAndRoles";
 import JobSeekers from "./components/JobSeekers/JobSeekers";
 import InternshipPortalPage from "./components/Internships/InternshipPortal";
-import InternshipDetailPage from "./components/Internships/InternshipDetailPage";
+import InternshipDetailPage from "./components/ForStudents/InternshipDetailPage";
 import AdminLayout from "./admin/components/layout/AdminLayout";
 import DashboardHome from "./admin/pages/DashboardHome";
 import AdminSettings from "./admin/pages/AdminSettings";
@@ -70,6 +70,7 @@ import {
 import { ROUTES } from "./constants/routes";
 import OAuthCallbackPage from "./pages/OAuthCallbackPage"; 
 import ResetPasswordPage from "./pages/ResetPasswordPage"; 
+import Cursor from "./components/common/Cursor";
 
 
 const AppContent = () => {
@@ -101,6 +102,11 @@ const AppContent = () => {
   const toggleColor = () => {
     setColor(color === COLORS.PURPLE ? COLORS.ORANGE : COLORS.PURPLE);
   };
+
+  useEffect(() => {
+    document.body.className = theme;
+    document.body.style.cursor = 'none';
+  }, [theme]);
 
   useEffect(() => {
     if (authFlowState === "reset_password_form" && !isAuthModalOpen) {
@@ -203,7 +209,7 @@ const AppContent = () => {
           element={<InternshipPortalPage theme={theme} color={color} />}
         />
         <Route
-          path={ROUTES.INTERNSHIP_DETAIL}
+          path="/internships/:id"
           element={<InternshipDetailPage theme={theme} color={color} />}
         />
         <Route
@@ -504,6 +510,7 @@ const AppContent = () => {
         theme={theme}
         initialSelectedService={initialServiceForModal}
       />
+      <Cursor />
     </div>
   );
 };

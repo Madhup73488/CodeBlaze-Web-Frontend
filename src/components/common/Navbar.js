@@ -31,7 +31,10 @@ function Navbar({
   const navRef = useRef(null);
 
   // Corrected admin check to use user.roles array
-  const isAdmin = user && user.roles && (user.roles.includes('admin') || user.roles.includes('superadmin'));
+  const isAdmin =
+    user &&
+    user.roles &&
+    (user.roles.includes("admin") || user.roles.includes("superadmin"));
 
   const closeAllMenus = useCallback(() => {
     setIsMenuOpen(false);
@@ -739,7 +742,7 @@ function Navbar({
             135deg,
             rgba(10, 10, 10, 0.95) 0%,
             rgba(15, 15, 15, 0.97) 50%,
-            rgba(10, 10, 10, 0.95) 100%
+            rgb(146 73 29 / 95%) 100%
           );
           color: #ffffff;
         }
@@ -749,7 +752,7 @@ function Navbar({
             135deg,
             rgba(255, 255, 255, 0.95) 0%,
             rgba(250, 250, 250, 0.97) 50%,
-            rgba(255, 255, 255, 0.95) 100%
+            rgb(255 203 172 / 95%) 100%
           );
           color: #0a0a0a;
         }
@@ -1160,7 +1163,7 @@ function Navbar({
         }
 
         .login-button:hover {
-          transform: translateY(-2px);
+          // transform: translateY(-2px);
           box-shadow: 0 8px 32px ${primaryColor}66;
         }
 

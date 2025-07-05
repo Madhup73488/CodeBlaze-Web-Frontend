@@ -14,29 +14,37 @@
     135deg,
     rgba(10, 10, 10, 0.95) 0%,
     rgba(15, 15, 15, 0.97) 50%,
-    rgba(10, 10, 10, 0.95) 100%
+    rgb(146 73 29 / 95%) 100%
   );
   color: #ffffff;
-  --navbar-border-color: rgba(255,255,255,0.08);
+  --navbar-border-color: rgba(255, 255, 255, 0.08);
   --text-color: #ffffff;
   --subtext-color: #e5e5e5;
-  --background-color-light: rgba(255,255,255,0.05);
-  --background-color-hover: rgba(255,255,255,0.1);
-  --dropdown-background: linear-gradient(135deg, rgba(15, 15, 15, 0.98) 0%, rgba(20, 20, 20, 0.99) 100%);
-  --dropdown-border-color: rgba(255,255,255,0.08);
-  --dropdown-section-background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.05) 100%);
-  --dropdown-section-border-color: rgba(255,255,255,0.08);
-  --profile-border-color: rgba(255,255,255,0.2);
-  --profile-hover-bg: rgba(255,255,255,0.07);
-  --profile-dropdown-bg: rgba(25,25,25,0.98);
-  --profile-dropdown-border: rgba(255,255,255,0.1);
+  --background-color-light: rgba(255, 255, 255, 0.05);
+  --background-color-hover: rgba(255, 255, 255, 0.1);
+  --dropdown-background: linear-gradient(
+    135deg,
+    rgba(15, 15, 15, 0.98) 0%,
+    rgba(20, 20, 20, 0.99) 100%
+  );
+  --dropdown-border-color: rgba(255, 255, 255, 0.08);
+  --dropdown-section-background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.02) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  --dropdown-section-border-color: rgba(255, 255, 255, 0.08);
+  --profile-border-color: rgba(255, 255, 255, 0.2);
+  --profile-hover-bg: rgba(255, 255, 255, 0.07);
+  --profile-dropdown-bg: rgba(25, 25, 25, 0.98);
+  --profile-dropdown-border: rgba(255, 255, 255, 0.1);
   --profile-header-name-color: #ffffff;
   --profile-header-email-color: #9ca3af;
   --profile-menu-item-hover-bg: var(--primary-color-alpha-26);
-  --profile-menu-divider-bg: rgba(255,255,255,0.08);
-  --mobile-menu-bg: rgba(18,18,18,1);
-  --mobile-menu-border-top: rgba(255,255,255,0.1);
-  --mobile-dropdown-section-hover-bg: rgba(255,255,255,0.05);
+  --profile-menu-divider-bg: rgba(255, 255, 255, 0.08);
+  --mobile-menu-bg: rgba(18, 18, 18, 1);
+  --mobile-menu-border-top: rgba(255, 255, 255, 0.1);
+  --mobile-dropdown-section-hover-bg: rgba(255, 255, 255, 0.05);
 }
 
 .navbar.light {
@@ -44,29 +52,37 @@
     135deg,
     rgba(255, 255, 255, 0.95) 0%,
     rgba(250, 250, 250, 0.97) 50%,
-    rgba(255, 255, 255, 0.95) 100%
+    rgb(255 192 148 / 95%) 100%
   );
   color: #0a0a0a;
-  --navbar-border-color: rgba(0,0,0,0.08);
+  --navbar-border-color: rgba(0, 0, 0, 0.08);
   --text-color: #0a0a0a;
   --subtext-color: #374151;
-  --background-color-light: rgba(0,0,0,0.05);
-  --background-color-hover: rgba(0,0,0,0.1);
-  --dropdown-background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(250, 250, 250, 0.99) 100%);
-  --dropdown-border-color: rgba(0,0,0,0.08);
-  --dropdown-section-background: linear-gradient(135deg, rgba(0,0,0,0.01) 0%, rgba(0,0,0,0.03) 100%);
-  --dropdown-section-border-color: rgba(0,0,0,0.08);
-  --profile-border-color: rgba(0,0,0,0.1);
-  --profile-hover-bg: rgba(0,0,0,0.04);
-  --profile-dropdown-bg: rgba(252,252,252,0.98);
-  --profile-dropdown-border: rgba(0,0,0,0.1);
+  --background-color-light: rgba(0, 0, 0, 0.05);
+  --background-color-hover: rgba(0, 0, 0, 0.1);
+  --dropdown-background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(250, 250, 250, 0.99) 100%
+  );
+  --dropdown-border-color: rgba(0, 0, 0, 0.08);
+  --dropdown-section-background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.01) 0%,
+    rgba(0, 0, 0, 0.03) 100%
+  );
+  --dropdown-section-border-color: rgba(0, 0, 0, 0.08);
+  --profile-border-color: rgba(0, 0, 0, 0.1);
+  --profile-hover-bg: rgba(0, 0, 0, 0.04);
+  --profile-dropdown-bg: rgba(252, 252, 252, 0.98);
+  --profile-dropdown-border: rgba(0, 0, 0, 0.1);
   --profile-header-name-color: #0a0a0a;
   --profile-header-email-color: #6b7280;
   --profile-menu-item-hover-bg: var(--primary-color-alpha-26);
-  --profile-menu-divider-bg: rgba(0,0,0,0.08);
-  --mobile-menu-bg: rgba(253,253,253,1);
-  --mobile-menu-border-top: rgba(0,0,0,0.1);
-  --mobile-dropdown-section-hover-bg: rgba(0,0,0,0.03);
+  --profile-menu-divider-bg: rgba(0, 0, 0, 0.08);
+  --mobile-menu-bg: rgba(253, 253, 253, 1);
+  --mobile-menu-border-top: rgba(0, 0, 0, 0.1);
+  --mobile-dropdown-section-hover-bg: rgba(0, 0, 0, 0.03);
 }
 
 .navbar-container {
@@ -335,7 +351,11 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, var(--primary-color-alpha-1A), transparent);
+  background: linear-gradient(
+    135deg,
+    var(--primary-color-alpha-1A),
+    transparent
+  );
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -413,7 +433,11 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, var(--primary-color-alpha-33), transparent);
+  background: linear-gradient(
+    135deg,
+    var(--primary-color-alpha-33),
+    transparent
+  );
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -463,7 +487,7 @@
 }
 
 .login-button:hover {
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
   box-shadow: 0 8px 32px var(--primary-color-alpha-66);
 }
 
@@ -571,7 +595,9 @@
   z-index: 1050;
   overflow: hidden;
   animation: fadeInScale 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  color: var(--profile-header-email-color); /* Using email color for general text */
+  color: var(
+    --profile-header-email-color
+  ); /* Using email color for general text */
 }
 
 @keyframes fadeInScale {
@@ -679,8 +705,12 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @media (max-width: 1018px) {
