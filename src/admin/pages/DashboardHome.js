@@ -13,6 +13,7 @@ import {
   Legend,
 } from "chart.js";
 import { Doughnut } from "react-chartjs-2"; // Removed Line and Bar
+import ConnectAccess from "./ConnectAccess";
 
 // Register Chart.js components
 Chart.register(
@@ -237,6 +238,12 @@ const DashboardHome = () => {
               ) : (<p className="text-center">No recent users.</p>)}
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="charts-grid">
+        <div className={`chart-card ${theme} col-span-1 md:col-span-2`}>
+          <ConnectAccess />
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 // src/contexts/LoaderContext.js
 import { createContext, useState, useContext, useRef, useEffect } from "react";
 import logo from "./../assets/images/codeblazelogoorange.png"; // Import the logo
+import "./Loader.css";
 
 const LoaderContext = createContext();
 
@@ -61,61 +62,6 @@ export const LoaderProvider = ({ children, color }) => {
           <img src={logo} alt="Loading..." className="loader-logo" />
         </div>
       )}
-      <style jsx global>{`
-        .full-page-loader-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(
-            0,
-            0,
-            0,
-            0.7
-          ); /* Darker overlay for better contrast with orange logo */
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 9999; /* Ensure it's on top of everything */
-          backdrop-filter: blur(17px); /* Stronger blur */
-          -webkit-backdrop-filter: blur(5px);
-          animation: fadeIn 0.2s ease-out;
-        }
-
-        .loader-logo {
-          width: 100px; /* Adjust size as needed */
-          height: 100px;
-          border-radius: 50%; /* Make it circular */
-          box-shadow: 0 0 15px var(--primary-color),
-            0 0 30px rgba(var(--primary-color), 0.5); /* Use CSS variable for glow */
-          animation: blink 1.5s infinite alternate; /* Blinking animation */
-        }
-
-        @keyframes blink {
-          0% {
-            opacity: 0.5;
-            transform: scale(0.95);
-          }
-          50% {
-            opacity: 1;
-            transform: scale(0.98);
-          }
-          100% {
-            opacity: 0.5;
-            transform: scale(0.95);
-          }
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-      `}</style>
     </LoaderContext.Provider>
   );
 };

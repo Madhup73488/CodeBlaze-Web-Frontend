@@ -86,8 +86,8 @@ const JobDetail = () => {
       }
 
       // Fetch applications for this specific job
-      // Uses GET /api/v1/admin/job-applications?jobId=:jobId
-      const applicationsResponse = await api.fetchAdminJobApplications({
+      // Uses GET /api/v1/admin/applications?jobId=:jobId
+      const applicationsResponse = await api.fetchAdminApplications({
         jobId: jobId, // Pass jobId filter
       });
 

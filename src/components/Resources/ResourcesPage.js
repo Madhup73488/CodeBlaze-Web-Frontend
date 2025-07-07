@@ -35,8 +35,8 @@ const ResourcesPage = ({ theme, colorStyles }) => {
     <section
       className="py-20"
       style={{
-        background: theme === "dark" ? "#111" : "#f5f5f7",
-        color: theme === "dark" ? "#f5f5f7" : "#111",
+        background: theme === "dark" ? "#111827" : "#f9fafb",
+        color: theme === "dark" ? "#f9fafb" : "#111827",
       }}
     >
       <div className="container mx-auto px-4">
@@ -44,7 +44,7 @@ const ResourcesPage = ({ theme, colorStyles }) => {
           <h2 className="text-3xl font-bold mb-4">Our Resources</h2>
           <div
             className="w-24 h-1 mx-auto"
-            style={{ backgroundColor: "rgb(255, 121, 7)" }}
+            style={{ backgroundColor: colorStyles.primary }}
           ></div>
           <p className="mt-6 max-w-2xl mx-auto text-lg">
             Explore our collection of articles and guides designed to help you
@@ -59,14 +59,14 @@ const ResourcesPage = ({ theme, colorStyles }) => {
               key={resource.id}
               className="block p-6 rounded-lg transition-all duration-300 transform hover:scale-105"
               style={{
-                background: theme === "dark" ? "#1a1a1a" : "#ffffff",
+                background: theme === "dark" ? "#1f2937" : "#ffffff",
                 boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-                color: theme === "dark" ? "#f5f5f7" : "#111",
+                color: theme === "dark" ? "#f9fafb" : "#111827",
               }}
             >
               <h3
                 className="text-xl font-semibold mb-2"
-                style={{ color: "rgb(255, 121, 7)" }}
+                style={{ color: colorStyles.primary }}
               >
                 {resource.title}
               </h3>
@@ -74,7 +74,7 @@ const ResourcesPage = ({ theme, colorStyles }) => {
               <p className="text-md mb-4">{resource.description}</p>
               <button
                 className="px-4 py-2 rounded-md text-white font-medium"
-                style={{ backgroundColor: "rgb(255, 121, 7)" }}
+                style={{ backgroundColor: colorStyles.primary }}
               >
                 Read More
               </button>

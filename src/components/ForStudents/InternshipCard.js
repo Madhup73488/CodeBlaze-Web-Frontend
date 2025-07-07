@@ -41,28 +41,28 @@ function InternshipCard({ internship, theme, color }) {
   };
 
   const getImage = () => {
-    if (internship.id === "software-development-engineer-intern-mern-stack") {
+    if (internship.id === "a1b2c3d4-e5f6-7890-1234-567890abcdef") {
       return mernStackImage;
     }
     if (
-      internship.id === "frontend-development-engineer-intern-react-next-js"
+      internship.id === "b2c3d4e5-f6a7-8901-2345-67890abcdef1"
     ) {
       return frontendDevImage;
     }
     if (
       internship.id ===
-      "backend-development-engineer-intern-node-js-microservices"
+      "c3d4e5f6-a7b8-9012-3456-7890abcdef12"
     ) {
       return backendDevImage;
     }
     if (
       internship.id ===
-      "java-full-stack-development-engineer-spring-boot-angular"
+      "e5f6a7b8-c9d0-1234-5678-90abcdef1234"
     ) {
       return javaFullStackDevImage;
     }
     if (
-      internship.id === "python-full-stack-development-engineer-django-react"
+      internship.id === "d4e5f6a7-b8c9-0123-4567-890abcdef123"
     ) {
       return pythonFullStackDevImage;
     }

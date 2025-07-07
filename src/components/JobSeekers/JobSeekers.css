@@ -1,0 +1,170 @@
+.job-seekers-container {
+  padding: 2rem 5%;
+  max-width: 1800px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  min-height: 100vh; /* Ensure container takes at least full viewport height */
+  box-sizing: border-box; /* Include padding in width/height */
+}
+
+.job-seekers-container.dark {
+  background-color: #111827;
+  color: #f9fafb;
+}
+
+.job-seekers-container.light {
+  background-color: #ffffff;
+  color: #0a0a0a;
+}
+
+.jobs-section {
+  margin-top: 2rem;
+}
+
+.results-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 0 0.5rem;
+  min-height: 28px; /* Prevent layout shift while loading */
+}
+
+.results-count {
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.sort-options {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sort-select {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.sort-select:hover {
+  border-color: var(--primary-color);
+}
+
+.jobs-list {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.company-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+/* Style for the parent container when image fails */
+.company-logo-container.placeholder-fallback .company-logo {
+  display: none; /* Hide the broken image */
+}
+.company-logo-container.placeholder-fallback .company-logo-placeholder {
+  display: flex; /* Show the placeholder */
+}
+
+.company-logo-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background-color: var(--primary-color);
+  color: white;
+  display: none; /* Hide by default, shown by .placeholder-fallback */
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* Responsive grid layout */
+@media (min-width: 1800px) {
+  .jobs-list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .job-seekers-container {
+    padding: 2.5rem 6%;
+  }
+}
+
+@media (max-width: 1799px) and (min-width: 1400px) {
+  .jobs-list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1399px) and (min-width: 1200px) {
+  .jobs-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 900px) {
+  .jobs-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 899px) and (min-width: 600px) {
+  .jobs-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .job-seekers-container {
+    padding: 2rem 4%;
+  }
+}
+
+@media (max-width: 599px) {
+  .jobs-list {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .job-seekers-container {
+    padding: 1.25rem 3%;
+  }
+
+  .results-summary {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+  }
+
+  .sort-options {
+    width: 100%;
+  }
+
+  .sort-select {
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .job-seekers-container {
+    padding: 1rem 2%;
+  }
+
+  .jobs-list {
+    gap: 1rem;
+  }
+
+  .results-count {
+    font-size: 0.9rem;
+  }
+}

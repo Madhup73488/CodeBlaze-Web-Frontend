@@ -225,7 +225,7 @@ function Sidebar({
       permission: "content.view", // New permission for content management
     },
     {
-      title: "Companies",
+      title: "Connect Access",
       icon: (
         <svg
           viewBox="0 0 24 24"
@@ -235,29 +235,12 @@ function Sidebar({
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path>
         </svg>
       ),
-      path: "/admin/companies",
-      permission: "companies.view", // Permission to view companies
-    },
-    {
-      title: "Reports",
-      icon: (
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-        </svg>
-      ),
-      path: "/admin/reports",
-      permission: "reports.view", // Permission to view reports
+      path: "/admin/connect-access",
+      permission: "connect.access",
     },
     {
       title: "Settings",

@@ -83,7 +83,7 @@ function InternshipDetailPage({ theme = "light", color = "purple" }) {
                 className="level-badge"
                 style={{
                   backgroundColor: `${primaryColor}20`,
-                  color: primaryColor,
+                  color: primaryColor, 
                 }}
               >
                 {internship.level}

@@ -35,7 +35,6 @@ function RegisterForm({
             Full Name
           </label>
           <div className="input-wrapper">
-            <User size={18} className="input-icon" />
             <input
               type="text"
               id="register-name"
@@ -54,7 +53,6 @@ function RegisterForm({
             Email
           </label>
           <div className="input-wrapper">
-            <Mail size={18} className="input-icon" />
             <input
               type="email"
               id="register-email"
@@ -73,7 +71,6 @@ function RegisterForm({
             Password
           </label>
           <div className="input-wrapper">
-            <Lock size={18} className="input-icon" />
             <input
               type={showPassword ? "text" : "password"}
               id="register-password"
@@ -100,7 +97,6 @@ function RegisterForm({
             Confirm Password
           </label>
           <div className="input-wrapper">
-            <Lock size={18} className="input-icon" />
             <input
               type={showConfirmPassword ? "text" : "password"}
               id="register-confirm-password"

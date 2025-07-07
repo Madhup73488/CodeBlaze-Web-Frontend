@@ -1,5 +1,5 @@
 // src/components/profile/PublicProfile.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { userService } from "../../services/userService";
 import format from "date-fns/format";
@@ -33,15 +33,7 @@ const PublicProfile = ({ theme = "light", color = "orange" }) => {
         : "0 4px 6px rgba(0, 0, 0, 0.1)",
   };
 
-  useEffect(() => {
-    // Reset state when ID changes
-    setProfile(null);
-    setLoading(true);
-    setError(null);
-    fetchPublicProfile();
-  }, [id, fetchPublicProfile]);
-
-  const fetchPublicProfile = async () => {
+  const fetchPublicProfile = useCallback(async () => {
     try {
       const response = await userService.getPublicProfile(id);
       setProfile(response.data);
@@ -56,7 +48,15 @@ const PublicProfile = ({ theme = "light", color = "orange" }) => {
       }
       console.error("Error fetching public profile:", error);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    // Reset state when ID changes
+    setProfile(null);
+    setLoading(true);
+    setError(null);
+    fetchPublicProfile();
+  }, [id, fetchPublicProfile]);
 
   // Loading state component
   if (loading) {

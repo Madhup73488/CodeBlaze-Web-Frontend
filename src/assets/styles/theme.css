@@ -27,8 +27,8 @@
 }
 
 [data-theme="dark"] {
-  --bg-primary: #0a0a0a; /* Changed to a near-black */
-  --bg-secondary: #18181b; /* Slightly lighter dark gray for secondary backgrounds (e.g., cards) */
+  --bg-primary: #111827;
+  --bg-secondary: #1f2937;
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   

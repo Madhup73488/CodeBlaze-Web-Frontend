@@ -5,6 +5,11 @@ import { useNavigate } from "react-router-dom";
 const JobListings = ({ theme, colorStyles, activeFilter, onFilterChange }) => {
   const navigate = useNavigate();
   const [loadingJob, setLoadingJob] = useState(null);
+  const isDarkMode = theme === "dark";
+  const bgColor = isDarkMode ? "#111827" : "#f9fafb";
+  const cardBgColor = isDarkMode ? "#1f2937" : "#ffffff";
+  const textColor = isDarkMode ? "#f9fafb" : "#111827";
+  const mutedTextColor = isDarkMode ? "#9ca3af" : "#6b7280";
 
   const jobs = [
     {
@@ -78,16 +83,21 @@ const JobListings = ({ theme, colorStyles, activeFilter, onFilterChange }) => {
   return (
     <section
       className="py-20"
-      style={{ background: theme === "dark" ? "#111" : "#f5f5f7" }}
+      style={{ background: bgColor, color: textColor }}
     >
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Open Positions</h2>
+          <h2 className="text-3xl font-bold mb-4" style={{ color: textColor }}>
+            Open Positions
+          </h2>
           <div
             className="w-24 h-1 mx-auto"
             style={{ backgroundColor: colorStyles.primary }}
           ></div>
-          <p className="mt-6 max-w-2xl mx-auto text-lg">
+          <p
+            className="mt-6 max-w-2xl mx-auto text-lg"
+            style={{ color: mutedTextColor }}
+          >
             Join our team of passionate innovators building the next generation
             of digital solutions.
           </p>
@@ -104,10 +114,9 @@ const JobListings = ({ theme, colorStyles, activeFilter, onFilterChange }) => {
                 backgroundColor:
                   activeFilter === filter.name
                     ? colorStyles.primary
-                    : theme === "dark"
-                    ? "#1a1a1a"
-                    : "#ffffff",
+                    : cardBgColor,
                 boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                color: activeFilter === filter.name ? "#fff" : textColor,
               }}
               onClick={() => onFilterChange(filter.name)}
             >
@@ -122,18 +131,24 @@ const JobListings = ({ theme, colorStyles, activeFilter, onFilterChange }) => {
               key={job.id}
               className="p-6 rounded-lg transition-all"
               style={{
-                background: theme === "dark" ? "#1a1a1a" : "#ffffff",
+                background: cardBgColor,
                 boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
               }}
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between">
                 <div>
-                  <h3 className="text-xl font-semibold mb-2">{job.title}</h3>
+                  <h3
+                    className="text-xl font-semibold mb-2"
+                    style={{ color: textColor }}
+                  >
+                    {job.title}
+                  </h3>
                   <div className="flex flex-wrap gap-2 mb-4">
                     <span
                       className="inline-flex items-center px-3 py-1 rounded-full text-xs"
                       style={{
-                        backgroundColor: theme === "dark" ? "#333" : "#f0f0f0",
+                        backgroundColor: isDarkMode ? "#374151" : "#f0f0f0",
+                        color: textColor,
                       }}
                     >
                       {job.location}
@@ -141,7 +156,8 @@ const JobListings = ({ theme, colorStyles, activeFilter, onFilterChange }) => {
                     <span
                       className="inline-flex items-center px-3 py-1 rounded-full text-xs"
                       style={{
-                        backgroundColor: theme === "dark" ? "#333" : "#f0f0f0",
+                        backgroundColor: isDarkMode ? "#374151" : "#f0f0f0",
+                        color: textColor,
                       }}
                     >
                       {job.type}
@@ -156,7 +172,9 @@ const JobListings = ({ theme, colorStyles, activeFilter, onFilterChange }) => {
                       {job.department}
                     </span>
                   </div>
-                  <p className="mb-4">{job.description}</p>
+                  <p className="mb-4" style={{ color: mutedTextColor }}>
+                    {job.description}
+                  </p>
                 </div>
                 <button
                   className="self-start md:self-center px-5 py-2 rounded-md text-white font-medium transition-all whitespace-nowrap relative overflow-hidden"
@@ -199,10 +217,12 @@ const JobListings = ({ theme, colorStyles, activeFilter, onFilterChange }) => {
 
         {filteredJobs.length === 0 && (
           <div className="text-center py-8">
-            <h3 className="text-xl mb-2">
+            <h3 className="text-xl mb-2" style={{ color: textColor }}>
               No open positions in this department
             </h3>
-            <p>Check back later or explore other departments</p>
+            <p style={{ color: mutedTextColor }}>
+              Check back later or explore other departments
+            </p>
           </div>
         )}
       </div>

@@ -23,33 +23,45 @@ import {
 // Services Hero Component
 const ServicesHero = ({ theme }) => {
   const isDarkMode = theme === "dark";
+  const bgColor = isDarkMode ? "#111827" : "#f9fafb";
+  const textColor = isDarkMode ? "#f9fafb" : "#111827";
+  const mutedTextColor = isDarkMode ? "#9ca3af" : "#6b7280";
+  const cardBgColor = isDarkMode ? "#1f2937" : "#ffffff";
+  const cardBorderColor = isDarkMode
+    ? "rgba(255, 255, 255, 0.1)"
+    : "rgba(0, 0, 0, 0.1)";
 
   return (
-    <div className="py-20 px-6">
+    <div
+      className="py-20 px-6"
+      style={{ backgroundColor: bgColor, color: textColor }}
+    >
       <div className="container mx-auto text-center">
         <div className="max-w-4xl mx-auto space-y-8">
           <div
-            className={`inline-flex items-center px-4 py-2 rounded-full border ${
-              isDarkMode
-                ? "bg-neutral-900 border-neutral-700"
-                : "bg-gray-100 border-gray-300"
-            }`}
+            className="inline-flex items-center px-4 py-2 rounded-full border"
+            style={{
+              backgroundColor: cardBgColor,
+              borderColor: cardBorderColor,
+            }}
           >
             <Briefcase className="w-4 h-4 text-orange-500 mr-2" />
-            <span className="text-sm font-medium">
+            <span className="text-sm font-medium" style={{ color: textColor }}>
               Complete Engineering Solutions
             </span>
           </div>
 
-          <h1 className="text-5xl lg:text-7xl font-black leading-tight">
+          <h1
+            className="text-5xl lg:text-7xl font-black leading-tight"
+            style={{ color: textColor }}
+          >
             Our
             <span className="text-orange-500"> Services</span>
           </h1>
 
           <p
-            className={`text-xl lg:text-2xl max-w-3xl mx-auto ${
-              isDarkMode ? "text-neutral-300" : "text-gray-600"
-            }`}
+            className="text-xl lg:text-2xl max-w-3xl mx-auto"
+            style={{ color: mutedTextColor }}
           >
             From web development to payment orchestration, we provide end-to-end
             engineering solutions that transform your ideas into scalable
@@ -65,13 +77,15 @@ const ServicesHero = ({ theme }) => {
             ].map((stat, index) => (
               <div
                 key={index}
-                className={`px-6 py-3 rounded-full border ${
-                  isDarkMode
-                    ? "border-neutral-700 bg-neutral-800"
-                    : "border-gray-300 bg-gray-50"
-                }`}
+                className="px-6 py-3 rounded-full border"
+                style={{
+                  borderColor: cardBorderColor,
+                  backgroundColor: cardBgColor,
+                }}
               >
-                <span className="font-semibold">{stat}</span>
+                <span className="font-semibold" style={{ color: textColor }}>
+                  {stat}
+                </span>
               </div>
             ))}
           </div>
@@ -91,29 +105,36 @@ const ServiceCard = ({
 }) => {
   // Add onOpenCallbackModal prop
   const isDarkMode = theme === "dark";
+  const cardBgColor = isDarkMode ? "#1f2937" : "#ffffff";
+  const cardBorderColor = isDarkMode
+    ? "rgba(255, 255, 255, 0.1)"
+    : "rgba(0, 0, 0, 0.1)";
+  const textColor = isDarkMode ? "#f9fafb" : "#111827";
+  const mutedTextColor = isDarkMode ? "#9ca3af" : "#6b7280";
 
   return (
     <div
-      className={`p-8 rounded-2xl border-2 transition-all duration-300 cursor-pointer transform hover:scale-105 ${
+      className={`p-8 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${
         isActive
-          ? isDarkMode
-            ? "bg-neutral-900 border-orange-500 shadow-2xl"
-            : "bg-orange-50 border-orange-500 shadow-2xl"
+          ? "border-orange-500 shadow-2xl"
           : isDarkMode
-          ? "bg-[#1c1c1c] border-neutral-800 hover:border-neutral-700"
-          : "bg-white border-gray-200 hover:border-gray-300"
+          ? "border-neutral-800 hover:border-neutral-700"
+          : "border-gray-200 hover:border-gray-300"
       }`}
+      style={{
+        backgroundColor: isActive
+          ? isDarkMode
+            ? "#1f2937"
+            : "#fff7ed"
+          : cardBgColor,
+      }}
       onMouseEnter={() => onHover(service.id)}
       onMouseLeave={() => onHover(null)}
     >
       <div className="space-y-6">
         <div
           className={`w-16 h-16 rounded-2xl flex items-center justify-center ${
-            isActive
-              ? "bg-orange-500"
-              : isDarkMode
-              ? "bg-neutral-900"
-              : "bg-gray-100"
+            isActive ? "bg-orange-500" : isDarkMode ? "#111827" : "#f3f4f6"
           }`}
         >
           <service.icon
@@ -122,27 +143,26 @@ const ServiceCard = ({
         </div>
 
         <div>
-          <h3 className="text-2xl font-bold mb-3">{service.title}</h3>
+          <h3 className="text-2xl font-bold mb-3" style={{ color: textColor }}>
+            {service.title}
+          </h3>
           <p
-            className={`text-lg leading-relaxed ${
-              isDarkMode ? "text-neutral-400" : "text-gray-600"
-            }`}
+            className="text-lg leading-relaxed"
+            style={{ color: mutedTextColor }}
           >
             {service.description}
           </p>
         </div>
 
         <div className="space-y-3">
-          <h4 className="font-semibold text-lg">Key Features:</h4>
+          <h4 className="font-semibold text-lg" style={{ color: textColor }}>
+            Key Features:
+          </h4>
           <ul className="space-y-2">
             {service.features.map((feature, index) => (
               <li key={index} className="flex items-center">
                 <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
-                <span
-                  className={isDarkMode ? "text-neutral-400" : "text-gray-700"}
-                >
-                  {feature}
-                </span>
+                <span style={{ color: mutedTextColor }}>{feature}</span>
               </li>
             ))}
           </ul>
@@ -171,6 +191,13 @@ const ServiceCard = ({
 // Tech Stack Component
 const TechStackSection = ({ theme }) => {
   const isDarkMode = theme === "dark";
+  const bgColor = isDarkMode ? "#111827" : "#f9fafb";
+  const cardBgColor = isDarkMode ? "#1f2937" : "#ffffff";
+  const textColor = isDarkMode ? "#f9fafb" : "#111827";
+  const mutedTextColor = isDarkMode ? "#9ca3af" : "#6b7280";
+  const cardBorderColor = isDarkMode
+    ? "rgba(255, 255, 255, 0.1)"
+    : "rgba(0, 0, 0, 0.1)";
 
   const techStacks = [
     {
@@ -199,7 +226,8 @@ const TechStackSection = ({ theme }) => {
         },
         {
           name: "Xamarin",
-          logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Xamarin-logo.svg/1280px-Xamarin-logo.svg.png",
+          logoUrl:
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Xamarin-logo.svg/1280px-Xamarin-logo.svg.png",
         },
       ],
     },
@@ -325,7 +353,8 @@ const TechStackSection = ({ theme }) => {
         },
         {
           name: "Xamarin",
-          logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Xamarin-logo.svg/1280px-Xamarin-logo.svg.png",
+          logoUrl:
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Xamarin-logo.svg/1280px-Xamarin-logo.svg.png",
         },
       ],
     },
@@ -356,16 +385,21 @@ const TechStackSection = ({ theme }) => {
   ];
 
   return (
-    <div className="py-20 px-6">
+    <div
+      className="py-20 px-6"
+      style={{ backgroundColor: bgColor, color: textColor }}
+    >
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+          <h2
+            className="text-4xl lg:text-5xl font-bold mb-6"
+            style={{ color: textColor }}
+          >
             Technology <span className="text-orange-500">Stack</span>
           </h2>
           <p
-            className={`text-xl max-w-3xl mx-auto ${
-              isDarkMode ? "text-neutral-400" : "text-gray-600"
-            }`}
+            className="text-xl max-w-3xl mx-auto"
+            style={{ color: mutedTextColor }}
           >
             We work with cutting-edge technologies to deliver robust and
             scalable solutions
@@ -376,11 +410,11 @@ const TechStackSection = ({ theme }) => {
           {techStacks.map((stack, index) => (
             <div
               key={index}
-              className={`p-6 rounded-2xl border ${
-                isDarkMode
-                  ? "bg-[#1d1d1d] border-neutral-800"
-                  : "bg-white border-gray-200"
-              }`}
+              className="p-6 rounded-2xl border"
+              style={{
+                backgroundColor: cardBgColor,
+                borderColor: cardBorderColor,
+              }}
             >
               <h3 className="text-xl font-bold mb-4 text-orange-500">
                 {stack.category}
@@ -389,12 +423,11 @@ const TechStackSection = ({ theme }) => {
                 {stack.techs.map((tech, techIndex) => (
                   <div // Changed from span to div
                     key={techIndex}
-                    className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                      // Added flex items-center
-                      isDarkMode
-                        ? "bg-[oklch(0.33_0.01_65.83)] text-neutral-300"
-                        : "bg-gray-100 text-gray-700"
-                    }`}
+                    className="flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                    style={{
+                      backgroundColor: isDarkMode ? "#111827" : "#f3f4f6",
+                      color: mutedTextColor,
+                    }}
                   >
                     {tech.logoUrl && (
                       <img
@@ -418,6 +451,13 @@ const TechStackSection = ({ theme }) => {
 // Payment Partners Component
 const PaymentPartnersSection = ({ theme }) => {
   const isDarkMode = theme === "dark";
+  const bgColor = isDarkMode ? "#111827" : "#f9fafb";
+  const cardBgColor = isDarkMode ? "#1f2937" : "#ffffff";
+  const textColor = isDarkMode ? "#f9fafb" : "#111827";
+  const mutedTextColor = isDarkMode ? "#9ca3af" : "#6b7280";
+  const cardBorderColor = isDarkMode
+    ? "rgba(255, 255, 255, 0.1)"
+    : "rgba(0, 0, 0, 0.1)";
 
   const paymentPartners = [
     {
@@ -459,17 +499,20 @@ const PaymentPartnersSection = ({ theme }) => {
 
   return (
     <div
-      className={`py-20 px-6 ${isDarkMode ? "bg-neutral-950" : "bg-gray-50"}`}
+      className="py-20 px-6"
+      style={{ backgroundColor: bgColor, color: textColor }}
     >
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+          <h2
+            className="text-4xl lg:text-5xl font-bold mb-6"
+            style={{ color: textColor }}
+          >
             Payment <span className="text-orange-500">Partners</span>
           </h2>
           <p
-            className={`text-xl max-w-3xl mx-auto ${
-              isDarkMode ? "text-neutral-400" : "text-gray-600"
-            }`}
+            className="text-xl max-w-3xl mx-auto"
+            style={{ color: mutedTextColor }}
           >
             Integrated with leading payment providers for seamless transaction
             processing
@@ -480,11 +523,11 @@ const PaymentPartnersSection = ({ theme }) => {
           {paymentPartners.map((partner, index) => (
             <div
               key={index}
-              className={`p-6 rounded-xl border text-center transition-transform hover:scale-105 flex flex-col items-center justify-center ${
-                isDarkMode
-                  ? "bg-neutral-900 border-neutral-800"
-                  : "bg-white border-gray-200"
-              }`}
+              className="p-6 rounded-xl border text-center transition-transform hover:scale-105 flex flex-col items-center justify-center"
+              style={{
+                backgroundColor: cardBgColor,
+                borderColor: cardBorderColor,
+              }}
             >
               {partner.logoUrl ? (
                 <img
@@ -495,7 +538,12 @@ const PaymentPartnersSection = ({ theme }) => {
               ) : (
                 <CreditCard className="w-12 h-12 text-orange-500 mx-auto mb-4" />
               )}
-              <h3 className="font-bold text-lg mb-2 mt-auto">{partner.name}</h3>
+              <h3
+                className="font-bold text-lg mb-2 mt-auto"
+                style={{ color: textColor }}
+              >
+                {partner.name}
+              </h3>
               <span
                 className={`px-3 py-1 rounded-full text-sm ${
                   partner.type === "Orchestration"
@@ -520,6 +568,13 @@ const PaymentPartnersSection = ({ theme }) => {
 // Process Component
 const ProcessSection = ({ theme }) => {
   const isDarkMode = theme === "dark";
+  const bgColor = isDarkMode ? "#111827" : "#f9fafb";
+  const cardBgColor = isDarkMode ? "#1f2937" : "#ffffff";
+  const textColor = isDarkMode ? "#f9fafb" : "#111827";
+  const mutedTextColor = isDarkMode ? "#9ca3af" : "#6b7280";
+  const cardBorderColor = isDarkMode
+    ? "rgba(255, 255, 255, 0.1)"
+    : "rgba(0, 0, 0, 0.1)";
 
   const processes = [
     {
@@ -561,16 +616,21 @@ const ProcessSection = ({ theme }) => {
   ];
 
   return (
-    <div className="py-20 px-6">
+    <div
+      className="py-20 px-6"
+      style={{ backgroundColor: "rgb(17, 24, 39)", color: textColor }}
+    >
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+          <h2
+            className="text-4xl lg:text-5xl font-bold mb-6"
+            style={{ color: textColor }}
+          >
             Our <span className="text-orange-500">Process</span>
           </h2>
           <p
-            className={`text-xl max-w-3xl mx-auto ${
-              isDarkMode ? "text-neutral-400" : "text-gray-600"
-            }`}
+            className="text-xl max-w-3xl mx-auto"
+            style={{ color: mutedTextColor }}
           >
             A proven methodology that ensures successful project delivery
           </p>
@@ -580,20 +640,23 @@ const ProcessSection = ({ theme }) => {
           {processes.map((process, index) => (
             <div
               key={index}
-              className={`relative p-8 rounded-2xl border transition-all hover:scale-105 ${
-                isDarkMode
-                  ? "bg-[#191818] border-neutral-800"
-                  : "bg-white border-gray-200"
-              }`}
+              className="relative p-8 rounded-2xl border transition-all hover:scale-105"
+              style={{
+                backgroundColor: cardBgColor,
+                borderColor: cardBorderColor,
+              }}
             >
               <div className="absolute -top-4 -left-4 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">
                 {process.step}
               </div>
               <process.icon className="w-12 h-12 text-orange-500 mb-4" />
-              <h3 className="text-xl font-bold mb-3">{process.title}</h3>
-              <p className={isDarkMode ? "text-neutral-400" : "text-gray-600"}>
-                {process.description}
-              </p>
+              <h3
+                className="text-xl font-bold mb-3"
+                style={{ color: textColor }}
+              >
+                {process.title}
+              </h3>
+              <p style={{ color: mutedTextColor }}>{process.description}</p>
             </div>
           ))}
         </div>
@@ -605,21 +668,26 @@ const ProcessSection = ({ theme }) => {
 // CTA Section Component
 const CTASection = ({ theme, openCallbackModal }) => {
   const isDarkMode = theme === "dark";
+  const bgColor = isDarkMode ? "#111827" : "#f9fafb";
+  const textColor = isDarkMode ? "#f9fafb" : "#111827";
+  const mutedTextColor = isDarkMode ? "#9ca3af" : "#6b7280";
 
   return (
-    <div className={`py-20 px-6 ${isDarkMode ? "bg-black" : "bg-orange-50"}`}>
+    <div
+      className="py-20 px-6"
+      style={{ backgroundColor: bgColor, color: textColor }}
+    >
       <div className="container mx-auto text-center">
         <div className="max-w-4xl mx-auto space-y-8">
-          <h2 className="text-4xl lg:text-6xl font-bold">
+          <h2
+            className="text-4xl lg:text-6xl font-bold"
+            style={{ color: textColor }}
+          >
             Ready to Start Your
             <span className="text-orange-500"> Project?</span>
           </h2>
 
-          <p
-            className={`text-xl lg:text-2xl ${
-              isDarkMode ? "text-neutral-400" : "text-gray-600"
-            }`}
-          >
+          <p className="text-xl lg:text-2xl" style={{ color: mutedTextColor }}>
             Let's discuss how we can help transform your ideas into reality
           </p>
 
@@ -630,11 +698,19 @@ const CTASection = ({ theme, openCallbackModal }) => {
             </button>
             <button
               onClick={openCallbackModal}
-              className={`flex items-center justify-center px-8 py-4 rounded-full font-semibold border-2 transition-colors ${
-                isDarkMode
-                  ? "border-neutral-300 text-neutral-300 hover:bg-neutral-300 hover:text-black"
-                  : "border-black text-black hover:bg-black hover:text-white"
-              }`}
+              className="flex items-center justify-center px-8 py-4 rounded-full font-semibold border-2 transition-colors"
+              style={{
+                borderColor: textColor,
+                color: textColor,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = textColor;
+                e.currentTarget.style.color = bgColor;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = textColor;
+              }}
             >
               <Phone className="w-5 h-5 mr-2" />
               Schedule Call
@@ -647,7 +723,12 @@ const CTASection = ({ theme, openCallbackModal }) => {
 };
 
 // Main Services Component
-const ServicesPage = ({ theme = "light", color = "orange", openCallbackModal }) => { // Add openCallbackModal prop
+const ServicesPage = ({
+  theme = "light",
+  color = "orange",
+  openCallbackModal,
+}) => {
+  // Add openCallbackModal prop
   const [hoveredService, setHoveredService] = useState(null);
 
   const services = [
@@ -799,7 +880,8 @@ const ServicesPage = ({ theme = "light", color = "orange", openCallbackModal }) 
                 theme={theme}
                 isActive={hoveredService === service.id}
                 onHover={setHoveredService}
-                onOpenCallbackModal={(serviceTitle) => { // Use passed-in openCallbackModal
+                onOpenCallbackModal={(serviceTitle) => {
+                  // Use passed-in openCallbackModal
                   openCallbackModal(serviceTitle);
                 }}
               />
@@ -813,7 +895,8 @@ const ServicesPage = ({ theme = "light", color = "orange", openCallbackModal }) 
       <ProcessSection theme={theme} />
       <CTASection
         theme={theme}
-        openCallbackModal={() => { // Use passed-in openCallbackModal
+        openCallbackModal={() => {
+          // Use passed-in openCallbackModal
           openCallbackModal(); // No argument for general CTA, or pass ''
         }}
       />

@@ -11,6 +11,14 @@ import { useState, useEffect } from "react";
 
 function Services({ theme, color }) {
   const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
+  const isDarkMode = theme === "dark";
+  const bgColor = isDarkMode ? "#111827" : "#f9fafb";
+  const cardBgColor = isDarkMode ? "#1f2937" : "#ffffff";
+  const cardBorderColor = isDarkMode
+    ? "rgba(255, 255, 255, 0.1)"
+    : "rgba(0, 0, 0, 0.1)";
+  const textColor = isDarkMode ? "#f9fafb" : "#111827";
+  const mutedTextColor = isDarkMode ? "#9ca3af" : "#6b7280";
   const [isVisible, setIsVisible] = useState({});
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
@@ -122,163 +130,154 @@ function Services({ theme, color }) {
   return (
     <div
       style={{
-        backgroundColor: "transparent", // Ensure it doesn't have its own conflicting background
-        // Text color should be inherited from .landing-page
+        backgroundColor: bgColor,
+        color: textColor,
         padding: isMobile ? "2rem 5%" : "4rem 5%",
         overflow: "hidden", // Prevent horizontal scroll
+        position: "relative",
       }}
     >
       <div
-        style={{
-          fontSize: isMobile ? "1.25rem" : "1.5rem",
-          marginBottom: isMobile ? "1rem" : "2rem",
-          display: "flex",
-          alignItems: "center",
-          gap: "1rem",
-        }}
+        className="container mx-auto"
+        style={isMobile ? {} : { maxWidth: "1400px", padding: "0 5%" }}
       >
-        Our Services
+        {/* Decorative elements */}
+        <div
+          className={`absolute top-0 right-10 w-64 h-64 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 opacity-10 blur-3xl`}
+        ></div>
+        <div
+          className={`absolute bottom-40 left-10 w-48 h-48 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 opacity-10 blur-3xl`}
+        ></div>
+
         <div
           style={{
-            height: "1px",
-            backgroundColor:
-              theme === "dark" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)",
-            flexGrow: 1,
-            maxWidth: "300px",
-          }}
-        ></div>
-      </div>
-
-      <h2
-        style={{
-          fontSize: getTitleFontSize(),
-          fontWeight: "bold",
-          marginBottom: isMobile ? "1.5rem" : "3rem",
-          maxWidth: "100%",
-          lineHeight: "1.3",
-          transition: "transform 0.5s ease, opacity 0.5s ease",
-          transform: "translateY(0)",
-          opacity: 1,
-        }}
-      >
-        <span
-          style={{
-            color: primaryColor,
-            position: "relative",
-            display: "inline-block",
+            fontSize: isMobile ? "1.25rem" : "1.5rem",
+            marginBottom: isMobile ? "1rem" : "2rem",
+            display: "flex",
+            alignItems: "center",
+            gap: "1rem",
+            color: textColor,
           }}
         >
-          CodeBlaze
+          Our Services
           <div
             style={{
-              position: "absolute",
-              bottom: "-5px",
-              left: "0",
-              width: "100%",
-              height: "3px",
-              backgroundColor: primaryColor,
-              borderRadius: "2px",
+              height: "1px",
+              backgroundColor: cardBorderColor,
+              flexGrow: 1,
+              maxWidth: "300px",
             }}
           ></div>
-        </span>{" "}
-        offers a comprehensive range of custom services designed to guide
-        businesses through their digital transformation journey.
-      </h2>
+        </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: getGridColumns(),
-          gap: isMobile ? "1rem" : "2rem",
-          marginTop: isMobile ? "1.5rem" : "3rem",
-        }}
-      >
-        {services.map((service, index) => (
-          <div
-            key={index}
-            className="service-card"
-            data-index={index}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.75rem",
-              padding: getCardPadding(),
-              borderRadius: "0.75rem",
-              backgroundColor:
-                theme === "dark"
-                  ? "rgba(255,255,255,0.05)"
-                  : "rgba(0,0,0,0.02)",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-              border: `1px solid ${
-                theme === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)"
-              }`,
-              transition:
-                "all 0.3s ease-in-out, transform 0.5s ease, opacity 0.5s ease",
-              transform: isVisible[index]
-                ? "translateY(0)"
-                : "translateY(40px)",
-              opacity: isVisible[index] ? 1 : 0,
-              transitionDelay: `${index * 0.1}s`,
-              cursor: "pointer",
-              overflow: "hidden",
-              position: "relative",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-5px)";
-              e.currentTarget.style.boxShadow = "0 10px 25px rgba(0,0,0,0.1)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.05)";
-            }}
-          >
-            {/* Color accent */}
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "4px",
-                height: "100%",
-                backgroundColor: service.iconBg,
-              }}
-            ></div>
+        <h2
+          style={{
+            fontSize: getTitleFontSize(),
+            fontWeight: "bold",
+            marginBottom: isMobile ? "1.5rem" : "3rem",
+            maxWidth: "100%",
+            lineHeight: "1.3",
+            transition: "transform 0.5s ease, opacity 0.5s ease",
+            transform: "translateY(0)",
+            opacity: 1,
+            color: textColor,
+          }}
+        >
+          Explore Our Services
+        </h2>
 
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: getGridColumns(),
+            gap: isMobile ? "1rem" : "2rem",
+            marginTop: isMobile ? "1.5rem" : "3rem",
+          }}
+        >
+          {services.map((service, index) => (
             <div
+              key={index}
+              className="service-card"
+              data-index={index}
               style={{
-                width: isMobile ? "2.5rem" : "3rem",
-                height: isMobile ? "2.5rem" : "3rem",
-                borderRadius: "0.5rem",
                 display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginBottom: "0.5rem",
-                backgroundColor: service.iconBg,
-                transition: "transform 0.3s ease",
+                flexDirection: "column",
+                gap: "0.75rem",
+                padding: getCardPadding(),
+                borderRadius: "0.75rem",
+                backgroundColor: cardBgColor,
+                boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                border: `1px solid ${cardBorderColor}`,
+                transition:
+                  "all 0.3s ease-in-out, transform 0.5s ease, opacity 0.5s ease",
+                transform: isVisible[index]
+                  ? "translateY(0)"
+                  : "translateY(40px)",
+                opacity: isVisible[index] ? 1 : 0,
+                transitionDelay: `${index * 0.1}s`,
+                cursor: "pointer",
+                overflow: "hidden",
+                position: "relative",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-5px)";
+                e.currentTarget.style.boxShadow = "0 10px 25px rgba(0,0,0,0.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.05)";
               }}
             >
-              {service.icon}
+              {/* Color accent */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "4px",
+                  height: "100%",
+                  backgroundColor: service.iconBg,
+                }}
+              ></div>
+
+              <div
+                style={{
+                  width: isMobile ? "2.5rem" : "3rem",
+                  height: isMobile ? "2.5rem" : "3rem",
+                  borderRadius: "0.5rem",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginBottom: "0.5rem",
+                  backgroundColor: service.iconBg,
+                  transition: "transform 0.3s ease",
+                }}
+              >
+                {service.icon}
+              </div>
+              <h3
+                style={{
+                  fontSize: isMobile ? "1rem" : "1.25rem",
+                  fontWeight: "bold",
+                  marginBottom: "0.25rem",
+                  color: textColor,
+                }}
+              >
+                {service.title}
+              </h3>
+              <p
+                style={{
+                  fontSize: isMobile ? "0.8rem" : "0.9rem",
+                  opacity: "0.8",
+                  lineHeight: "1.5",
+                  color: mutedTextColor,
+                }}
+              >
+                {service.description}
+              </p>
             </div>
-            <h3
-              style={{
-                fontSize: isMobile ? "1rem" : "1.25rem",
-                fontWeight: "bold",
-                marginBottom: "0.25rem",
-              }}
-            >
-              {service.title}
-            </h3>
-            <p
-              style={{
-                fontSize: isMobile ? "0.8rem" : "0.9rem",
-                opacity: "0.8",
-                lineHeight: "1.5",
-              }}
-            >
-              {service.description}
-            </p>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

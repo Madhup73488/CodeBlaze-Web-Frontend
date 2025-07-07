@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Hero from "../components/landing/Hero";
 import ProductDevelopment from "../components/landing/ProductDevelopment";
 import Services from "../components/landing/Services";
+import PremiumInternships from "../components/landing/PremiumInternships";
 import Strategy from "../components/landing/Strategy";
 import FeaturedTechnology from "../components/landing/FeaturedTechnology";
 import contentApi from "../admin/utils/contentApi"; // Import the content API
@@ -64,6 +65,7 @@ const Landing = ({ theme, color, openCallbackModal }) => { // Add openCallbackMo
         <p className="text-center text-gray-500 dark:text-gray-400">No active banners to display.</p>
       )} */}
 
+      <PremiumInternships theme={theme} color={color} />
       <Services theme={theme} color={color} />
       <Strategy theme={theme} color={color} />
       <ProductDevelopment theme={theme} color={color} />

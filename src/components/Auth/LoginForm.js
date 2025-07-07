@@ -47,7 +47,6 @@ function LoginForm({
             Email
           </label>
           <div className="input-wrapper">
-            <Mail size={18} className="input-icon" />
             <input
               type="email"
               id="email"
@@ -76,7 +75,6 @@ function LoginForm({
             </button>
           </div>
           <div className="input-wrapper">
-            <Lock size={18} className="input-icon" />
             <input
               type={showPassword ? "text" : "password"}
               id="password"

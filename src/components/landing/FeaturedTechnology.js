@@ -9,6 +9,14 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [rotation, setRotation] = useState(0); // Add rotation state
   const isDark = theme === "dark";
+  const [isMobile, setIsMobile] = useState(false);
+  const bgColor = isDark ? "#111827" : "#f9fafb";
+  const cardBgColor = isDark ? "#1f2937" : "#ffffff";
+  const cardBorderColor = isDark
+    ? "rgba(255, 255, 255, 0.1)"
+    : "rgba(0, 0, 0, 0.1)";
+  const textColor = isDark ? "#f9fafb" : "#111827";
+  const mutedTextColor = isDark ? "#9ca3af" : "#6b7280";
 
   // Core technologies with proper logos and descriptions
   const technologies = [
@@ -82,6 +90,13 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => {
 
   // Intersection Observer for animations when section comes into view
   useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -101,6 +116,7 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => {
       if (currentRef) {
         observer.unobserve(currentRef);
       }
+      window.removeEventListener("resize", checkScreenSize);
     };
   }, []);
 
@@ -118,17 +134,31 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => {
   return (
     <div
       ref={containerRef}
-      className="w-full py-16 lg:py-24" // Removed theme classes from here
+      className="w-full py-16 lg:py-24"
       style={{
-        backgroundColor: `var(--bg-primary)`, // Use CSS variable
-        color: `var(--text-primary)`, // Use CSS variable
+        backgroundColor: bgColor,
+        color: textColor,
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      <div className="container mx-auto px-4">
+      <div
+        className="container mx-auto"
+        style={isMobile ? {} : { maxWidth: "1400px", padding: "0 5%" }}
+      >
+        {/* Decorative elements */}
+        <div
+          className={`absolute top-0 right-10 w-64 h-64 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 opacity-10 blur-3xl`}
+        ></div>
+        <div
+          className={`absolute bottom-40 left-10 w-48 h-48 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 opacity-10 blur-3xl`}
+        ></div>
+
         <div className="text-center mb-16">
           <h2
             className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-4 inline-block
             ${isVisible ? "animate-fade-in-down" : "opacity-0"}`}
+            style={{ color: textColor }}
           >
             Featured Technology
           </h2>
@@ -139,9 +169,7 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => {
           <p
             className={`mt-4 text-lg max-w-2xl mx-auto 
               ${isVisible ? "animate-fade-in-up delay-200" : "opacity-0"}`}
-            // Text color will be inherited from parent div's var(--text-primary)
-            // If a secondary text color is desired, use var(--text-secondary)
-            style={{ color: `var(--text-secondary)` }}
+            style={{ color: mutedTextColor }}
           >
             Optimized solutions built with industry-leading technologies
           </p>
@@ -160,22 +188,18 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => {
               }`}
             >
               <div
-                className={`flex items-center justify-center p-6 rounded-full 
-                 shadow-xl border`}
+                className="flex items-center justify-center p-6 rounded-full shadow-xl border"
                 style={{
-                  backgroundColor: `var(--bg-secondary)`, // Use CSS variable for card-like background
-                  borderColor: isDark
-                    ? "var(--border-dark, #444444)"
-                    : "var(--border-light, #e5e7eb)", // Assuming these vars or use direct values
+                  backgroundColor: cardBgColor,
+                  borderColor: cardBorderColor,
                 }}
               >
                 <div className="text-orange-500">
                   <img
-                    src={codeBlazeLogoOrange} // Use imported variable
+                    src={codeBlazeLogoOrange}
                     alt="CodeBlaze Logo"
                     className="w-12 h-12 md:w-16 md:h-16"
-                  />{" "}
-                  {/* Self-closing tag is common practice */}
+                  />
                 </div>
                 <div className="text-orange-500 font-bold text-2xl md:text-3xl">
                   CodeBlaze
@@ -185,12 +209,10 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => {
 
             {/* Orbiting tech icons */}
             {technologies.map((tech, index) => {
-              // Calculate position based on index and total count
               const angle = index * (360 / technologies.length) + rotation;
               const radian = (angle * Math.PI) / 180;
-              const distance = 140; // Distance from center
+              const distance = 140;
 
-              // x and y coordinates for positioning
               const x = Math.cos(radian) * distance;
               const y = Math.sin(radian) * distance;
 
@@ -218,14 +240,12 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => {
                           : ""
                       }`}
                     style={{
-                      backgroundColor: `var(--bg-secondary)`, // Use CSS variable
+                      backgroundColor: cardBgColor,
                       color: tech.color,
                       boxShadow:
                         index === activeIndex ? `0 0 20px ${tech.color}40` : "",
                       ringColor: tech.color,
-                      borderColor: isDark
-                        ? "var(--border-dark, #444444)"
-                        : "var(--border-light, #e5e7eb)",
+                      borderColor: cardBorderColor,
                     }}
                   >
                     <svg viewBox="0 0 24 24" className="w-6 h-6">
@@ -243,10 +263,8 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => {
               className={`rounded-lg shadow-lg p-8 border
                 ${isVisible ? "animate-fade-in-right" : "opacity-0"}`}
               style={{
-                backgroundColor: `var(--bg-secondary)`, // Use CSS variable
-                borderColor: isDark
-                  ? "var(--border-dark, #444444)"
-                  : "var(--border-light, #e5e7eb)",
+                backgroundColor: cardBgColor,
+                borderColor: cardBorderColor,
               }}
             >
               {/* Active technology information */}
@@ -263,25 +281,27 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold">
+                  <h3
+                    className="text-2xl font-bold"
+                    style={{ color: textColor }}
+                  >
                     {technologies[activeIndex].name}
                   </h3>
-                  <span
-                    className="text-sm"
-                    style={{ color: `var(--text-secondary)` }}
-                  >
+                  <span className="text-sm" style={{ color: mutedTextColor }}>
                     {technologies[activeIndex].category}
                   </span>
                 </div>
               </div>
 
-              <p className="mb-8" style={{ color: `var(--text-secondary)` }}>
+              <p className="mb-8" style={{ color: mutedTextColor }}>
                 {technologies[activeIndex].description}
               </p>
 
               {/* Category breakdown */}
               <div className="mt-6">
-                <h4 className="font-bold mb-4">Technology Categories</h4>
+                <h4 className="font-bold mb-4" style={{ color: textColor }}>
+                  Technology Categories
+                </h4>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {Array.from(new Set(technologies.map((t) => t.category))).map(
                     (category) => (
@@ -289,10 +309,8 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => {
                         key={category}
                         className="px-3 py-2 rounded-md text-center text-sm font-medium"
                         style={{
-                          backgroundColor: isDark
-                            ? "var(--bg-primary-darker, #111827)"
-                            : "var(--bg-light-accent, #f3f4f6)", // Assuming these vars or use direct values
-                          color: `var(--text-secondary)`,
+                          backgroundColor: isDark ? "#111827" : "#f3f4f6",
+                          color: mutedTextColor,
                         }}
                       >
                         {category}
@@ -308,14 +326,10 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => {
               {technologies.map((tech, index) => (
                 <button
                   key={`indicator-${tech.name}`}
-                  className={`w-2 h-2 rounded-full transition-all duration-300`}
+                  className="w-2 h-2 rounded-full transition-all duration-300"
                   style={{
                     backgroundColor:
-                      index === activeIndex
-                        ? primaryColor
-                        : isDark
-                        ? "var(--border-dark, #4b5563)"
-                        : "var(--border-light, #d1d5db)",
+                      index === activeIndex ? primaryColor : cardBorderColor,
                   }}
                   onClick={() => setActiveIndex(index)}
                   aria-label={`Select ${tech.name}`}
@@ -325,102 +339,6 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => {
           </div>
         </div>
       </div>
-
-      {/* CSS animations */}
-      <style jsx>{`
-        @keyframes fade-in-down {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes fade-in-left {
-          from {
-            opacity: 0;
-            transform: translateX(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
-        @keyframes fade-in-right {
-          from {
-            opacity: 0;
-            transform: translateX(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
-        @keyframes expand-width {
-          from {
-            width: 0;
-          }
-          to {
-            width: 6rem;
-          }
-        }
-
-        @keyframes pulse-slow {
-          0% {
-            transform: scale(1);
-          }
-          50% {
-            transform: scale(1.05);
-          }
-          100% {
-            transform: scale(1);
-          }
-        }
-
-        .animate-fade-in-down {
-          animation: fade-in-down 0.8s ease-out forwards;
-        }
-
-        .animate-fade-in-up {
-          animation: fade-in-up 0.8s ease-out forwards;
-        }
-
-        .animate-fade-in-left {
-          animation: fade-in-left 0.8s ease-out forwards;
-        }
-
-        .animate-fade-in-right {
-          animation: fade-in-right 0.8s ease-out forwards;
-        }
-
-        .animate-expand-width {
-          animation: expand-width 1.2s ease-out forwards;
-        }
-
-        .animate-pulse-slow {
-          animation: pulse-slow 3s infinite ease-in-out;
-        }
-
-        .delay-200 {
-          animation-delay: 200ms;
-        }
-      `}</style>
     </div>
   );
 };

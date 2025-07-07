@@ -6,8 +6,8 @@ import rohanPLocalImage from "../../../assets/images/team/RohanP.png";
 import syedRoshanLocalImage from "../../../assets/images/team/SyedRoshan.png";
 import prateekLocalImage from "../../../assets/images/team/Prateek.png"; // Import Prateek's image
 
-function OurTeamPage({ theme = "dark", color = "purple" }) {
-  const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
+function OurTeamPage({ theme = "dark" }) {
+  const primaryColor = theme === "dark" ? "#f97316" : "#a855f7";
   const [isMobile, setIsMobile] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentEngineeringSlide, setCurrentEngineeringSlide] = useState(0);
@@ -270,7 +270,7 @@ function OurTeamPage({ theme = "dark", color = "purple" }) {
         }
 
         .team-container.dark {
-          background: black;
+          background: #111827;
           color: #ffffff;
         }
 
@@ -341,7 +341,7 @@ function OurTeamPage({ theme = "dark", color = "purple" }) {
 
         .member-card {
           background: ${theme === "dark"
-            ? "linear-gradient(145deg, #1e1e1e, #141414)"
+            ? "linear-gradient(145deg, #1f2937, #111827)"
             : "linear-gradient(145deg, #ffffff, #f1f5f9)"};
           border-radius: 24px;
           overflow: hidden;
@@ -475,7 +475,7 @@ function OurTeamPage({ theme = "dark", color = "purple" }) {
 
         .team-member-desktop {
           background: ${theme === "dark"
-            ? "linear-gradient(145deg, #1e1e1e, #141414)"
+            ? "linear-gradient(145deg, #1f2937, #111827)"
             : "linear-gradient(145deg, #ffffff, #f1f5f9)"};
           border-radius: 24px;
           overflow: hidden;
@@ -530,7 +530,7 @@ function OurTeamPage({ theme = "dark", color = "purple" }) {
 
         .join-content {
           background: ${theme === "dark"
-            ? "linear-gradient(145deg, #1e1e1e, #141414)"
+            ? "linear-gradient(145deg, #1f2937, #111827)"
             : "linear-gradient(145deg, #ffffff, #f1f5f9)"};
           border-radius: 24px;
           padding: 3rem 2rem;
