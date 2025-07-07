@@ -11,7 +11,7 @@ const slugify = (text) => {
 
 export const internships = [
     {
-      id: "software-development-engineer-intern-mern-stack",
+      id: "a1b2c3d4-e5f6-7890-1234-567890abcdef",
       title: "Software Development Engineer Intern (MERN Stack)",
       company: "Codeblaze",
       category: "fullstack",
@@ -66,7 +66,7 @@ export const internships = [
       logo: "TF",
     },
     {
-      id: "frontend-development-engineer-intern-react-next-js",
+      id: "b2c3d4e5-f6a7-8901-2345-67890abcdef1",
       title: "Frontend Development Engineer Intern (React & Next.js)",
       company: "Codeblaze",
       category: "frontend",
@@ -121,7 +121,7 @@ export const internships = [
       logo: "DC",
     },
     {
-      id: "backend-development-engineer-intern-node-js-microservices",
+      id: "c3d4e5f6-a7b8-9012-3456-7890abcdef12",
       title: "Backend Development Engineer Intern (Node.js & Microservices)",
       company: "Codeblaze",
       category: "backend",
@@ -176,7 +176,7 @@ export const internships = [
       logo: "CT",
     },
     {
-      id: "python-full-stack-development-engineer-django-react",
+      id: "d4e5f6a7-b8c9-0123-4567-890abcdef123",
       title: "Python Full-Stack Development Engineer (Django & React)",
       company: "Codeblaze",
       category: "python",
@@ -232,7 +232,7 @@ export const internships = [
       logo: "DF",
     },
     {
-      id: "java-full-stack-development-engineer-spring-boot-angular",
+      id: "e5f6a7b8-c9d0-1234-5678-90abcdef1234",
       title: "Java Full-Stack Development Engineer (Spring Boot & Angular)",
       company: "Codeblaze",
       category: "java",

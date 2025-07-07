@@ -1,8 +1,8 @@
 import React from "react";
 
-function OurValuesPage({ theme, color }) {
+function OurValuesPage({ theme }) {
   // Renamed component
-  const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
+  const primaryColor = theme === "dark" ? "#f97316" : "#a855f7";
 
   const values = [
     {
@@ -241,7 +241,7 @@ function OurValuesPage({ theme, color }) {
         }
 
         .values-container.dark {
-          background-color: #0a0a0a;
+          background-color: #111827;
           color: #ffffff;
         }
 
@@ -286,7 +286,7 @@ function OurValuesPage({ theme, color }) {
           padding: 2rem;
           border-radius: 10px;
           transition: transform 0.3s ease;
-          background-color: ${theme === "dark" ? "#111" : "#f8f8f8"};
+          background-color: ${theme === "dark" ? "#1f2937" : "#f8f8f8"};
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -349,7 +349,7 @@ function OurValuesPage({ theme, color }) {
         .action-item {
           padding: 1.5rem;
           border-radius: 10px;
-          background-color: ${theme === "dark" ? "#111" : "#f8f8f8"};
+          background-color: ${theme === "dark" ? "#1f2937" : "#f8f8f8"};
         }
 
         .action-number {
@@ -374,7 +374,7 @@ function OurValuesPage({ theme, color }) {
           padding: 3rem;
           border-radius: 10px;
           border-left: 5px solid;
-          background-color: ${theme === "dark" ? "#111" : "#f8f8f8"};
+          background-color: ${theme === "dark" ? "#1f2937" : "#f8f8f8"};
           margin-bottom: 2rem;
         }
 

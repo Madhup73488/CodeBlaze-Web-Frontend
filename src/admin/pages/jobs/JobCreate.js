@@ -6,11 +6,10 @@ import { useAdmin } from "../../contexts/AdminContext";
 import {
   InputField,
   SelectField,
-  TextAreaField,
-  CheckboxField,
 } from "../../components/common/FormFields";
 import api from "../../utils/api"; // Assuming api utility has createJobAdmin
 import debounce from "lodash.debounce";
+import Toast from "../../../components/common/Toast";
 
 const LOGO_DEV_API_KEY = "sk_MtiQij_oTbi09LZRSFdj5A"; // Replace with your actual key
 const LOGO_DEV_API_URL = "https://api.logo.dev/search";
@@ -20,6 +19,7 @@ const JobCreate = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [toast, setToast] = useState(null);
 
   // State structure aligned with the JobSchema
   const [formData, setFormData] = useState({
@@ -32,14 +32,9 @@ const JobCreate = () => {
     salary: {
       min: "", // Keep as string initially
       max: "", // Keep as string initially
-      currency: "USD",
-      isNegotiable: false,
+      currency: "INR",
     },
-    skills: "",
     applicationUrl: "",
-    description: "",
-    featured: false,
-    isActive: true,
   });
 
   // State for company name input and logo suggestions
@@ -180,14 +175,6 @@ const JobCreate = () => {
     }
   };
 
-  const handleTextAreaChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -198,13 +185,10 @@ const JobCreate = () => {
       !formData.title ||
       !formData.company ||
       !formData.location ||
-      !formData.description ||
       !formData.workType ||       // Added workType check
       !formData.employmentType   // Added employmentType check
-      // Consider if skills array should not be empty, or if applicationUrl is required
-      // For now, focusing on explicitly available form fields.
     ) {
-      setError("Please fill in all required fields (Title, Company, Location, Description, Work Type, Employment Type).");
+      setError("Please fill in all required fields (Title, Company, Location, Work Type, Employment Type).");
       setLoading(false);
       return;
     }
@@ -213,69 +197,54 @@ const JobCreate = () => {
     const jobData = {
       title: formData.title,
       company: formData.company,
-      company_logo_url: formData.companyLogoUrl, // snake_case
+      company_logo_url: formData.companyLogoUrl,
       location: formData.location,
       work_type: formData.workType,
       employment_type: formData.employmentType,
-      description: formData.description,
-      application_url: formData.applicationUrl, // snake_case
-      skills: formData.skills
-        .split(",")
-        .map((skill) => skill.trim())
-        .filter((skill) => skill.length > 0),
-      // Assuming backend expects salary fields potentially snake_cased if nested,
-      // or flat. If flat: salary_min, salary_max etc.
-      // For now, keeping nested structure but ensuring keys inside are consistent if possible,
-      // or assuming backend handles camelCase for this specific nested object.
-      // If backend expects flat salary fields, this needs more significant change.
-      // Let's assume backend expects a salary object, and keys within it are also snake_case.
-      salary: {
-        min_salary: // Renaming to salary_min or min_salary based on backend
-          formData.salary.min !== ""
-            ? parseFloat(formData.salary.min)
-            : undefined,
-        max_salary: // Renaming to salary_max or max_salary
-          formData.salary.max !== ""
-            ? parseFloat(formData.salary.max)
-            : undefined,
-        currency: formData.salary.currency, // Assuming 'currency' is fine
-        is_negotiable: Boolean(formData.salary.isNegotiable), // snake_case
-      },
-      featured: Boolean(formData.featured),
-      is_active: Boolean(formData.isActive), // snake_case
-      // Ensure all other relevant fields from formData are included if needed by backend
-      // e.g., if there were fields like 'experienceLevel', 'educationRequirement' etc.
-      // they would need to be added here, potentially mapped to snake_case.
+      application_url: formData.applicationUrl,
+      salary_min:
+        formData.salary.min !== ""
+          ? parseFloat(formData.salary.min) * 100000
+          : undefined,
+      salary_max:
+        formData.salary.max !== ""
+          ? parseFloat(formData.salary.max) * 100000
+          : undefined,
     };
 
     // Clean up undefined optional fields to avoid sending them as null
     if (jobData.company_logo_url === "") delete jobData.company_logo_url;
     if (jobData.application_url === "") delete jobData.application_url;
-    if (jobData.salary.min_salary === undefined) delete jobData.salary.min_salary;
-    if (jobData.salary.max_salary === undefined) delete jobData.salary.max_salary;
-    // If salary object becomes empty of min/max, consider removing it or sending null based on backend requirement
-    if (jobData.salary.min_salary === undefined && jobData.salary.max_salary === undefined) {
-        // Option 1: Send empty salary object if backend allows/expects it
-        // Option 2: delete jobData.salary; // If backend prefers salary field to be absent
-        // Option 3: jobData.salary = null; // If backend expects null
-        // For now, let's send it with currency and is_negotiable even if min/max are not set.
-    }
+    if (jobData.salary_min === undefined) delete jobData.salary_min;
+    if (jobData.salary_max === undefined) delete jobData.salary_max;
 
 
     try {
-      // api.createJobAdmin returns the response.data from apiClient
-      // So, 'response' here is the object like { success: true, data: { job_object } }
       const response = await api.createJobAdmin(jobData);
 
       if (response && response.success && response.data && (response.data.id || response.data._id)) {
         console.log("Job created successfully:", response.data);
-        navigate("/admin/jobs");
+        setToast({ message: "Job created successfully!", type: "success" });
+        setFormData({
+          title: "",
+          company: "",
+          companyLogoUrl: "",
+          location: "",
+          workType: "onsite",
+          employmentType: "full-time",
+          salary: {
+            min: "",
+            max: "",
+            currency: "INR",
+          },
+          applicationUrl: "",
+        });
+        setCompanyNameInput("");
       } else {
-        // This block will now correctly handle backend's { success: false, message: "..." }
         console.error(
           "Backend reported error or unexpected response structure creating job:",
-          response?.message, // Use optional chaining for safety
-          response?.errors   // Use optional chaining for safety
+          response?.message,
+          response?.errors
         );
         if (response?.errors && Array.isArray(response.errors)) {
           setError(
@@ -311,15 +280,6 @@ const JobCreate = () => {
     { value: "internship", label: "Internship" },
   ];
 
-  const currencyOptions = [
-    { value: "USD", label: "USD" },
-    { value: "INR", label: "INR" },
-    { value: "EUR", label: "EUR" },
-    { value: "GBP", label: "GBP" },
-    { value: "CAD", label: "CAD" },
-    { value: "AUD", label: "AUD" },
-  ];
-
   // Log companyLogoUrl state whenever it changes (useful for debugging preview)
   useEffect(() => {
     console.log("companyLogoUrl state changed:", formData.companyLogoUrl);
@@ -327,6 +287,13 @@ const JobCreate = () => {
 
   return (
     <div className={`job-form-container ${theme}`}>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       <div className="page-header">
         <h2>Create Job Posting</h2>
         <div className="page-actions">
@@ -495,25 +462,12 @@ const JobCreate = () => {
           </div>
 
           <div className="form-section">
-            <h3>Job Description</h3>
-            <TextAreaField
-              label="Description"
-              name="description"
-              value={formData.description}
-              onChange={handleTextAreaChange}
-              theme={theme}
-              rows={5}
-              required
-            />
-          </div>
-
-          <div className="form-section">
             <h3>Salary Information</h3>
             <div className="form-grid">
               {/* Min and Max salary on same row */}
               <div className="form-column">
                 <InputField
-                  label="Minimum Salary"
+                  label="Minimum Salary (in Lakhs)"
                   name="salary.min"
                   value={formData.salary.min}
                   onChange={handleChange}
@@ -524,7 +478,7 @@ const JobCreate = () => {
               </div>
               <div className="form-column">
                 <InputField
-                  label="Maximum Salary"
+                  label="Maximum Salary (in Lakhs)"
                   name="salary.max"
                   value={formData.salary.max}
                   onChange={handleChange}
@@ -533,46 +487,12 @@ const JobCreate = () => {
                   min="0"
                 />
               </div>
-
-              {/* Currency and Negotiable on same row */}
-              <div className="form-column">
-                <SelectField
-                  label="Currency"
-                  name="salary.currency"
-                  value={formData.salary.currency}
-                  options={currencyOptions}
-                  onChange={handleChange}
-                  theme={theme}
-                />
-              </div>
-              <div className="form-column negotiable-column">
-                <div className="checkbox-wrapper">
-                  <CheckboxField
-                    label="Is Salary Negotiable?"
-                    name="salary.isNegotiable"
-                    checked={formData.salary.isNegotiable}
-                    onChange={handleChange}
-                    theme={theme}
-                  />
-                </div>
-              </div>
             </div>
           </div>
 
           <div className="form-section">
-            <h3>Skills & Application</h3>
+            <h3>Application</h3>
             <div className="form-grid">
-              {/* Skills and Application URL on same row */}
-              <div className="form-column">
-                <InputField
-                  label="Skills (comma-separated)"
-                  name="skills"
-                  value={formData.skills}
-                  onChange={handleChange}
-                  theme={theme}
-                  placeholder="e.g., JavaScript, React, Node.js"
-                />
-              </div>
               <div className="form-column">
                 <InputField
                   label="Application URL"
@@ -582,30 +502,6 @@ const JobCreate = () => {
                   theme={theme}
                   type="url"
                 />
-              </div>
-
-              {/* Featured and Active on same row */}
-              <div className="form-column featured-column">
-                <div className="checkbox-wrapper">
-                  <CheckboxField
-                    label="Featured Job?"
-                    name="featured"
-                    checked={formData.featured}
-                    onChange={handleChange}
-                    theme={theme}
-                  />
-                </div>
-              </div>
-              <div className="form-column active-column">
-                <div className="checkbox-wrapper">
-                  <CheckboxField
-                    label="Is Active?"
-                    name="isActive"
-                    checked={formData.isActive}
-                    onChange={handleChange}
-                    theme={theme}
-                  />
-                </div>
               </div>
             </div>
           </div>

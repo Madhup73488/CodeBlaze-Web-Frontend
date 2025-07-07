@@ -6,8 +6,8 @@
 }
 
 .internships-container.dark {
-  background-color: #1a1a1a;
-  color: #f0f0f0;
+  background-color: #111827;
+  color: #f9fafb;
 }
 
 .internships-container.light {
@@ -134,9 +134,9 @@
 }
 
 .internships-container.dark .new-internship-card {
-  background-color: #2a2a2a;
-  border: 1px solid #444;
-  color: #f0f0f0;
+  background-color: #1f2937;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f9fafb;
 }
 
 .new-internship-card-image {
@@ -153,7 +153,7 @@
 }
 
 .internships-container.dark .new-internship-card-content {
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+  background: #1f2937;
 }
 
 .new-internship-card-title {
@@ -237,9 +237,9 @@
 }
 
 .internships-container.dark .new-internship-card-button {
-  border: 1px solid white;
+  border: 1px solid #f9fafb;
   background: transparent;
-  color: white;
+  color: #f9fafb;
 }
 
 .internships-container.light .new-internship-card-button:hover {
@@ -248,8 +248,8 @@
 }
 
 .internships-container.dark .new-internship-card-button:hover {
-  background-color: white;
-  color: black;
+  background-color: #f9fafb;
+  color: #111827;
 }
 
 .internship-header {
@@ -649,9 +649,9 @@
     align-items: center;
   }
 
-  .company-logo {
+  /* .company-logo {
     margin-bottom: 1rem;
-  }
+  } */
 
   .internship-title-info {
     text-align: center;

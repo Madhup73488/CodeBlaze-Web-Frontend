@@ -1,0 +1,55 @@
+.coming-soon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.coming-soon-container.dark {
+  background-color: #111827;
+  color: #ffffff;
+}
+
+.coming-soon-container.light {
+  background-color: #ffffff;
+  color: #0a0a0a;
+}
+
+.coming-soon-content {
+  animation: fadeIn 1.5s ease-in-out;
+}
+
+.coming-soon-title {
+  font-size: 4rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  animation: slideIn 1s ease-in-out;
+}
+
+.coming-soon-subtitle {
+  font-size: 1.5rem;
+  opacity: 0.8;
+  animation: slideIn 1s ease-in-out 0.5s;
+  animation-fill-mode: backwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

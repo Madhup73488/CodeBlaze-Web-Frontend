@@ -17,7 +17,6 @@ const FiltersModal = ({
   useEffect(() => {
     if (isOpen) {
       setAnimationState("opening");
-      // Short timeout to ensure the opening class is applied after the component is rendered
       const timer = setTimeout(() => {
         setAnimationState("open");
       }, 50);
@@ -25,14 +24,13 @@ const FiltersModal = ({
     } else {
       if (animationState === "open") {
         setAnimationState("closing");
-        // Add timeout to match the CSS transition duration
         const timer = setTimeout(() => {
           setAnimationState("closed");
-        }, 300); // Match this with your CSS transition time
+        }, 300);
         return () => clearTimeout(timer);
       }
     }
-  }, [isOpen, animationState]);
+  }, [isOpen]);
 
   // Don't render anything if the modal is fully closed
   if (animationState === "closed" && !isOpen) return null;
@@ -256,7 +254,7 @@ const FiltersModal = ({
           display: flex;
           align-items: center;
           justify-content: center;
-          z-index: 1000;
+          z-index: 1001;
           transition: background 0.3s ease;
         }
 

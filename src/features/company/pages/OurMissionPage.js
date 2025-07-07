@@ -1,9 +1,9 @@
 import React from "react";
 import teamWorkingTogetherImage from "../../../assets/images/teamworkingtogether.png"; // Import the image
 
-function OurMissionPage({ theme, color }) {
+function OurMissionPage({ theme }) {
   // Renamed component
-  const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
+  const primaryColor = theme === "dark" ? "#f97316" : "#a855f7";
 
   return (
     <div className={`mission-container ${theme}`}>
@@ -306,7 +306,7 @@ function OurMissionPage({ theme, color }) {
         }
 
         .mission-container.dark {
-          background-color: #0a0a0a;
+          background-color: #111827;
           color: #ffffff;
         }
 
@@ -383,7 +383,7 @@ function OurMissionPage({ theme, color }) {
           text-align: center;
           padding: 2rem;
           border-radius: 10px;
-          background-color: ${theme === "dark" ? "#111" : "#f8f8f8"};
+          background-color: ${theme === "dark" ? "#1f2937" : "#f8f8f8"};
           transition: transform 0.3s ease;
         }
 
@@ -452,7 +452,7 @@ function OurMissionPage({ theme, color }) {
           padding: 2rem;
           text-align: center;
           border-radius: 10px;
-          background-color: ${theme === "dark" ? "#111" : "#f8f8f8"};
+          background-color: ${theme === "dark" ? "#1f2937" : "#f8f8f8"};
         }
 
         .stat-number {
@@ -493,7 +493,7 @@ function OurMissionPage({ theme, color }) {
           border-radius: 10px;
           overflow: hidden;
           position: relative;
-          background-color: ${theme === "dark" ? "#111" : "#f8f8f8"};
+          background-color: ${theme === "dark" ? "#1f2937" : "#f8f8f8"};
         }
 
         .story-content {

@@ -303,6 +303,33 @@ export const verifyCertificatePublic = async (certificateId) => {
   }
 };
 
+export const grantAccess = async (accessData) => {
+  try {
+    const response = await apiClient.post("/admin/users/grant-access", accessData);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const fetchConnectUsers = async () => {
+  try {
+    const response = await apiClient.get("/admin/users/connect");
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const deleteConnectUser = async (id) => {
+  try {
+    const response = await apiClient.delete(`/admin/users/connect/${id}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
 // Consolidate exports
 const adminApi = {
   fetchDashboardStats,
@@ -338,6 +365,9 @@ const adminApi = {
   generateOfferLetter,
   generateCertificate,
   verifyCertificatePublic,
+  grantAccess,
+  fetchConnectUsers,
+  deleteConnectUser,
 };
 
 export default adminApi;

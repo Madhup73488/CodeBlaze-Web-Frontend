@@ -10,41 +10,30 @@
 }
 
 .navbar.dark {
-  background: linear-gradient(
-    135deg,
-    rgba(10, 10, 10, 0.95) 0%,
-    rgba(15, 15, 15, 0.97) 50%,
-    rgb(146 73 29 / 95%) 100%
-  );
-  color: #ffffff;
-  --navbar-border-color: rgba(255, 255, 255, 0.08);
-  --text-color: #ffffff;
-  --subtext-color: #e5e5e5;
-  --background-color-light: rgba(255, 255, 255, 0.05);
-  --background-color-hover: rgba(255, 255, 255, 0.1);
-  --dropdown-background: linear-gradient(
-    135deg,
-    rgba(15, 15, 15, 0.98) 0%,
-    rgba(20, 20, 20, 0.99) 100%
-  );
-  --dropdown-border-color: rgba(255, 255, 255, 0.08);
-  --dropdown-section-background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.02) 0%,
-    rgba(255, 255, 255, 0.05) 100%
-  );
-  --dropdown-section-border-color: rgba(255, 255, 255, 0.08);
+  background: #111827;
+  color: #f9fafb;
+  --primary-color: #f97316;
+  --primary-color-alpha-26: rgba(249, 115, 22, 0.26);
+  --navbar-border-color: rgba(255, 255, 255, 0.1);
+  --text-color: #f9fafb;
+  --subtext-color: #9ca3af;
+  --background-color-light: #1f2937;
+  --background-color-hover: #374151;
+  --dropdown-background: #1f2937;
+  --dropdown-border-color: rgba(255, 255, 255, 0.1);
+  --dropdown-section-background: #111827;
+  --dropdown-section-border-color: rgba(255, 255, 255, 0.1);
   --profile-border-color: rgba(255, 255, 255, 0.2);
-  --profile-hover-bg: rgba(255, 255, 255, 0.07);
-  --profile-dropdown-bg: rgba(25, 25, 25, 0.98);
+  --profile-hover-bg: #374151;
+  --profile-dropdown-bg: #1f2937;
   --profile-dropdown-border: rgba(255, 255, 255, 0.1);
-  --profile-header-name-color: #ffffff;
+  --profile-header-name-color: #f9fafb;
   --profile-header-email-color: #9ca3af;
-  --profile-menu-item-hover-bg: var(--primary-color-alpha-26);
-  --profile-menu-divider-bg: rgba(255, 255, 255, 0.08);
-  --mobile-menu-bg: rgba(18, 18, 18, 1);
+  --profile-menu-item-hover-bg: #374151;
+  --profile-menu-divider-bg: rgba(255, 255, 255, 0.1);
+  --mobile-menu-bg: #111827;
   --mobile-menu-border-top: rgba(255, 255, 255, 0.1);
-  --mobile-dropdown-section-hover-bg: rgba(255, 255, 255, 0.05);
+  --mobile-dropdown-section-hover-bg: #374151;
 }
 
 .navbar.light {
@@ -55,6 +44,8 @@
     rgb(255 192 148 / 95%) 100%
   );
   color: #0a0a0a;
+  --primary-color: #f97316;
+  --primary-color-alpha-26: rgba(249, 115, 22, 0.26);
   --navbar-border-color: rgba(0, 0, 0, 0.08);
   --text-color: #0a0a0a;
   --subtext-color: #374151;
@@ -98,7 +89,6 @@
 .navbar-brand {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
   font-weight: 700;
   font-size: 1.5rem;
   cursor: pointer;
@@ -222,6 +212,7 @@
   cursor: pointer;
   position: relative;
   padding: 0.75rem 0;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -272,6 +263,7 @@
 
 .dropdown-trigger {
   position: relative;
+  cursor: pointer;
 }
 
 .chevron-icon {
@@ -296,20 +288,8 @@
   padding: 2.5rem 5%;
   z-index: 999;
   overflow-y: auto;
-  animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   max-height: calc(100vh - (4.5rem - 1px));
   border-bottom: 1px solid var(--dropdown-border-color);
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .dropdown-menu-container {
@@ -337,6 +317,7 @@
   background: var(--dropdown-section-background);
   cursor: pointer;
   position: relative;
+  cursor: pointer;
   overflow: hidden;
 }
 .dropdown-section:focus-visible {
@@ -365,7 +346,6 @@
 }
 
 .dropdown-section:hover {
-  transform: translateY(-4px);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
   border-color: var(--primary-color-alpha-66);
 }
@@ -414,6 +394,7 @@
   border: 1px solid var(--navbar-border-color);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -465,11 +446,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(
-    135deg,
-    var(--primary-color) 0%,
-    var(--primary-color-alpha-CC) 100%
-  );
+  background: #f97316;
   color: white;
   border: none;
   border-radius: 12px;
@@ -477,6 +454,7 @@
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -514,6 +492,7 @@
   position: relative;
   cursor: pointer;
   border-radius: 12px;
+  cursor: pointer;
   padding: 0.5rem;
   transition: background-color 0.2s ease;
 }

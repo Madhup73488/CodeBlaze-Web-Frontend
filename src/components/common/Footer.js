@@ -39,6 +39,8 @@ function Footer({ theme = "dark", color = "purple" }) {
         { text: "Our Team", path: "/ourteam" },
         { text: "Our Mission", path: "/ourmission" },
         { text: "Our Values", path: "/ourvalues" },
+        { text: "Cancellation and Refund Policy", path: "/cancellation-and-refund-policy" },
+        { text: "Shipping and Delivery Policy", path: "/shipping-and-delivery-policy" },
       ],
       mdColSpan: 1,
       lgColSpan: 3,
@@ -61,14 +63,14 @@ function Footer({ theme = "dark", color = "purple" }) {
   // Theme configurations
   const themeConfig = {
     dark: {
-      background: "bg-black",
-      cardBg: "bg-zinc-900",
-      text: "text-white",
-      subtext: "text-gray-400",
-      border: "border-zinc-800",
-      inputBg: "bg-zinc-800",
-      socialBg: "bg-zinc-800 hover:bg-zinc-700",
-      divider: "bg-zinc-800",
+      background: "bg-[#111827]",
+      cardBg: "bg-[#1f2937]",
+      text: "text-[#f9fafb]",
+      subtext: "text-[#9ca3af]",
+      border: "border-[rgba(255,255,255,0.1)]",
+      inputBg: "bg-[#1f2937]",
+      socialBg: "bg-[#1f2937] hover:bg-[#374151]",
+      divider: "bg-[rgba(255,255,255,0.1)]",
     },
     light: {
       background: "bg-gray-50",

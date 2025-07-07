@@ -28,6 +28,8 @@ import SkillsAndRoles from "./components/ForStudents/SkillsAndRoles";
 import JobSeekers from "./components/JobSeekers/JobSeekers";
 import InternshipPortalPage from "./components/Internships/InternshipPortal";
 import InternshipDetailPage from "./components/ForStudents/InternshipDetailPage";
+import CancellationAndRefundPolicy from "./pages/CancellationAndRefundPolicy";
+import ShippingAndDeliveryPolicy from "./pages/ShippingAndDeliveryPolicy";
 import AdminLayout from "./admin/components/layout/AdminLayout";
 import DashboardHome from "./admin/pages/DashboardHome";
 import AdminSettings from "./admin/pages/AdminSettings";
@@ -37,6 +39,7 @@ import JobList from "./admin/pages/jobs/JobList";
 import JobCreate from "./admin/pages/jobs/JobCreate";
 import JobEdit from "./admin/pages/jobs/JobEdit";
 import JobDetail from "./admin/pages/jobs/JobDetail";
+import ConnectAccess from "./admin/pages/ConnectAccess";
 import AdminInternshipList from "./admin/pages/internships/InternshipList";
 import AdminInternshipCreate from "./admin/pages/internships/InternshipCreate";
 import AdminInternshipEdit from "./admin/pages/internships/InternshipEdit";
@@ -69,8 +72,7 @@ import {
 } from "./constants/theme";
 import { ROUTES } from "./constants/routes";
 import OAuthCallbackPage from "./pages/OAuthCallbackPage"; 
-import ResetPasswordPage from "./pages/ResetPasswordPage"; 
-import Cursor from "./components/common/Cursor";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 
 const AppContent = () => {
@@ -105,7 +107,6 @@ const AppContent = () => {
 
   useEffect(() => {
     document.body.className = theme;
-    document.body.style.cursor = 'none';
   }, [theme]);
 
   useEffect(() => {
@@ -231,6 +232,14 @@ const AppContent = () => {
         <Route
           path={ROUTES.JOB_SEEKERS}
           element={<JobSeekers theme={theme} color={color} />}
+        />
+        <Route
+          path="/cancellation-and-refund-policy"
+          element={<CancellationAndRefundPolicy theme={theme} />}
+        />
+        <Route
+          path="/shipping-and-delivery-policy"
+          element={<ShippingAndDeliveryPolicy theme={theme} />}
         />
         <Route
           path={ROUTES.RESOURCES}
@@ -475,6 +484,10 @@ const AppContent = () => {
             path={ROUTES.ADMIN_CONTENT_MANAGEMENT.split("/").pop()}
             element={<BannerCarouselPage />}
           />
+          <Route
+            path="connect-access"
+            element={<ConnectAccess />}
+          />
           <Route path={ROUTES.NOT_FOUND} element={<AdminNotFound />} />
         </Route>
 
@@ -510,7 +523,6 @@ const AppContent = () => {
         theme={theme}
         initialSelectedService={initialServiceForModal}
       />
-      <Cursor />
     </div>
   );
 };

@@ -108,7 +108,7 @@ const ExperienceSection = ({
         setErrors((prev) => ({ ...prev, to: null }));
       }
     }
-  }, [formData.current]);
+  }, [formData.current, formData.to, errors.to]);
 
   const validateForm = () => {
     const newErrors = {};

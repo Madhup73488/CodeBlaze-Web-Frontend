@@ -97,17 +97,17 @@ const JobList = () => {
   const handleDeleteConfirm = async () => {
     if (!jobToDelete) return; // Should not happen if modal is correctly managed
 
-    setDeletingId(jobToDelete._id); // Set deleting state for the specific job
+    setDeletingId(jobToDelete.id); // Set deleting state for the specific job
     try {
       // Call the delete API function
       // Assuming deleteJobAdmin sends DELETE request and apiRequest throws on non-2xx
-      await api.deleteJobAdmin(jobToDelete._id);
+      await api.deleteJobAdmin(jobToDelete.id);
 
-      console.log(`[JobList] Job ${jobToDelete._id} deleted successfully.`);
+      console.log(`[JobList] Job ${jobToDelete.id} deleted successfully.`);
       // Optionally show a success notification
 
       // Update the list: Remove the deleted job from the state for instant UI update
-      setJobs(jobs.filter((job) => job._id !== jobToDelete._id));
+      setJobs(jobs.filter((job) => job.id !== jobToDelete.id));
       // Decrement the total items count for pagination
       setTotalItems((prevTotal) => (prevTotal > 0 ? prevTotal - 1 : 0));
 
@@ -158,8 +158,8 @@ const JobList = () => {
       cell: (row) => (
         // 'row' is a job object from the backend response
         <div className="mobile-job-card">
-          {/* Use _id for the link */}
-          <Link to={`/admin/jobs/${row._id}/detail`} className="job-title-link">
+          {/* Use id for the link */}
+          <Link to={`/admin/jobs/${row.id}/detail`} className="job-title-link">
             {row.title} {/* Use schema field name */}
           </Link>
           <div className="job-company">{row.company}</div>{" "}
@@ -186,12 +186,12 @@ const JobList = () => {
                 e.stopPropagation();
                 handleDeleteClick(row);
               }} // Stop propagation to prevent link click
-              disabled={deletingId === row._id} // Disable button while deleting this row
+              disabled={deletingId === row.id} // Disable button while deleting this row
               className={`delete-button-mobile ${theme}`} // Specific class for mobile button styling
               aria-label={`Delete ${row.title}`}
             >
               {/* Show spinner if this job is being deleted */}
-              {deletingId === row._id ? (
+              {deletingId === row.id ? (
                 <div className="button-spinner"></div>
               ) : (
                 <FiTrash2 />
@@ -210,8 +210,8 @@ const JobList = () => {
       accessor: "title", // Use schema field name
       cell: (row) => (
         // 'row' is a job object from the backend response
-        // Use _id for the link
-        <Link to={`/admin/jobs/${row._id}`} className="job-title-link">
+        // Use id for the link
+        <Link to={`/admin/jobs/${row.id}`} className="job-title-link">
           {row.title} {/* Use schema field name */}
         </Link>
       ),
@@ -219,6 +219,12 @@ const JobList = () => {
     {
       header: "Company",
       accessor: "company", // Use schema field name
+      cell: (row) => (
+        <div className="company-cell">
+          <img src={row.company_logo_url} alt={`${row.company} logo`} className="company-logo-table" onError={(e) => e.target.style.display = 'none'} />
+          <span>{row.company}</span>
+        </div>
+      ),
     },
     {
       header: "Location",
@@ -226,38 +232,26 @@ const JobList = () => {
     },
     {
       header: "Employment Type", // Updated header for clarity
-      accessor: "employmentType", // Use schema field name
+      accessor: "employment_type", // Use schema field name
     },
     {
       header: "Work Type", // Added Work Type column
-      accessor: "workType", // Use schema field name
-    },
-    {
-      header: "Status",
-      accessor: "isActive", // Use schema field name (boolean)
-      cell: (row) => (
-        // Map isActive boolean to status string for StatusBadge
-        <StatusBadge status={mapStatus(row.isActive)} />
-      ),
-    },
-    {
-      header: "Applications",
-      accessor: "applicationsCount", // Use schema field name
+      accessor: "work_type", // Use schema field name
     },
     // --- ADDED Delete Action Column - UPDATED button logic ---
     {
       header: "Actions",
-      accessor: "_id", // Use a unique accessor for the column (e.g., _id)
+      accessor: "id", // Use a unique accessor for the column (e.g., id)
       cell: (row) => (
         <button
           // Call handleDeleteClick to open the modal, passing the job object
           onClick={() => handleDeleteClick(row)}
-          disabled={deletingId === row._id} // Disable button while deleting this row
+          disabled={deletingId === row.id} // Disable button while deleting this row
           className={`delete-button ${theme}`} // Class for styling
           aria-label={`Delete ${row.title}`} // Accessibility
         >
           {/* Show "Deleting..." text or spinner if this job is being deleted */}
-          {deletingId === row._id ? "Deleting..." : "Delete"}
+          {deletingId === row.id ? "Deleting..." : "Delete"}
         </button>
       ),
       // You might want to make this column narrower
@@ -440,6 +434,19 @@ const JobList = () => {
 
         .job-title-link:hover {
           text-decoration: underline;
+        }
+
+        .company-cell {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .company-logo-table {
+          width: 24px;
+          height: 24px;
+          object-fit: contain;
+          border-radius: 4px;
         }
 
         /* Mobile job card styles */

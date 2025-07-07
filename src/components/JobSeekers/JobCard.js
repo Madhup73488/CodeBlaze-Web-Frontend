@@ -12,66 +12,39 @@ function JobCard({
   formatDate, // This function is still defined and passed from JobSeekers
 }) {
   // Function to format the salary display string - Moved from JobSeekers
-  const formatSalary = (salary) => {
-    if (
-      !salary ||
-      (salary.min === undefined &&
-        salary.max === undefined &&
-        !salary.isNegotiable)
-    ) {
-      return "Salary not specified";
-    }
+  const formatSalary = (job) => {
+    if (!job) return "Salary not specified";
 
-    if (salary.isNegotiable) {
+    if (job.salary_is_negotiable) {
       return "Salary: Negotiable";
     }
 
-    const hasMin = salary.min !== undefined && salary.min !== null;
-    const hasMax = salary.max !== undefined && salary.max !== null;
-    const currency = salary.currency || ""; // Use default or empty if currency is missing
+    const hasMin =
+      job.salary_min !== undefined &&
+      job.salary_min !== null &&
+      job.salary_min > 0;
+    const hasMax =
+      job.salary_max !== undefined &&
+      job.salary_max !== null &&
+      job.salary_max > 0;
 
-    // Basic check if min/max are numeric before formatting
-    const isMinNumeric = typeof salary.min === "number";
-    const isMaxNumeric = typeof salary.max === "number";
+    const min = parseFloat(job.salary_min);
+    const max = parseFloat(job.salary_max);
+
+    const isMinNumeric = !isNaN(min);
+    const isMaxNumeric = !isNaN(max);
 
     if (hasMin && isMinNumeric && hasMax && isMaxNumeric) {
-      // Format in lakhs for INR, otherwise standard currency format
-      if (currency === "INR") {
-        const minInLakhs = (salary.min / 100000).toFixed(1);
-        const maxInLakhs = (salary.max / 100000).toFixed(1);
-        return `Salary: ₹${minInLakhs}L - ₹${maxInLakhs}L`;
-      } else {
-        const formatter = new Intl.NumberFormat("en-US", {
-          // You can adjust locale
-          style: "currency",
-          currency: currency || "USD", // Default to USD if currency is empty
-          maximumFractionDigits: 0, // Adjust as needed
-          minimumFractionDigits: 0,
-        });
-        // Safely format numbers
-        const formattedMin = isMinNumeric ? formatter.format(salary.min) : "";
-        const formattedMax = isMaxNumeric ? formatter.format(salary.max) : "";
-        return `Salary: ${formattedMin} - ${formattedMax}`;
-      }
+      const minInLakhs = (min / 100000).toFixed(1);
+      const maxInLakhs = (max / 100000).toFixed(1);
+      return `Salary: ₹${minInLakhs}L - ₹${maxInLakhs}L`;
     } else if (hasMin && isMinNumeric) {
-      const formatter = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: currency || "USD",
-        maximumFractionDigits: 0,
-        minimumFractionDigits: 0,
-      });
-      return `Salary: From ${formatter.format(salary.min)}`;
+      const minInLakhs = (min / 100000).toFixed(1);
+      return `Salary: From ₹${minInLakhs}L`;
     } else if (hasMax && isMaxNumeric) {
-      const formatter = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: currency || "USD",
-        maximumFractionDigits: 0,
-        minimumFractionDigits: 0,
-      });
-      return `Salary: Up to ${formatter.format(salary.max)}`;
+      const maxInLakhs = (max / 100000).toFixed(1);
+      return `Salary: Up to ₹${maxInLakhs}L`;
     } else {
-      // Fallback if salary object exists but min/max are not numeric
-      if (salary.isNegotiable) return "Salary: Negotiable"; // Double-check negotiable
       return "Salary not specified";
     }
   };
@@ -100,24 +73,23 @@ function JobCard({
           {/* Use job._id or job.id for the identifier */}
           <button
             className={`save-job-button ${
-              savedJobs.includes(job?._id || job?.id) ? "saved" : ""
+              savedJobs.includes(job?.id) ? "saved" : ""
             }`}
-            onClick={() => toggleSaveJob(job?._id || job?.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleSaveJob(job?.id);
+            }}
             title={
-              savedJobs.includes(job?._id || job?.id)
+              savedJobs.includes(job?.id)
                 ? "Remove from saved jobs"
                 : "Save job"
             }
           >
             <svg
               viewBox="0 0 24 24"
-              fill={
-                savedJobs.includes(job?._id || job?.id) ? primaryColor : "none"
-              }
+              fill={savedJobs.includes(job?.id) ? primaryColor : "none"}
               stroke={
-                savedJobs.includes(job?._id || job?.id)
-                  ? primaryColor
-                  : "currentColor"
+                savedJobs.includes(job?.id) ? primaryColor : "currentColor"
               }
               strokeWidth="2"
               strokeLinecap="round"
@@ -129,126 +101,19 @@ function JobCard({
         </div>
       </div>
 
-      <div className="job-details">
-        <div className="detail-item">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="detail-icon"
-          >
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-          </svg>
-          {/* Use job.location from the original API object */}
-          <span>{job?.location || "Location not specified"}</span>{" "}
-          {/* Use optional chaining */}
-        </div>
-        <div className="detail-item">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="detail-icon"
-          >
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
-          {/* Use job.createdAt from the original API object and the passed formatDate function */}
-          <span>
-            Posted{" "}
-            {job?.createdAt ? formatDate(job.createdAt) : "Date not specified"}
-          </span>{" "}
-          {/* Use optional chaining */}
-        </div>
-        <div className="detail-item">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="detail-icon"
-          >
-            <path d="M12 1v22"></path>
-            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-          </svg>
-          {/* Use the formatSalary function defined in this component */}
-          <span>{formatSalary(job?.salary)}</span> {/* Use optional chaining */}
-        </div>
-        {/* The experience level field is not in your provided JSON.
-            Unless your API includes 'experienceLevel', this will likely always show 'Experience not specified'. */}
-        {/* <div className="detail-item">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="detail-icon"
-          >
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-            <line x1="12" y1="22.08" x2="12" y2="12"></line>
-          </svg>
-
-          <span>{job?.experienceLevel || "Experience not specified"}</span>{" "}
-
-        </div> */}
-
-        <div className="detail-item">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="detail-icon"
-          >
-            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-          </svg>
-          {/* Use job.employmentType from the original API object */}
-          <span>{job?.employmentType || "Type not specified"}</span>{" "}
-          {/* Use optional chaining */}
-        </div>
-        <div className="detail-item">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="detail-icon"
-          >
-            <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
-            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
-            <path d="M2 2l7.586 7.586"></path>
-            <circle cx="11" cy="11" r="2"></circle>
-          </svg>
-          {/* Use job.workType from the original API object */}
-          {/* Map workType values to display strings */}
-          <span>
-            {job?.workType === "remote"
-              ? "Remote"
-              : job?.workType === "hybrid"
-              ? "Hybrid"
-              : job?.workType === "onsite"
-              ? "On-site"
-              : "Work type not specified"}
-          </span>{" "}
-          {/* Use optional chaining */}
-        </div>
+      <div className="job-details-normal">
+        <p>
+          <strong>Location:</strong> {job?.location || "Not specified"}
+        </p>
+        <p>
+          <strong>Salary:</strong> {formatSalary(job)}
+        </p>
+        <p>
+          <strong>Type:</strong> {job?.employment_type || "Not specified"}
+        </p>
+        <p>
+          <strong>Work Style:</strong> {job?.work_type || "Not specified"}
+        </p>
       </div>
 
       <div className="job-footer">
@@ -264,26 +129,36 @@ function JobCard({
           {/* Use job._id or job.id for the identifier */}
           <button
             className={`save-button ${
-              savedJobs.includes(job?._id || job?.id) ? "saved" : ""
+              savedJobs.includes(job?.id) ? "saved" : ""
             }`}
-            onClick={() => toggleSaveJob(job?._id || job?.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleSaveJob(job?.id);
+            }}
           >
-            {savedJobs.includes(job?._id || job?.id) ? "Saved" : "Save"}
+            {savedJobs.includes(job?.id) ? "Saved" : "Save"}
           </button>
-          {/* Use job.applicationUrl from the original API object */}
+          {/* Use job.application_url from the original API object */}
           <a
-            href={job?.applicationUrl} // Use optional chaining
+            href={job?.application_url?.trim() || "#"} // Fallback href
             target="_blank"
             rel="noopener noreferrer"
             className={`apply-button ${
-              appliedJobs.includes(job?._id || job?.id) ? "applied" : ""
-            }`}
+              appliedJobs.includes(job?.id) ? "applied" : ""
+            } ${!job?.application_url ? "disabled" : ""}`}
             style={{
-              backgroundColor: appliedJobs.includes(job?._id || job?.id)
+              backgroundColor: appliedJobs.includes(job?.id)
                 ? "#22c55e"
                 : primaryColor,
             }}
-            onClick={() => toggleApplyJob(job?._id || job?.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!job?.application_url?.trim()) {
+                e.preventDefault();
+                return;
+              }
+              toggleApplyJob(job?.id);
+            }}
           >
             Apply
           </a>
@@ -292,7 +167,7 @@ function JobCard({
 
       <style jsx>{`
         .job-card {
-          background: ${theme === "dark" ? "#1a1a1a" : "#fff"};
+          background: ${theme === "dark" ? "rgb(31, 41, 55)" : "#fff"};
           border-radius: 12px;
           box-shadow: 0 4px 12px
             rgba(0, 0, 0, ${theme === "dark" ? "0.3" : "0.1"});
@@ -328,7 +203,7 @@ function JobCard({
           overflow: hidden;
           margin-right: 0.75rem;
           flex-shrink: 0;
-          background: ${theme === "dark" ? "#2d2d2d" : "#f5f5f5"};
+          background: white;
           border: 1px solid ${theme === "dark" ? "#3d3d3d" : "#e0e0e0"};
         }
 
@@ -336,6 +211,7 @@ function JobCard({
           width: 100%;
           height: 100%;
           object-fit: contain;
+          margin-left: 23px;
         }
 
         .company-logo-placeholder {
@@ -365,6 +241,7 @@ function JobCard({
         }
 
         .job-title-info {
+          margin-top: 10px;
           flex: 1;
           min-width: 0;
           padding-right: 40px;
@@ -417,32 +294,14 @@ function JobCard({
           transition: all 0.3s ease;
         }
 
-        .job-details {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.6rem;
+        .job-details-normal {
           margin-bottom: 1rem;
-          padding-bottom: 1rem;
         }
 
-        .detail-item {
-          display: flex;
-          align-items: center;
-          font-size: 0.8rem;
-          padding: 0.3rem 0.6rem;
-          background: ${theme === "dark" ? "#2d2d2d" : "#f5f5f5"};
-          border-radius: 20px;
-          color: ${theme === "dark" ? "#eee" : "#0a0a0a"};
-          box-shadow: 0 1px 3px
-            rgba(0, 0, 0, ${theme === "dark" ? "0.2" : "0.05"});
-        }
-
-        .detail-icon {
-          width: 14px;
-          height: 14px;
-          margin-right: 0.4rem;
-          opacity: 0.8;
-          stroke: ${theme === "dark" ? "#bbb" : "#555"};
+        .job-details-normal p {
+          margin: 0.25rem 0;
+          font-size: 0.9rem;
+          color: ${theme === "dark" ? "#ccc" : "#333"};
         }
 
         .job-footer {
@@ -516,6 +375,12 @@ function JobCard({
           background-color: #22c55e !important;
         }
 
+        .apply-button.disabled {
+          background-color: #9ca3af;
+          cursor: not-allowed;
+          opacity: 0.7;
+        }
+
         @media (max-width: 767px) {
           .job-card {
             padding: 1rem;
@@ -543,21 +408,12 @@ function JobCard({
             height: 18px;
           }
 
-          .job-details {
-            gap: 0.5rem;
+          .job-details-normal {
             margin-bottom: 0.8rem;
-            padding-bottom: 0.8rem;
           }
 
-          .detail-item {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
-          }
-
-          .detail-icon {
-            width: 12px;
-            height: 12px;
-            margin-right: 0.3rem;
+          .job-details-normal p {
+            font-size: 0.8rem;
           }
 
           .job-footer {

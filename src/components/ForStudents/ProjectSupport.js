@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
-function ProjectSupport({ theme, color }) {
-  const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
+function ProjectSupport({ theme }) {
+  const primaryColor = theme === "dark" ? "#f97316" : "#a855f7";
   const [activeTab, setActiveTab] = useState("ideation");
   const [expanded, setExpanded] = useState(null);
 
@@ -840,7 +840,7 @@ function ProjectSupport({ theme, color }) {
         }
 
         .project-support-container.dark {
-          background-color: #0a0a0a;
+          background-color: #111827;
           color: #e0e0e0;
         }
 
@@ -897,7 +897,7 @@ function ProjectSupport({ theme, color }) {
         }
 
         .dark .stat-card {
-          background-color: rgb(21, 21, 21);
+          background-color: #1f2937;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
@@ -972,7 +972,7 @@ function ProjectSupport({ theme, color }) {
         }
 
         .dark .project-card {
-          background-color: rgb(21, 21, 21);
+          background-color: #1f2937;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
@@ -1055,7 +1055,7 @@ function ProjectSupport({ theme, color }) {
         }
 
         .dark .resource-link {
-          background-color: #222;
+          background-color: #1f2937;
         }
 
         .resource-link:hover {
@@ -1145,7 +1145,7 @@ function ProjectSupport({ theme, color }) {
         }
 
         .dark .workshop-card {
-          background-color: rgb(21, 21, 21);
+          background-color: #1f2937;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
@@ -1225,7 +1225,8 @@ function ProjectSupport({ theme, color }) {
         }
 
         .dark .consultation-container {
-          background-color: rgb(21, 21, 21);
+          background: #1f2937;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .consultation-title {

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
-function PlacementGuidance({ theme, color }) {
-  const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
+function PlacementGuidance({ theme }) {
+  const primaryColor = theme === "dark" ? "#f97316" : "#a855f7";
   const [activeTab, setActiveTab] = useState("preparation");
   const [expanded, setExpanded] = useState(null);
 
@@ -892,7 +892,7 @@ function PlacementGuidance({ theme, color }) {
         }
 
         .guidance-container.dark {
-          background-color: #0a0a0a;
+          background-color: #111827;
           color: #e0e0e0;
         }
 
@@ -949,7 +949,7 @@ function PlacementGuidance({ theme, color }) {
         }
 
         .dark .stat-card {
-          background-color: rgb(21, 21, 21);
+          background-color: #1f2937;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
@@ -1024,7 +1024,7 @@ function PlacementGuidance({ theme, color }) {
         }
 
         .dark .guidance-card {
-          background-color: rgb(21, 21, 21);
+          background-color: #1f2937;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
@@ -1220,7 +1220,7 @@ function PlacementGuidance({ theme, color }) {
         }
 
         .dark .event-card {
-          background-color: rgb(21, 21, 21);
+          background-color: #1f2937;
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
@@ -1295,7 +1295,7 @@ function PlacementGuidance({ theme, color }) {
         }
 
         .dark .consultation-container {
-          background: rgb(21, 21, 21);
+          background: #1f2937;
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 

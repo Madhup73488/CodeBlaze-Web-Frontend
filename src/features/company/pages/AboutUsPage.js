@@ -1,8 +1,8 @@
 import React from "react";
 import aboutUsImage from '../../../assets/images/codeblaze_about_us.png';
 
-function AboutUsPage({ theme, color }) { // Renamed component
-  const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
+function AboutUsPage({ theme }) { // Renamed component
+  const primaryColor = theme === "dark" ? "#f97316" : "#a855f7";
 
   return (
     <div className={`about-us-container ${theme}`}>
@@ -122,7 +122,7 @@ function AboutUsPage({ theme, color }) { // Renamed component
         }
 
         .about-us-container.dark {
-          background-color: #0a0a0a;
+          background-color: #111827;
           color: #ffffff;
         }
 
@@ -214,7 +214,7 @@ function AboutUsPage({ theme, color }) { // Renamed component
           align-items: center;
           padding: 1.5rem 1rem;
           border-radius: 8px;
-          background-color: ${theme === "dark" ? "#111" : "#f8f8f8"};
+          background-color: ${theme === "dark" ? "#1f2937" : "#f8f8f8"};
           transition: transform 0.3s ease;
         }
 
@@ -291,7 +291,7 @@ function AboutUsPage({ theme, color }) { // Renamed component
 
         .timeline-content {
           padding: 20px;
-          background-color: ${theme === "dark" ? "#111" : "#f8f8f8"};
+          background-color: ${theme === "dark" ? "#1f2937" : "#f8f8f8"};
           border-radius: 8px;
           position: relative;
         }
