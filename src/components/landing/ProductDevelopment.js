@@ -183,7 +183,7 @@ function ProductDevelopment({ theme = "dark", color = "purple" }) {
       `}</style>
 
       {/* Main container */}
-      <div
+      <section
         style={{
           fontFamily: "'Inter', sans-serif",
           backgroundColor: bgColor,
@@ -298,7 +298,7 @@ function ProductDevelopment({ theme = "dark", color = "purple" }) {
             ))}
           </div>
         )}
-      </div>
+      </section>
     </>
   );
 }

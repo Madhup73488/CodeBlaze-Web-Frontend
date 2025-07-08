@@ -128,7 +128,7 @@ function Services({ theme, color }) {
   };
 
   return (
-    <div
+    <section
       style={{
         backgroundColor: bgColor,
         color: textColor,
@@ -279,7 +279,7 @@ function Services({ theme, color }) {
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 

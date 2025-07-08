@@ -1,17 +1,29 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
 import './assets/styles/theme.css'; // Import theme.css globally
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { LoaderProvider } from './contexts/LoaderContext';
+import { HelmetProvider } from 'react-helmet-async';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <ThemeProvider>
-      <App />
-    </ThemeProvider>
+    <Router>
+      <HelmetProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <LoaderProvider>
+              <App />
+            </LoaderProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </HelmetProvider>
+    </Router>
   </React.StrictMode>
 );
 

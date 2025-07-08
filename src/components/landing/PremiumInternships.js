@@ -40,14 +40,14 @@ const PremiumInternships = ({ theme, color }) => {
   };
 
   return (
-    <div className={`premium-internships-container ${theme}`}>
+    <section className={`premium-internships-container ${theme}`}>
       <div className="premium-internships-header">
-        <h2 className="premium-internships-title">
+        <h1 className="premium-internships-title">
           Explore Our{" "}
           <span style={{ color: primaryColor }}>
             Premium Internship Programs
           </span>
-        </h2>
+        </h1>
         <div
           className="accent-line"
           style={{ backgroundColor: primaryColor }}
@@ -229,7 +229,7 @@ const PremiumInternships = ({ theme, color }) => {
           opacity: 0.9;
         }
       `}</style>
-    </div>
+    </section>
   );
 };
 

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Helmet } from 'react-helmet-async';
 import {
   Code,
   Smartphone,
@@ -847,13 +848,22 @@ const ServicesPage = ({
   ];
 
   return (
-    <div
+    <main
       className="transition-colors duration-500 min-h-screen"
       style={{
         backgroundColor: "var(--bg-primary)",
         color: "var(--text-primary)",
       }}
     >
+      <Helmet>
+        <title>Our Services - CodeBlaze</title>
+        <meta name="description" content="Explore the wide range of services offered by CodeBlaze, including web development, mobile app development, e-commerce solutions, and more." />
+        <meta property="og:title" content="Our Services - CodeBlaze" />
+        <meta property="og:description" content="Explore the wide range of services offered by CodeBlaze, including web development, mobile app development, e-commerce solutions, and more." />
+        <meta property="og:image" content="https://www.codeblaze.net/logo512.png" />
+        <meta property="og:url" content="https://www.codeblaze.net/services" />
+        <meta property="og:type" content="website" />
+      </Helmet>
       <ServicesHero theme={theme} />
 
       <div className="py-20 px-6">
@@ -901,7 +911,7 @@ const ServicesPage = ({
         }}
       />
       {/* CallbackModal is now rendered in App.js */}
-    </div>
+    </main>
   );
 };
 
