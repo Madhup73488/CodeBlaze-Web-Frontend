@@ -11,7 +11,6 @@ import OurValuesPage from "./features/company/pages/OurValuesPage";
 import NotFound from "./pages/NotFound";
 import SupportPage from "./features/static/pages/SupportPage";
 import {
-  BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
@@ -530,11 +529,9 @@ const AppContent = () => {
 function App() {
   return (
     <LoaderProvider color="orange">
-      <Router>
-        <AuthProvider>
-          <AppContent />
-        </AuthProvider>
-      </Router>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </LoaderProvider>
   );
 }

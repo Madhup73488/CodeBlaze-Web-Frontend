@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
 import './assets/styles/theme.css'; // Import theme.css globally
 import App from './App';
@@ -12,15 +13,17 @@ import { HelmetProvider } from 'react-helmet-async';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <HelmetProvider>
-      <ThemeProvider>
-        <AuthProvider>
-          <LoaderProvider>
-            <App />
-          </LoaderProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </HelmetProvider>
+    <Router>
+      <HelmetProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <LoaderProvider>
+              <App />
+            </LoaderProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </HelmetProvider>
+    </Router>
   </React.StrictMode>
 );
 
