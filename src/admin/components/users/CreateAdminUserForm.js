@@ -34,7 +34,13 @@ function CreateAdminUserForm({ onAdminCreated }) {
     }
 
     try {
-      const newAdmin = await createAdminAccount(formData);
+      const payload = {
+        ...formData,
+        roles: [formData.role], // Send role as an array
+      };
+      delete payload.role; // Optional: remove the old role key if not needed by backend
+
+      const newAdmin = await createAdminAccount(payload);
       setSuccessMessage(`Admin user "${newAdmin.name}" created successfully!`);
       setFormData({ name: "", email: "", password: "", role: "admin" });
       if (onAdminCreated) {
