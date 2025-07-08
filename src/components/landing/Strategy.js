@@ -22,7 +22,7 @@ function Strategy({ theme, color }) {
   }, []);
 
   return (
-    <div
+    <section
       style={{
         padding: "4rem 5%",
         backgroundColor: bgColor,
@@ -57,7 +57,7 @@ function Strategy({ theme, color }) {
           experiences, and discover new revenue streams.
         </h2>
       </div>
-    </div>
+    </section>
   );
 }
 

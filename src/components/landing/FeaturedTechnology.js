@@ -132,7 +132,7 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => {
   }, [technologies.length]);
 
   return (
-    <div
+    <section
       ref={containerRef}
       className="w-full py-16 lg:py-24"
       style={{
@@ -339,7 +339,7 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

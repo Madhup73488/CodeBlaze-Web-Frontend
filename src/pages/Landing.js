@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import Hero from "../components/landing/Hero";
 import ProductDevelopment from "../components/landing/ProductDevelopment";
 import Services from "../components/landing/Services";
@@ -42,13 +43,22 @@ const Landing = ({ theme, color, openCallbackModal }) => { // Add openCallbackMo
   console.log("Current error state:", error); // Log current error state
 
   return (
-    <div 
+    <main 
       className="landing-page" // Changed class name
       style={{
         backgroundColor: `var(--bg-primary)`,
         color: `var(--text-primary)`
       }}
     >
+      <Helmet>
+        <title>CodeBlaze - Ignite Your Tech Career</title>
+        <meta name="description" content="CodeBlaze offers cutting-edge internship programs, job placement services, and expert-led courses to help you launch your career in tech." />
+        <meta property="og:title" content="CodeBlaze - Ignite Your Tech Career" />
+        <meta property="og:description" content="CodeBlaze offers cutting-edge internship programs, job placement services, and expert-led courses to help you launch your career in tech." />
+        <meta property="og:image" content="https://www.codeblaze.net/logo512.png" />
+        <meta property="og:url" content="https://www.codeblaze.net" />
+        <meta property="og:type" content="website" />
+      </Helmet>
       <Hero theme={theme} color={color} openCallbackModal={openCallbackModal} /> {/* Pass openCallbackModal to Hero */}
 {/* 
       {loading && <p className="text-center text-gray-500 dark:text-gray-400">Loading dynamic content...</p>}
@@ -70,7 +80,7 @@ const Landing = ({ theme, color, openCallbackModal }) => { // Add openCallbackMo
       <Strategy theme={theme} color={color} />
       <ProductDevelopment theme={theme} color={color} />
       <FeaturedTechnology theme={theme} color={color} />
-    </div>
+    </main>
   );
 };
 
