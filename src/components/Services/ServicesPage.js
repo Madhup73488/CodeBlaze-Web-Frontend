@@ -717,6 +717,23 @@ const CTASection = ({ theme, openCallbackModal }) => {
               Schedule Call
             </button>
           </div>
+          <div className="flex justify-center gap-4 pt-8">
+            <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.codeblaze.net/services" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">
+              <svg className="w-8 h-8 text-gray-500 hover:text-orange-500 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.67 21.22 10.44 22V14.69H7.9V12.06H10.44V9.93C10.44 7.43 11.93 6 14.22 6C15.33 6 16.45 6.1 16.45 6.1V8.29H15.24C14.01 8.29 13.56 9.03 13.56 10.18V12.06H16.34L15.89 14.69H13.56V22C18.33 21.22 22 17.06 22 12.06C22 6.53 17.5 2.04 12 2.04Z" />
+              </svg>
+            </a>
+            <a href="https://twitter.com/intent/tweet?url=https://www.codeblaze.net/services&text=Check out the services offered by CodeBlaze!" target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter">
+              <svg className="w-8 h-8 text-gray-500 hover:text-orange-500 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M22.46 6c-.77.35-1.6.58-2.46.67.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98-3.56-.18-6.72-1.88-8.84-4.48-.37.63-.58 1.37-.58 2.15 0 1.49.76 2.81 1.91 3.58-.71 0-1.37-.22-1.95-.55v.05c0 2.08 1.48 3.82 3.44 4.21-.36.1-.74.15-1.14.15-.28 0-.55-.03-.81-.08.55 1.7 2.14 2.94 4.03 2.97-1.47 1.15-3.33 1.84-5.35 1.84-.35 0-.69-.02-1.03-.06 1.9 1.22 4.16 1.93 6.58 1.93 7.89 0 12.21-6.54 12.21-12.21 0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.22z" />
+              </svg>
+            </a>
+            <a href="https://www.linkedin.com/shareArticle?mini=true&url=https://www.codeblaze.net/services" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn">
+              <svg className="w-8 h-8 text-gray-500 hover:text-orange-500 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14zm-7 6.08c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM8 9.08c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm8 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+              </svg>
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -863,6 +880,23 @@ const ServicesPage = ({
         <meta property="og:image" content="https://www.codeblaze.net/logo512.png" />
         <meta property="og:url" content="https://www.codeblaze.net/services" />
         <meta property="og:type" content="website" />
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "ItemList",
+              "name": "Our Services",
+              "itemListElement": [
+                ${services.map((service, index) => `{
+                  "@type": "Service",
+                  "position": ${index + 1},
+                  "name": "${service.title}",
+                  "description": "${service.description}"
+                }`).join(',')}
+              ]
+            }
+          `}
+        </script>
       </Helmet>
       <ServicesHero theme={theme} />
 
