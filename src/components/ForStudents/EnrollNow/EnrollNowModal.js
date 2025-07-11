@@ -112,7 +112,7 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
           address: 'CodeBlaze Technologies',
         },
         theme: {
-          color: '#8A2BE2',
+          color: '#F37254',
         },
       };
 
