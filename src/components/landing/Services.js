@@ -132,15 +132,12 @@ function Services({ theme, color }) {
       style={{
         backgroundColor: bgColor,
         color: textColor,
-        padding: isMobile ? "2rem 5%" : "4rem 5%",
+        padding: isMobile ? "2rem 0" : "4rem 0",
         overflow: "hidden", // Prevent horizontal scroll
         position: "relative",
       }}
     >
-      <div
-        className="container mx-auto"
-        style={isMobile ? {} : { maxWidth: "1400px", padding: "0 5%" }}
-      >
+      <div className="container">
         {/* Decorative elements */}
         <div
           className={`absolute top-0 right-10 w-64 h-64 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 opacity-10 blur-3xl`}

@@ -187,85 +187,84 @@ function ProductDevelopment({ theme = "dark", color = "purple" }) {
         style={{
           fontFamily: "'Inter', sans-serif",
           backgroundColor: bgColor,
-          padding: "6rem 1.5rem",
+          padding: "6rem 0",
           position: "relative",
           overflow: "hidden",
         }}
       >
-        {/* Header Section */}
-        <div style={{ textAlign: "center", marginBottom: isMobile ? "3rem" : "5rem", position: 'relative', zIndex: 1, }}>
-          <h2
-            style={{
-              fontSize: isMobile ? "2.25rem" : "3rem",
-              fontWeight: "800",
-              color: textColor,
-              marginBottom: "1rem",
-              letterSpacing: "-0.025em",
-            }}
-          >
-            Our Development Process
-          </h2>
-          <p
-            style={{
-              fontSize: isMobile ? "1rem" : "1.125rem",
-              color: mutedTextColor,
-              maxWidth: "650px",
-              margin: "0 auto",
-            }}
-          >
-            From a spark of an idea to a fully supported product, we follow a structured path to ensure success and quality at every stage.
-          </p>
-        </div>
-
-        {/* Conditional Rendering: Desktop Grid vs. Mobile Slider */}
-        {isMobile ? (
-          // --- Mobile Slider View ---
-          <div className="mobile-slider-container" ref={sliderRef}>
-            {cycleParts.map((part, index) => (
-              <div
-                key={index}
-                ref={(el) => (cardRefs.current[index] = el)}
-                className="mobile-slide"
-                style={{ transitionDelay: `${index * 0.1}s` }}
-              >
-                <div
-                  style={{
-                    backgroundColor: cardBgColor,
-                    borderRadius: "1rem",
-                    border: `1px solid ${cardBorderColor}`,
-                    padding: "2rem 1.5rem",
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)",
-                    borderTop: `4px solid ${part.accentColor}`,
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.5rem" }}>
-                    <div style={{ color: part.accentColor }}>{part.icon}</div>
-                    <h3 style={{ fontSize: "1.25rem", fontWeight: "700", color: textColor }}>
-                      {part.title}
-                    </h3>
-                  </div>
-                  <p style={{ fontSize: "0.95rem", color: mutedTextColor, lineHeight: 1.6 }}>
-                    {part.description}
-                  </p>
-                </div>
-              </div>
-            ))}
+        <div className="container">
+          {/* Header Section */}
+          <div style={{ textAlign: "center", marginBottom: isMobile ? "3rem" : "5rem", position: 'relative', zIndex: 1, }}>
+            <h2
+              style={{
+                fontSize: isMobile ? "2.25rem" : "3rem",
+                fontWeight: "800",
+                color: textColor,
+                marginBottom: "1rem",
+                letterSpacing: "-0.025em",
+              }}
+            >
+              Our Development Process
+            </h2>
+            <p
+              style={{
+                fontSize: isMobile ? "1rem" : "1.125rem",
+                color: mutedTextColor,
+                maxWidth: "650px",
+                margin: "0 auto",
+              }}
+            >
+              From a spark of an idea to a fully supported product, we follow a structured path to ensure success and quality at every stage.
+            </p>
           </div>
-        ) : (
-          // --- Desktop Grid View ---
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-              gap: "2rem",
-              maxWidth: "1200px",
-              margin: "0 auto",
-            }}
-          >
-            {cycleParts.map((part, index) => (
+
+          {/* Conditional Rendering: Desktop Grid vs. Mobile Slider */}
+          {isMobile ? (
+            // --- Mobile Slider View ---
+            <div className="mobile-slider-container" ref={sliderRef}>
+              {cycleParts.map((part, index) => (
+                <div
+                  key={index}
+                  ref={(el) => (cardRefs.current[index] = el)}
+                  className="mobile-slide"
+                  style={{ transitionDelay: `${index * 0.1}s` }}
+                >
+                  <div
+                    style={{
+                      backgroundColor: cardBgColor,
+                      borderRadius: "1rem",
+                      border: `1px solid ${cardBorderColor}`,
+                      padding: "2rem 1.5rem",
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)",
+                      borderTop: `4px solid ${part.accentColor}`,
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.5rem" }}>
+                      <div style={{ color: part.accentColor }}>{part.icon}</div>
+                      <h3 style={{ fontSize: "1.25rem", fontWeight: "700", color: textColor }}>
+                        {part.title}
+                      </h3>
+                    </div>
+                    <p style={{ fontSize: "0.95rem", color: mutedTextColor, lineHeight: 1.6 }}>
+                      {part.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            // --- Desktop Grid View ---
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+                gap: "2rem",
+              }}
+            >
+              {cycleParts.map((part, index) => (
               <div
                 key={index}
                 ref={(el) => (cardRefs.current[index] = el)}
@@ -296,8 +295,9 @@ function ProductDevelopment({ theme = "dark", color = "purple" }) {
                 </p>
               </div>
             ))}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </section>
     </>
   );

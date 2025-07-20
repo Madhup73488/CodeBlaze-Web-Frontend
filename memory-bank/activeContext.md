@@ -80,4 +80,17 @@
         - `src/admin/components/common/FormFields.js`: Removed unused `Form` import.
         - `src/admin/contexts/AdminContext.js`: Addressed `exhaustive-deps` for `contextValue`'s `useMemo` by removing `handleResize` from its dependencies.
     - **Current Blocker (Backend)**: A database error `"type "enum_app_users_roles[]" does not exist"` is occurring. This needs to be resolved in the backend's database schema and Sequelize model/migrations.
+    - **Navbar Refactor**:
+        - `src/components/common/Navbar.js`: Refactored to use `AuthContext` for conditional rendering of auth buttons vs. user profile dropdown. Integrated `AuthModal`.
+        - `src/components/common/Navbar.css`: Cleaned up to remove unused CSS and only include Tailwind CSS helper classes.
+    - **Hero Section Update**:
+        - `src/components/landing/Hero.js`: Updated the main slogan and subtitle with new marketing copy.
+        - `src/components/landing/Hero.css`: Removed unused CSS for the old layout.
+    - **UI Fixes and Enhancements**:
+        - **Login Modal**: Corrected the state management to allow the login modal to be opened from the mobile menu.
+        - **Navbar Indicator**: Added a visual "active" indicator to the "Internships" link to attract user attention.
+        - **Learning Goals Section**: Refactored the component to use the correct image and video assets. Addressed and fixed issues related to image loading and layout shifting during tab changes.
+        - **Mobile Navigation**: Added "Profile" and "Admin Dashboard" links to the mobile menu for authenticated users, ensuring feature parity with the desktop view.
+    - **New Issue Identified**:
+        - **Infinite Loader / API Calls**: The user has reported that some components are getting stuck in a loading state, causing a continuous loop of API calls to `/connect/user/progress`. This needs to be investigated.
     - Thorough integration testing will be critical once the backend database issue is resolved.

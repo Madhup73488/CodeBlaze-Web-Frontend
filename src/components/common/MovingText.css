@@ -1,0 +1,21 @@
+@keyframes fadeInOut {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.moving-text-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.moving-text {
+  animation: fadeInOut 3s ease-in-out infinite;
+  color: #fffaf3;
+}

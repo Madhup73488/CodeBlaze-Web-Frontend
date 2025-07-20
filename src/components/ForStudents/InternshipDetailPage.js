@@ -1,245 +1,131 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import jsPDF from "jspdf";
-import EnrollNowModal from "./EnrollNow/EnrollNowModal";
-import html2canvas from "html2canvas";
-import {
-  Calendar,
-  MapPin,
-  DollarSign,
-  Clock,
-  Users,
-  Award,
-  Book,
-  Star,
-} from "lucide-react";
-import "./Internships.css";
-import { internships } from "./internshipsData"; // Assuming you move the data to a separate file
+import { internships } from "./internshipsData";
+import { allCourses } from "../../pages/CoursesPage";
+import InternshipDetailSkeleton from "../Internships/InternshipDetailSkeleton";
+import CourseAccessCard from "../common/CourseAccessCard";
+import { Button } from "../ui/button";
+import { useCart } from "../../contexts/CartContext";
 
-function InternshipDetailPage({ theme = "light", color = "purple" }) {
+const InternshipDetailPage = () => {
   const { id } = useParams();
-  const internship = internships.find((internship) => internship.id === id);
-  const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { addToCart } = useCart();
+  const [internship, setInternship] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isAdding, setIsAdding] = useState(false);
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const foundInternship = internships.find((i) => i.id === id);
+      setInternship(foundInternship);
+      setLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [id]);
+
+  const handleAddToCart = () => {
+    setIsAdding(true);
+    setTimeout(() => {
+      addToCart(internship);
+      setIsAdding(false);
+    }, 1000);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+  if (loading) {
+    return <InternshipDetailSkeleton />;
+  }
 
   if (!internship) {
     return <div>Internship not found</div>;
   }
 
-  const handleDownload = () => {
-    const input = document.getElementById("internship-details");
-    const originalTheme = document.body.className;
-    document.body.className = "light";
-    html2canvas(input, { scrollY: -window.scrollY, windowWidth: document.documentElement.offsetWidth, windowHeight: document.documentElement.offsetHeight }).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
-      const ratio = canvasWidth / canvasHeight;
-      const width = pdfWidth;
-      const height = width / ratio;
-      pdf.addImage(imgData, "PNG", 0, 0, width, height);
-      pdf.save(`${internship.id}.pdf`);
-      document.body.className = originalTheme;
-    });
-  };
-
   return (
-    <div className={`internships-container ${theme} ${color}`}>
-      <div id="internship-details" className="internship-card">
-        {/* Header Section */}
-        <div className="internship-header">
-          <div
-            className="company-logo"
-            style={{ backgroundColor: primaryColor }}
-          >
-            {internship.logo}
+    <div className="py-16 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="lg:grid lg:grid-cols-2 lg:gap-x-8">
+          <div className="lg:col-span-1">
+            <div className="mt-4">
+              <img
+                src={internship.image}
+                alt={internship.title}
+                className="w-full h-auto object-cover rounded-lg"
+              />
+            </div>
           </div>
-          <div className="internship-title-info">
-            <h3 className="internship-title">{internship.title}</h3>
-            <div className="company-name">{internship.company}</div>
-            <div className="rating-section">
-              <div className="rating">
-                <Star
-                  className="star-icon"
-                  style={{ color: "#fbbf24" }}
-                />
-                <span>{internship.rating}</span>
-                <span className="reviews">
-                  ({internship.reviews} reviews)
-                </span>
+          <div className="mt-8 lg:mt-0 lg:col-span-1">
+            <h1 className="text-3xl font-bold text-gray-900">
+              {internship.title}
+            </h1>
+            <p className="mt-4 text-lg text-gray-500">
+              {internship.company}
+            </p>
+            <div className="mt-8">
+              <h2 className="text-2xl font-bold text-gray-900">
+                About this internship
+              </h2>
+              <p className="mt-4 text-gray-500">{internship.description}</p>
+            </div>
+            <div className="mt-8">
+              <h2 className="text-2xl font-bold text-gray-900">
+                Requirements
+              </h2>
+              <ul className="mt-4 list-disc list-inside text-gray-500">
+                {internship.requirements.map((req, i) => (
+                  <li key={i}>{req}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="mt-8">
+              <h2 className="text-2xl font-bold text-gray-900">Curriculum</h2>
+              <ul className="mt-4 list-disc list-inside text-gray-500">
+                {internship.curriculum.map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="mt-8">
+              <h2 className="text-2xl font-bold text-gray-900">
+                Courses you will get access to
+              </h2>
+              <div className="mt-4 grid grid-cols-2 gap-4">
+                {allCourses
+                  .filter((course) =>
+                    internship.techStack.some((tech) =>
+                      course.title.toLowerCase().includes(tech.toLowerCase())
+                    )
+                  )
+                  .map((course) => (
+                    <CourseAccessCard key={course.id} course={course} />
+                  ))}
               </div>
-              <div
-                className="level-badge"
-                style={{
-                  backgroundColor: `${primaryColor}20`,
-                  color: primaryColor, 
-                }}
+            </div>
+            <div className="mt-8 bg-gray-50 rounded-lg p-8">
+              <h2 className="text-2xl font-bold text-gray-900">
+                {internship.fees}
+              </h2>
+              <Button
+                onClick={handleAddToCart}
+                className="mt-4 w-full"
+                disabled={isAdding}
               >
-                {internship.level}
+                {isAdding ? "Adding..." : "Add to Bag"}
+              </Button>
+              <div className="mt-8">
+                <h3 className="text-lg font-bold text-gray-900">
+                  This internship includes
+                </h3>
+                <ul className="mt-4 space-y-2 text-gray-500">
+                  {internship.highlights.map((highlight, i) => (
+                    <li key={i}>{highlight}</li>
+                  ))}
+                </ul>
               </div>
             </div>
-          </div>
-          <div
-            className="discount-badge"
-            style={{ backgroundColor: primaryColor }}
-          >
-            {internship.discount}
-          </div>
-        </div>
-
-        {/* Pricing and Benefits */}
-        <div className="pricing-section">
-          <div className="pricing">
-            <div className="price-info">
-              <div className="current-price">
-                <span className="price">{internship.fees}</span>
-                <span className="original-price">
-                  {internship.originalFees}
-                </span>
-              </div>
-            </div>
-            <div className="benefits">
-              <div className="benefit-item">
-                <Award className="benefit-icon" />
-                <span>{internship.certificate}</span>
-              </div>
-              <div className="benefit-item">
-                <Book className="benefit-icon" />
-                <span>{internship.placement}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="internship-footer">
-          <div className="action-buttons">
-            <button
-              className="apply-button"
-              style={{ backgroundColor: primaryColor }}
-              onClick={handleOpenModal}
-            >
-              Enroll Now
-            </button>
-          </div>
-        </div>
-
-        {/* Quick Info Section */}
-        <div className="quick-info">
-          <div className="info-item">
-            <MapPin className="info-icon" />
-            <span>{internship.location}</span>
-          </div>
-          <div className="info-item">
-            <Clock className="info-icon" />
-            <span>{internship.duration}</span>
-          </div>
-          <div className="info-item">
-            <Users className="info-icon" />
-            <span>{internship.batchSize}</span>
-          </div>
-        </div>
-
-        {/* Description */}
-        <div className="description">
-          <p>{internship.description}</p>
-        </div>
-
-        {/* Highlights */}
-        <div className="highlights">
-          <h4>Program Highlights</h4>
-          <div className="highlights-grid">
-            {internship.highlights.map((highlight, index) => (
-              <div key={index} className="highlight-item">
-                <div
-                  className="highlight-dot"
-                  style={{ backgroundColor: primaryColor }}
-                ></div>
-                <span>{highlight}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Tech Stack */}
-        <div className="tech-stack">
-          <h4>Technologies You'll Learn</h4>
-          <div className="tech-tags">
-            {internship.techStack.map((tech, index) => (
-              <span
-                key={index}
-                className="tech-tag"
-                style={{ borderColor: primaryColor, color: primaryColor }}
-              >
-                {tech}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Requirements */}
-        <div className="requirements">
-          <h4>Requirements</h4>
-          <ul>
-            {internship.requirements.map((req, index) => (
-              <li key={index}>{req}</li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Curriculum Preview */}
-        <div className="curriculum">
-          <h4>Curriculum Overview</h4>
-          <div className="curriculum-timeline">
-            {internship.curriculum.map((item, index) => (
-              <div key={index} className="curriculum-item">
-                <div
-                  className="curriculum-number"
-                  style={{ backgroundColor: primaryColor }}
-                >
-                  {index + 1}
-                </div>
-                <span>{item}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="dates">
-          <div className="date-item">
-            <span className="date-label">Application Deadline:</span>
-            <span className="date-value">{internship.deadline}</span>
-          </div>
-          <div className="date-item">
-            <span className="date-label">Program Starts:</span>
-            <span className="date-value">{internship.startDate}</span>
           </div>
         </div>
       </div>
-      {isModalOpen && (
-        <EnrollNowModal
-          internship={internship}
-          onClose={handleCloseModal}
-          onSubmit={() => {
-            // Handle submission if needed, e.g., show a success message
-            handleCloseModal();
-          }}
-          theme={theme}
-        />
-      )}
     </div>
   );
-}
+};
 
 export default InternshipDetailPage;

@@ -45,7 +45,7 @@ const login = async (email, password) => {
       // with information we have (or can extract from token)
       const user = response.data.user || {
         email: email, // We at least know the email from the login attempt
-        role: response.data.isAdmin ? "admin" : "user", // Use isAdmin flag to determine role
+        roles: response.data.isAdmin ? ["admin"] : ["user"], // Use isAdmin flag to determine role
       };
 
       return {

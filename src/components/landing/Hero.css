@@ -1,0 +1,298 @@
+.hero-section-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  overflow: hidden;
+}
+
+.decorative-circle-1 {
+  position: absolute;
+  top: -3rem; /* Adjusted for mobile */
+  left: -3rem; /* Adjusted for mobile */
+  width: 10rem; /* Smaller for mobile */
+  height: 10rem; /* Smaller for mobile */
+  background-color: #fdba74;
+  border-radius: 9999px;
+  mix-blend-mode: overlay;
+  opacity: 0.5;
+  animation: pulse-slow 4s infinite ease-in-out;
+}
+
+.decorative-circle-2 {
+  position: absolute;
+  bottom: -1.5rem; /* Adjusted for mobile */
+  right: -1.5rem; /* Adjusted for mobile */
+  width: 16rem; /* Smaller for mobile */
+  height: 16rem; /* Smaller for mobile */
+  background-color: #a5b4fc;
+  border-radius: 9999px;
+  mix-blend-mode: overlay;
+  opacity: 0.4;
+  animation: pulse-slow-reverse 4s infinite ease-in-out;
+}
+
+.hero-content-wrapper {
+  position: relative;
+  max-width: 80rem;
+  width: 100%;
+  backdrop-filter: blur(15px); /* Increased blur for a smoother effect */
+  border-radius: 1.5rem;
+  /* box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2);  */
+  padding: 1rem 0.5rem; /* Adjusted padding for mobile */
+  display: flex;
+  flex-direction: column; /* Default to column for mobile */
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  border: 1px solid rgba(209, 213, 219, 0.7);
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+@media (max-width: 639px) {
+  .hero-content-wrapper {
+    border: none;
+  }
+}
+
+.text-content {
+  text-align: left;
+  margin-bottom: 2rem; /* Adjusted margin for mobile */
+  width: 100%;
+}
+
+.hero-main-title {
+  font-size: 2.5rem; /* Smaller font size for mobile */
+  font-weight: 800;
+  color: #1f2937;
+  line-height: 1.2;
+  margin-bottom: 0.75rem; /* Adjusted margin */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.text-highlight {
+  color: #ea580c;
+}
+
+.hero-subtitle-text {
+  font-size: 1rem; /* Smaller font size for mobile */
+  color: #4b5563;
+  margin-bottom: 1.5rem; /* Adjusted margin */
+  max-width: 100%; /* Ensure text wraps nicely */
+}
+
+.cta-buttons {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.explore-courses-btn,
+.learn-more-btn {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .explore-courses-btn,
+  .learn-more-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+.explore-courses-btn {
+  background-color: #f97316;
+  color: white;
+}
+
+.learn-more-btn {
+  border-color: #f97316;
+  color: #f97316;
+}
+
+.social-proof {
+  font-size: 0.9rem; /* Smaller font for social proof on mobile */
+  color: #4b5563;
+  margin-top: 1rem;
+}
+
+.graphic-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 0; /* Adjusted padding */
+  width: 100%;
+}
+
+.image-placeholder {
+  width: 100%;
+  max-width: 25rem; /* Adjusted max-width for mobile image */
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: float 1.5s ease-in-out infinite;
+}
+
+.feature-cards {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.feature-card {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: 1px solid #e5e7eb;
+  transition: transform 0.2s;
+  min-width: 120px;
+}
+
+.feature-card:hover {
+  transform: scale(1.05);
+}
+
+.feature-title {
+  margin-top: 0.5rem;
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 1rem; /* Lower on mobile */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #4b5563;
+  font-size: 0.9rem; /* Smaller text */
+}
+
+/* Animations remain the same */
+@keyframes pulse-slow {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+}
+
+@keyframes pulse-slow-reverse {
+  0%,
+  100% {
+    transform: scale(1.1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Media queries for larger screens */
+@media (min-width: 640px) {
+  .feature-cards {
+    grid-template-columns: repeat(
+      3,
+      1fr
+    ); /* 3 columns on small desktops and tablets */
+    max-width: 32rem; /* Keep original max-width for features */
+  }
+  .hero-main-title {
+    font-size: 3rem; /* Slightly larger on tablets */
+  }
+  .hero-subtitle-text {
+    font-size: 1rem; /* Smaller font size for mobile */
+    color: #4b5563;
+    margin-bottom: 1.5rem; /* Adjusted margin */
+    max-width: 90%; /* Ensure text wraps nicely */
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-section-container {
+    padding: 2rem; /* Original padding for desktop */
+  }
+  .decorative-circle-1 {
+    top: -5rem;
+    left: -5rem;
+    width: 16rem;
+    height: 16rem;
+  }
+  .decorative-circle-2 {
+    bottom: -2.5rem;
+    right: -2.5rem;
+    width: 24rem;
+    height: 24rem;
+  }
+  .hero-content-wrapper {
+    flex-direction: row; /* Row layout on desktop */
+    padding: 4rem; /* Original padding for desktop */
+    background-color: rgba(255, 255, 255, 0.8); /* Original transparency */
+    backdrop-filter: blur(10px);
+    /* box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); */
+  }
+  .text-content {
+    text-align: left;
+    width: 60%;
+    margin-bottom: 0;
+  }
+  .hero-main-title {
+    font-size: 3.75rem; /* Original font size for desktop */
+  }
+  .hero-subtitle-text {
+    font-size: 1.25rem; /* Original font size for desktop */
+    max-width: 40rem;
+    margin-left: unset;
+    margin-right: unset;
+  }
+  .graphic-content {
+    width: 40%;
+    padding: 1rem;
+  }
+  .image-placeholder {
+    max-width: 28rem; /* Original max-width for desktop image */
+  }
+  .scroll-indicator {
+    bottom: 2rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 639px) {
+  .hero-content-wrapper {
+    border-radius: 0;
+  }
+}
