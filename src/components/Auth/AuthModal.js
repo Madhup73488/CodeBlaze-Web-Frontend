@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
+import { useCart } from "../../contexts/CartContext";
 import AuthBranding from "./AuthBranding";
 import AuthContent from "./AuthContent";
 import "./AuthModal.css";
@@ -23,6 +24,7 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
     forgotPassword: requestForgotPassword,
     resetPassword: resetUserPassword,
   } = useAuth();
+  const { openCart, checkoutInitiated, setCheckoutInitiated } = useCart();
 
   const [activeTab, setActiveTab] = useState("login");
   const [showPassword, setShowPassword] = useState(false);
@@ -118,6 +120,10 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
       const result = await loginUser(loginForm.email, loginForm.password);
       if (result.success) {
         onClose();
+        if (checkoutInitiated) {
+          openCart();
+          setCheckoutInitiated(false);
+        }
       }
       setIsButtonLoading(false);
     }, 2000);

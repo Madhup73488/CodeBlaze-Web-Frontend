@@ -1,3 +1,9 @@
+import mernStack from "../../assets/images/mern-stack.png";
+import frontendDev from "../../assets/images/frontend-dev.png";
+import backendDev from "../../assets/images/backend-dev.png";
+import pythonFullStack from "../../assets/images/Python-full-stack-dev.png";
+import javaFullStack from "../../assets/images/Java-full-stack-dev.png";
+
 const slugify = (text) => {
   return text
     .toString()
@@ -15,6 +21,8 @@ export const internships = [
     title: "Software Development Engineer Intern (MERN Stack)",
     company: "Codeblaze",
     category: "fullstack",
+    price: 999,
+    image: mernStack,
     location: "Bengaluru, KA, IN",
     duration: "12 Weeks",
     fees: "₹999",
@@ -70,6 +78,8 @@ export const internships = [
     title: "Frontend Development Engineer Intern (React & Next.js)",
     company: "Codeblaze",
     category: "frontend",
+    price: 799,
+    image: frontendDev,
     location: "Bengaluru, KA, IN",
     duration: "12 Weeks",
     fees: "₹799",
@@ -125,6 +135,8 @@ export const internships = [
     title: "Backend Development Engineer Intern (Node.js & Microservices)",
     company: "Codeblaze",
     category: "backend",
+    price: 899,
+    image: backendDev,
     location: "Bengaluru, KA, IN",
     duration: "12 Weeks",
     fees: "₹899",
@@ -180,6 +192,8 @@ export const internships = [
     title: "Python Full-Stack Development Engineer (Django & React)",
     company: "Codeblaze",
     category: "python",
+    price: 949,
+    image: pythonFullStack,
     location: "Bengaluru, KA, IN",
     duration: "12 Weeks",
     fees: "₹949",
@@ -236,6 +250,8 @@ export const internships = [
     title: "Java Full-Stack Development Engineer (Spring Boot & Angular)",
     company: "Codeblaze",
     category: "java",
+    price: 999,
+    image: javaFullStack,
     location: "Bengaluru, KA, IN",
     duration: "12 Weeks",
     fees: "₹999",
@@ -291,6 +307,8 @@ export const internships = [
     title: "Test Internship for Payments",
     company: "Codeblaze",
     category: "testing",
+    price: 2,
+    image: "https://placehold.co/600x400/cccccc/000000?text=Test",
     location: "Bengaluru, KA, IN",
     duration: "1 Week",
     fees: "₹2",

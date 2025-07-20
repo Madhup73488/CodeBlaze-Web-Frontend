@@ -41,23 +41,24 @@ const PremiumInternships = ({ theme, color }) => {
 
   return (
     <section className={`premium-internships-container ${theme}`}>
-      <div className="premium-internships-header">
-        <h1 className="premium-internships-title">
-          Explore Our{" "}
-          <span style={{ color: primaryColor }}>
-            Premium Internship Programs
-          </span>
-        </h1>
-        <div
-          className="accent-line"
-          style={{ backgroundColor: primaryColor }}
-        ></div>
-        <p className="premium-internships-subtitle">
-          Gain hands-on experience and accelerate your career with our
-          industry-leading internship programs.
-        </p>
-      </div>
-      <div className="internships-grid">
+      <div className="container">
+        <div className="premium-internships-header">
+          <h1 className="premium-internships-title">
+            Explore Our{" "}
+            <span style={{ color: primaryColor }}>
+              Premium Internship Programs
+            </span>
+          </h1>
+          <div
+            className="accent-line"
+            style={{ backgroundColor: primaryColor }}
+          ></div>
+          <p className="premium-internships-subtitle">
+            Gain hands-on experience and accelerate your career with our
+            industry-leading internship programs.
+          </p>
+        </div>
+        <div className="internships-grid">
         {internships.slice(0, 3).map((internship) => (
           <Link
             to={`/internships/${internship.id}`}
@@ -102,6 +103,7 @@ const PremiumInternships = ({ theme, color }) => {
           </svg>
         </Link>
       </div>
+      </div>
       <style jsx>{`
         .explore-more-container {
           text-align: center;
@@ -119,7 +121,7 @@ const PremiumInternships = ({ theme, color }) => {
           gap: 1rem;
         }
         .premium-internships-container {
-          padding: 4rem 2rem;
+          padding: 4rem 0;
           background-color: ${theme === "dark" ? "#111827" : "#f9fafb"};
         }
         .premium-internships-header {
@@ -156,8 +158,6 @@ const PremiumInternships = ({ theme, color }) => {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
           gap: 2rem;
-          max-width: 1200px;
-          margin: 0 auto;
         }
         @media (max-width: 768px) {
           .internships-grid {

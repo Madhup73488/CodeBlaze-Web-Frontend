@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 1100;
   padding: 1rem;
   transition: opacity 0.3s ease;
   animation: fadeIn 0.3s ease;

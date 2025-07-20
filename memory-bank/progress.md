@@ -20,8 +20,13 @@
   - File upload field names updated.
   - Admin panel user management refactored.
   - `systemPatterns.md` updated.
+  - `src/components/common/Navbar.js`: Refactored to use `AuthContext` and `AuthModal`.
+  - `src/components/common/Navbar.css`: Cleaned up and simplified.
+  - `src/components/landing/Hero.js` and `src/components/landing/Hero.css`: Updated hero section with new marketing copy and cleaned up styles.
+  - UI components (`Navbar.js`, `MobileMenu.js`, `LearningGoals.js`) have been fixed and enhanced based on user feedback, improving functionality and user experience.
 
 - **What's left to build (Current Task Focus)**:
+  - **Investigate Infinite Loader**: Debug the component causing the infinite re-render loop and excessive API calls to `/connect/user/progress`.
   - **Backend Database Issue**: The primary blocker is a backend database error: `"type "enum_app_users_roles[]" does not exist"`.
   - **Frontend Alignment with Backend Refactor (Largely Complete for reviewed areas, pending backend fix)**:
     - User needs to integrate `ResetPasswordPage.js` and `OAuthCallbackPage.js` into the router.
@@ -37,6 +42,7 @@
 
 - **Known issues**:
   - **BLOCKER: Backend database error related to `enum_app_users_roles[]` type.**
+  - A component is causing an infinite loader and repeated calls to the `/connect/user/progress` API endpoint.
   - Numerous ESLint warnings across the codebase still need attention.
   - The `handleSubmit` in `src/components/careers/JobApplicationForm.js` is a simulation.
   - Other admin panel sections (Content Management, Documents, Job Detail application list) may need review.

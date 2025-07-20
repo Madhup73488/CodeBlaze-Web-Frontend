@@ -232,11 +232,7 @@ export const AdminProvider = ({ children }) => {
   const contextValue = useMemo(() => ({
     currentUser: user,
     isAuthenticated: mainIsAuthenticated && state.hasAdminAccess,
-    // isAdmin and isSuperAdmin from AuthContext are more reliable as they use user.roles
-    // isAdmin: user?.role === "admin", // This was from AuthContext, but AdminContext should rely on its own hasAdminAccess
-    // isSuperAdmin: user?.role === "superadmin", // Same as above
-    // hasRole: (...roles) => user && roles.includes(user.role), // Same as above
-    hasAdminAccess: state.hasAdminAccess, // This is the key flag from AdminContext
+    hasAdminAccess: state.hasAdminAccess,
     adminAccessError: state.adminAccessError,
     isAdminChecking: state.isAdminChecking,
     theme: state.theme,
@@ -246,7 +242,7 @@ export const AdminProvider = ({ children }) => {
     notifications: state.notifications,
     unreadNotificationCount: state.unreadNotificationCount,
     dashboardStats: state.dashboardStats,
-    users: state.users, // These are regular users, fetched by adminApi.default.fetchUsers
+    users: state.users,
     jobPostings: state.jobPostings,
     internshipPostings: state.internshipPostings,
     jobApplications: state.jobApplications,
@@ -267,14 +263,14 @@ export const AdminProvider = ({ children }) => {
     fetchUserAnalytics: wrappedFetchUserAnalytics,
     fetchJobAnalytics: wrappedFetchJobAnalytics,
     fetchApplicationAnalytics: wrappedFetchApplicationAnalytics,
-    fetchUsers: adminApi.default.fetchUsers, // For regular users
+    fetchUsers: adminApi.default.fetchUsers,
     fetchJobPostings: adminApi.default.fetchAdminJobs,
     fetchInternshipPostings: adminApi.default.fetchAdminInternships,
     fetchJobApplications: adminApi.default.fetchAdminJobApplications,
     fetchInternshipApplications: adminApi.default.fetchAdminInternshipApplications,
     fetchSettings: adminApi.default.fetchAdminSettings,
-    updateUser: adminApi.default.updateUser, // For regular users
-    deleteUser: adminApi.default.deleteUser, // For regular users
+    updateUser: adminApi.default.updateUser,
+    deleteUser: adminApi.default.deleteUser,
     createJobAdmin: adminApi.default.createJobAdmin,
     updateJobAdmin: adminApi.default.updateJobAdmin,
     deleteJobAdmin: adminApi.default.deleteJobAdmin,
@@ -285,7 +281,22 @@ export const AdminProvider = ({ children }) => {
     fetchNotifications,
     markNotificationAsRead,
     clearError,
-  }), [user, mainIsAuthenticated, authLoading, state, setTheme, toggleSidebar, clearError, checkAdminAccess, fetchNotifications, markNotificationAsRead, loadDashboardStats, wrappedFetchUserAnalytics, wrappedFetchJobAnalytics, wrappedFetchApplicationAnalytics, dispatch]); // Removed handleResize from deps as contextValue doesn't directly use it
+  }), [
+    user, 
+    mainIsAuthenticated, 
+    authLoading, 
+    state, 
+    setTheme, 
+    toggleSidebar, 
+    clearError, 
+    checkAdminAccess, 
+    fetchNotifications, 
+    markNotificationAsRead, 
+    loadDashboardStats, 
+    wrappedFetchUserAnalytics, 
+    wrappedFetchJobAnalytics, 
+    wrappedFetchApplicationAnalytics
+  ]);
 
   return <AdminContext.Provider value={contextValue}>{children}</AdminContext.Provider>;
 };

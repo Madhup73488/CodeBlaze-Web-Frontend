@@ -53,7 +53,9 @@ import OfferLetterGeneratorPage from "./admin/pages/documents/OfferLetterGenerat
 import CertificateGeneratorPage from "./admin/pages/documents/CertificateGeneratorPage";
 import BannerCarouselPage from "./admin/pages/ContentManagement/BannerCarouselPage";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { CartProvider } from "./contexts/CartContext";
 import AuthModal from "./components/Auth/AuthModal";
+import CartDrawer from "./components/common/CartDrawer";
 import ProfileDashboard from "./components/profile/ProfileDashboard";
 import PublicProfile from "./components/profile/PublicProfile";
 import ProfilePage from "./components/profile/ProfilePage";
@@ -63,6 +65,8 @@ import ResumeWritingTips from "./components/Resources/ResumeWritingTips";
 import CertificateVerificationPage from "./pages/CertificateVerificationPage";
 import ServicesPage from "./components/Services/ServicesPage";
 import CallbackModal from "./components/common/CallbackModal";
+import CoursesPage from "./pages/CoursesPage";
+import CourseDetailPage from "./pages/CourseDetailPage";
 import {
   DEFAULT_THEME,
   DEFAULT_COLOR,
@@ -79,14 +83,14 @@ const AppContent = () => {
     isAuthenticated,
     user,
     loading: authLoading,
-    authFlowState,
-    setAuthFlowState,
+    isAuthModalOpen,
+    openAuthModal,
+    closeAuthModal,
   } = useAuth();
   const [theme, setTheme] = useState(DEFAULT_THEME);
   const [color, setColor] = useState(DEFAULT_COLOR);
   const location = useLocation();
   const navigate = useNavigate();
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isCallbackModalOpen, setIsCallbackModalOpen] = useState(false);
   const [initialServiceForModal, setInitialServiceForModal] = useState('');
   const isAdminRoute = location.pathname.startsWith("/admin");
@@ -108,30 +112,6 @@ const AppContent = () => {
     document.body.className = theme;
   }, [theme]);
 
-  useEffect(() => {
-    if (authFlowState === "reset_password_form" && !isAuthModalOpen) {
-      setIsAuthModalOpen(true);
-    }
-  }, [authFlowState, isAuthModalOpen]);
-
-
-  const openAuthModal = (initialFlowState = "initial") => {
-    setAuthFlowState(initialFlowState);
-    setIsAuthModalOpen(true);
-  };
-
-  const closeAuthModal = () => {
-    setIsAuthModalOpen(false);
-    if (
-      authFlowState !== "reset_password_form" && 
-      authFlowState !== "password_reset_success"
-    ) {
-      setAuthFlowState("initial");
-    }
-    if (authFlowState === "reset_password_form" && location.pathname.startsWith("/reset-password")) {
-      navigate("/", { replace: true }); 
-    }
-  };
   
   if (authLoading && !isAdminRoute) { 
     return (
@@ -317,6 +297,8 @@ const AppContent = () => {
           path={ROUTES.CERTIFICATE_VERIFICATION}
           element={<CertificateVerificationPage theme={theme} />}
         />
+        <Route path="/courses" element={<CoursesPage />} />
+        <Route path="/courses/:id" element={<CourseDetailPage />} />
 
         {/* Admin Routes */}
         <Route
@@ -522,6 +504,7 @@ const AppContent = () => {
         theme={theme}
         initialSelectedService={initialServiceForModal}
       />
+      <CartDrawer />
     </div>
   );
 };
@@ -530,7 +513,9 @@ function App() {
   return (
     <LoaderProvider color="orange">
       <AuthProvider>
-        <AppContent />
+        <CartProvider>
+          <AppContent />
+        </CartProvider>
       </AuthProvider>
     </LoaderProvider>
   );

@@ -22,6 +22,7 @@ export const AuthProvider = ({ children }) => {
   const [authFlowState, setAuthFlowState] = useState("initial");
   const [userEmailForOTP, setUserEmailForOTP] = useState("");
   const [resetPasswordToken, setResetPasswordToken] = useState(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -239,6 +240,14 @@ export const AuthProvider = ({ children }) => {
     }
   }, [setError, setLoading, setUser, setIsAuthenticated, setAuthFlowState]);
 
+  const openAuthModal = useCallback(() => {
+    setIsAuthModalOpen(true);
+  }, []);
+
+  const closeAuthModal = useCallback(() => {
+    setIsAuthModalOpen(false);
+  }, []);
+
   const memoizedContextValue = useMemo(() => ({
     user,
     isAuthenticated,
@@ -247,40 +256,46 @@ export const AuthProvider = ({ children }) => {
     authFlowState,
     userEmailForOTP,
     resetPasswordToken,
-    setError, 
-    setAuthFlowState, 
-    register, 
+    isAuthModalOpen,
+    setError,
+    setAuthFlowState,
+    register,
     verifyOTP,
     resendOTP,
     login,
     logout,
     forgotPassword,
     resetPassword,
-    checkAuthStatus, 
+    checkAuthStatus,
     loginWithTokens,
+    openAuthModal,
+    closeAuthModal,
     // Updated role checks
     isAdmin: user && user.roles && (user.roles.includes('admin') || user.roles.includes('superadmin')),
     isSuperAdmin: user && user.roles && user.roles.includes('superadmin'),
     hasRole: (...checkRoles) => user && user.roles && checkRoles.some(role => user.roles.includes(role)),
   }), [
-    user, 
-    isAuthenticated, 
-    loading, 
-    error, 
-    authFlowState, 
-    userEmailForOTP, 
-    resetPasswordToken, 
-    setError, 
-    setAuthFlowState, 
-    register, 
-    verifyOTP, 
-    resendOTP, 
-    login,     
-    logout,    
-    forgotPassword, 
-    resetPassword,  
-    checkAuthStatus, 
-    loginWithTokens
+    user,
+    isAuthenticated,
+    loading,
+    error,
+    authFlowState,
+    userEmailForOTP,
+    resetPasswordToken,
+    isAuthModalOpen,
+    setError,
+    setAuthFlowState,
+    register,
+    verifyOTP,
+    resendOTP,
+    login,
+    logout,
+    forgotPassword,
+    resetPassword,
+    checkAuthStatus,
+    loginWithTokens,
+    openAuthModal,
+    closeAuthModal
   ]);
 
   return (

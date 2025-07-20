@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import InternshipCard from "../ForStudents/InternshipCard";
+import React, { useState, useEffect } from "react";
+import InternshipCard from "./InternshipCard";
+import InternshipCardSkeleton from "./InternshipCardSkeleton";
 import InternshipDetailPage from "../ForStudents/InternshipDetailPage";
 import { internships } from "../ForStudents/internshipsData";
 import "../ForStudents/Internships.css";
@@ -7,6 +8,30 @@ import "../ForStudents/Internships.css";
 function InternshipPortal({ theme = "light", color = "purple" }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
+  const [loading, setLoading] = useState(true);
+  const [savedInternships, setSavedInternships] = useState([]);
+  const [appliedInternships, setAppliedInternships] = useState([]);
+
+  const toggleSaveInternship = (id) => {
+    setSavedInternships((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
+
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const categories = [
     { id: "all", name: "All Programs" },
@@ -76,14 +101,22 @@ function InternshipPortal({ theme = "light", color = "purple" }) {
 
       <section className="internships-section">
         <div className="internships-list">
-          {filteredInternships.map((internship) => (
-            <InternshipCard
-              key={internship.id}
-              internship={internship}
-              theme={theme}
-              color={color}
-            />
-          ))}
+          {loading
+            ? Array.from({ length: 6 }).map((_, index) => (
+                <InternshipCardSkeleton key={index} />
+              ))
+            : filteredInternships.map((internship) => (
+                <InternshipCard
+                  key={internship.id}
+                  internship={internship}
+                  theme={theme}
+                  primaryColor={color === "purple" ? "#a855f7" : "#f97316"}
+                  savedInternships={savedInternships}
+                  appliedInternships={appliedInternships}
+                  toggleSaveInternship={toggleSaveInternship}
+                  formatDate={formatDate}
+                />
+              ))}
         </div>
       </section>
     </div>
