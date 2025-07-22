@@ -417,7 +417,7 @@ function JobSeekers({ theme = "light", color = "blue" }) {
           ) : (
             showContent &&
             hasResults &&
-            filteredJobs().map((job) => (
+            filteredJobs().slice(0, 11).map((job) => (
               <div key={job.id} className="job-card-link">
                 <JobCard
                   job={job}
@@ -433,16 +433,20 @@ function JobSeekers({ theme = "light", color = "blue" }) {
               </div>
             ))
           )}
+          {showContent && hasResults && (
+            <div className="job-card-link">
+              <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out overflow-hidden h-full flex flex-col items-center justify-center p-6 text-center">
+                <h3 className="font-bold text-lg leading-tight text-gray-900 mb-4">
+                  Get full access to job updates by registering for an internship program.
+                </h3>
+                <a href="/internships" className="bg-primary text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors">
+                  Register Now
+                </a>
+              </div>
+            </div>
+          )}
         </div>
 
-        {hasResults && totalPages > 1 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            handlePageChange={handlePageChange}
-            primaryColor={primaryColor}
-          />
-        )}
       </section>
     </div>
   );

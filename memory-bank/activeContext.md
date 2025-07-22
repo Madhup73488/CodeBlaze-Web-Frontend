@@ -1,42 +1,21 @@
 # Active Context
 
-- **Current Work Focus**: Understanding and integrating significant backend API and structural changes into the frontend application. The backend has undergone a major refactor, including a database migration from MongoDB/Mongoose to PostgreSQL/Sequelize, and substantial reorganization of API endpoints.
+- **Current Work Focus**: Standardizing the UI across the entire admin section, including padding, margins, headings, and background colors. Implementing a new "Work Bag" feature to replace the old cart system and creating a new enrollment flow. Modifying the job portal page to display a limited number of jobs and a promotional card.
 
-- **Recent Information Received (Backend Changes Summary)**:
-    - **Project Directory Restructure**: Core backend logic (middleware, services, utils, controllers, routes) moved into a main `src/` directory. Controllers and routes are now organized into a feature-based structure (e.g., `src/features/auth/`).
-    - **Database Migration**: Backend migrated from MongoDB (Mongoose) to PostgreSQL (Sequelize). Field names aligned with `initial_schema.sql`.
-    - **Authentication Flow (`/api/auth`)**:
-        - `POST /register`: Initiates OTP verification.
-        - `POST /verify-email` (or similar): Submits OTP to complete registration and get tokens.
-        - `POST /login`: Requires verified email.
-        - `POST /logout`: Handles server-side refresh token invalidation.
-        - `POST /refresh`: Refreshes access tokens.
-        - Google OAuth (`GET /google`, `GET /google/callback`): Callback issues application-specific JWTs.
-    - **User Profile Management (`/api/users`)**:
-        - Resume Upload (`POST /resume`): Expects `resumeFile` (form-data).
-        - Profile Image Upload (`POST /profile-image`): Expects `profileImageFile` (form-data).
-        - CRUD endpoints for user experience and education.
-    - **Job and Internship Management (`/api/jobs`, `/api/internships`)**:
-        - Standard CRUD for employers/admins.
-        - `GET /my-jobs`, `GET /my-internships` for user's own listings.
-        - `GET /:id/applications` for employers/admins.
-    - **Application Process (`/api/applications`)**:
-        - `POST /`: Submits application, integrates resume upload.
-        - Endpoints for viewing user's applications, specific application details, status updates, and withdrawal.
-    - **Admin Panel Endpoints (`/api/admin/...`)**:
-        - Consolidated routes for user management, admin user management, full CRUD for Jobs/Internships, activating/featuring listings, application management, content management (banners/carousels), document generation, and analytics.
-    - **Public Endpoints (`/api/public`)**:
-        - `GET /certificate/:certificateId` for public certificate verification.
-    - **Error Handling**: Global error handler updated for Sequelize.
-    - **Reset Password API (`POST /api/auth/reset-password`)**: Changed to POST, expects token and newPassword in the body. Returns success message, no user/token.
+- **Recent Changes**:
+    - **UI Overhaul**: Updated the styling of all admin pages to ensure a consistent and modern design.
+    - **"Work Bag" Feature**: Replaced the `Cart` with a `WorkBag`, including renaming components and contexts.
+    - **Enrollment Flow**: Implemented a new `EnrollNowModal` that appears after a user logs in to collect additional details before proceeding to payment.
+    - **User Profile Update**: The `EnrollNowModal` now updates the user's profile with their phone number and college name.
+    - **Excel Export**: After a successful payment, the enrollment data is sent to a new endpoint to be saved in an Excel sheet.
+    - **Mobile View**: Added the "Work Bag" icon to the mobile view of the navbar.
+    - **Grant Access Modal**: Refactored the "Grant Access" form into a modal and fixed various styling and accessibility issues.
+    - **Job Portal**: Modified the job portal page to display only 11 jobs and a promotional card at the end that links to the internships page.
+    - **Job Card**: The "Apply Now" button on the `JobCard` component now triggers the login modal if the user is not authenticated.
 
 - **Next Steps**:
-    - Review all frontend service files (e.g., `src/services/api.js`, `src/services/AuthApi.js`, `src/services/userService.js`, `src/admin/utils/api.js`) to update API endpoint paths, HTTP methods, and request/response payloads to align with the new backend. (Largely completed, with specific update for resetPassword).
-    - Update the authentication flow in the frontend (components in `src/components/Auth/`) to support the new OTP-based registration.
-    - Verify and update file upload mechanisms (`src/components/profile/FileUploadSection.js`, `src/components/careers/JobApplicationForm.js`) to use the correct form-data field names (`resumeFile`, `profileImageFile`).
-    - Refactor the admin panel (`src/admin/`) to use the new consolidated `/api/admin/...` routes.
-    - Conduct thorough testing of all features that interact with the backend.
-    - Update other relevant Memory Bank files (`progress.md`, `systemPatterns.md`) to reflect these changes and the new tasks.
+    - Continue to monitor and address any UI inconsistencies or bugs that arise.
+    - Conduct thorough testing of the new "Work Bag" and enrollment flow.
 
 - **Important Patterns and Preferences**:
     - Adhering to the Memory Bank structure and update workflows.
@@ -44,53 +23,7 @@
     - Prioritizing robust error handling and user feedback for API interactions.
 
 - **Learnings and Project Insights**:
-    - The backend has undergone a significant refactoring, moving from MongoDB/Mongoose to PostgreSQL/Sequelize.
-    - API endpoints have been restructured, particularly for authentication and admin functionalities.
-    - File upload handling has specific field name requirements.
-    - A new OTP-based registration flow is in place.
-    - The `resetPassword` API has changed (POST, token in body, no user/token in response).
-    - Frontend logic for handling the password reset URL (`/reset-password?token=...`) has been refined.
-    - **Google OAuth Sign-In Frontend Support Updated**:
-        - `src/components/Auth/SocialLogin.js`: Google button now redirects to `/api/auth/google`.
-        - Backend callback now redirects to `/oauth-callback` with `token` (access token) and `refreshToken` in query parameters.
-        - `src/pages/OAuthCallbackPage.js`: Refactored for robust token processing and navigation.
-        - `src/contexts/AuthContext.js`: Context functions stabilized with `useCallback`/`useMemo`; admin role checking logic updated to use `user.roles` array.
-    - **Navbar Admin Links**:
-        - `src/components/common/Navbar.js`: Updated to correctly check `user.roles` for displaying admin links; `showLoaderFor` temporarily commented out in `handleNavigation`.
-    - **Admin Route Protection**:
-        - `src/App.js` (within `AppContent`): Admin route guard uses a locally derived `isAdmin` check based on `user.roles` from `AuthContext`. Diagnostic logging added.
-        - `src/admin/contexts/AdminContext.js`: Corrected the `checkAdminAccess` function to properly use `user.roles.includes('admin')`.
-    - **Admin Dashboard Stats**:
-        - `src/admin/pages/DashboardHome.js`: Updated `getApplicationStatusCounts` function to process `applicationsByStatus` as an array of `{status, count}` objects. Addressed React key warning.
-    - **Admin Listings (Jobs & Internships) & Applications**:
-        - `src/admin/pages/jobs/JobList.js`: Updated to handle flat pagination response (`response.jobs`, `response.totalJobs`).
-        - `src/admin/pages/internships/InternshipList.js`: Updated to handle flat pagination response.
-        - `src/admin/utils/api.js`: Consolidated application fetching.
-        - `src/admin/pages/applications/JobApplications.js` & `InternshipApplications.js`: Updated for consolidated API and new response structure.
-        - `src/admin/pages/internships/InternshipDetail.js`: Updated for consolidated application API and new response structure. Cleaned up unused imports/variables.
-    - **Admin Analytics**:
-        - `src/admin/pages/analytics/UserAnalyticsPage.js`: Fixed `TypeError`.
-        - `src/admin/pages/analytics/JobAnalyticsPage.js`: Fixed `TypeError`.
-    - **Job & Internship Creation**:
-        - `src/admin/pages/jobs/JobCreate.js`: Improved client-side validation, payload key mapping (camelCase to snake_case), and API response handling (to fix "undefined undefined" console error on success).
-        - `src/admin/pages/internships/InternshipCreate.js`: Improved client-side validation, payload key mapping, API response handling (to fix "undefined undefined" console error on success). Cleaned up unused function and ESLint `useCallback` dependency.
-    - **ESLint Warnings Addressed**:
-        - `src/App.js`: Removed unused `useRef`.
-        - `src/admin/components/common/DataTable.js`: Removed unused `Link` import and `handleSearch` function.
-        - `src/admin/components/common/FormFields.js`: Removed unused `Form` import.
-        - `src/admin/contexts/AdminContext.js`: Addressed `exhaustive-deps` for `contextValue`'s `useMemo` by removing `handleResize` from its dependencies.
-    - **Current Blocker (Backend)**: A database error `"type "enum_app_users_roles[]" does not exist"` is occurring. This needs to be resolved in the backend's database schema and Sequelize model/migrations.
-    - **Navbar Refactor**:
-        - `src/components/common/Navbar.js`: Refactored to use `AuthContext` for conditional rendering of auth buttons vs. user profile dropdown. Integrated `AuthModal`.
-        - `src/components/common/Navbar.css`: Cleaned up to remove unused CSS and only include Tailwind CSS helper classes.
-    - **Hero Section Update**:
-        - `src/components/landing/Hero.js`: Updated the main slogan and subtitle with new marketing copy.
-        - `src/components/landing/Hero.css`: Removed unused CSS for the old layout.
-    - **UI Fixes and Enhancements**:
-        - **Login Modal**: Corrected the state management to allow the login modal to be opened from the mobile menu.
-        - **Navbar Indicator**: Added a visual "active" indicator to the "Internships" link to attract user attention.
-        - **Learning Goals Section**: Refactored the component to use the correct image and video assets. Addressed and fixed issues related to image loading and layout shifting during tab changes.
-        - **Mobile Navigation**: Added "Profile" and "Admin Dashboard" links to the mobile menu for authenticated users, ensuring feature parity with the desktop view.
-    - **New Issue Identified**:
-        - **Infinite Loader / API Calls**: The user has reported that some components are getting stuck in a loading state, causing a continuous loop of API calls to `/connect/user/progress`. This needs to be investigated.
-    - Thorough integration testing will be critical once the backend database issue is resolved.
+    - The admin section now has a consistent and modern design.
+    - The new "Work Bag" feature provides a more intuitive user experience.
+    - The enrollment flow is now more streamlined and collects all necessary user information.
+    - The job portal page now has a clear call to action to encourage users to register for internships.
