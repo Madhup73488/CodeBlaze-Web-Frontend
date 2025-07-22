@@ -131,7 +131,6 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
         description: `Enrollment for ${internship.title}`,
         image: codeblazeLogoOrange,
         order_id: order.id,
-        callback_url: `${apiUrl}/api/payment/verify-payment`, // We can use this as a fallback
         handler: async (response) => {
           console.log("Razorpay handler called", response); // New log
           try {
