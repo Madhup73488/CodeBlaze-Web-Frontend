@@ -1,4 +1,5 @@
 import React from "react";
+import { useAuth } from "../../contexts/AuthContext";
 
 function JobCard({
   job, // Now receives the original job object from the API
@@ -11,6 +12,7 @@ function JobCard({
   getCompanyLogo, // This function is still defined and passed from JobSeekers
   formatDate, // This function is still defined and passed from JobSeekers
 }) {
+  const { isAuthenticated, openAuthModal } = useAuth();
   // Function to format the salary display string - Moved from JobSeekers
   const formatSalary = (job) => {
     if (!job) return "Salary not specified";
@@ -139,10 +141,7 @@ function JobCard({
             {savedJobs.includes(job?.id) ? "Saved" : "Save"}
           </button>
           {/* Use job.application_url from the original API object */}
-          <a
-            href={job?.application_url?.trim() || "#"} // Fallback href
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
             className={`apply-button ${
               appliedJobs.includes(job?.id) ? "applied" : ""
             } ${!job?.application_url ? "disabled" : ""}`}
@@ -153,15 +152,20 @@ function JobCard({
             }}
             onClick={(e) => {
               e.stopPropagation();
-              if (!job?.application_url?.trim()) {
-                e.preventDefault();
-                return;
+              e.preventDefault();
+              if (!isAuthenticated) {
+                openAuthModal();
+              } else {
+                if (!job?.application_url?.trim()) {
+                  return;
+                }
+                toggleApplyJob(job?.id);
+                window.open(job.application_url, "_blank");
               }
-              toggleApplyJob(job?.id);
             }}
           >
             Apply
-          </a>
+          </button>
         </div>
       </div>
 

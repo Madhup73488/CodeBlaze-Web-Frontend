@@ -6,7 +6,7 @@ The frontend is structured as a Single Page Application (SPA), likely built with
 
 **Key Architectural Decisions:**
 - **Component-Based Structure**: The application heavily utilizes a component-based architecture, with components organized by feature or domain (e.g., `src/components/Auth`, `src/components/careers`, `src/components/Internships`, `src/components/profile`).
-- **Context API for State Management**: The presence of `src/contexts/AuthContext.js` and `src/contexts/LoaderContext.js` suggests the use of React's Context API for global state management, handling authentication status and loading states across the application.
+- **Context API for State Management**: The presence of `src/contexts/AuthContext.js`, `src/contexts/LoaderContext.js`, and `src/contexts/WorkBagContext.js` suggests the use of React's Context API for global state management, handling authentication, loading states, and the user's work bag across the application.
 - **Service Layer for API Interaction**:
     - A centralized Axios instance (`apiClient`) is defined in `src/services/api.js`. This client handles base URL configuration, request interceptors (e.g., for adding auth tokens), and provides a common error handler (`handleApiError`).
     - `src/services/AuthApi.js` and `src/services/userService.js` utilize this `apiClient` for their respective API calls, ensuring consistent API interaction patterns for the main application.
@@ -27,5 +27,5 @@ The frontend is structured as a Single Page Application (SPA), likely built with
 
 **Critical Implementation Paths:**
 - **Authentication Flow**: Involves `AuthContext`, `AuthApi`, and components within `src/components/Auth`.
-- **Job/Internship Application Flow**: Involves components from `src/components/Internships`, `src/components/JobSeekers`, and potentially `src/components/careers`, interacting with relevant services.
+- **Job/Internship Application Flow**: Involves components from `src/components/Internships`, `src/components/JobSeekers`, and potentially `src/components/careers`, interacting with relevant services. The checkout process now includes an `EnrollNowModal` to collect user details before proceeding to payment.
 - **Admin Data Management**: Involves components and hooks from `src/admin/`, interacting with admin-specific APIs.

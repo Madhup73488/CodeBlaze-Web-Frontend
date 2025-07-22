@@ -2,28 +2,20 @@
 
 - **What works**:
   - The core memory bank structure is initialized.
-  - `activeContext.md` updated with all recent changes, including ESLint fixes and job/internship creation form updates.
+  - `activeContext.md` updated with all recent changes.
   - Frontend service files (`src/services/AuthApi.js`, `src/services/userService.js`, `src/admin/utils/api.js`) refactored/updated.
-    - `src/admin/utils/api.js`: Consolidated application fetching.
   - Authentication flow components and `AuthContext.js` reviewed and updated.
-    - `src/admin/contexts/AdminContext.js`: Corrected `checkAdminAccess` function. Addressed ESLint warning for `useMemo` deps.
-  - `src/components/common/Navbar.js`: Updated for admin link visibility.
-  - `src/App.js`: Admin route guard updated and diagnostic logging added. Removed unused `useRef`.
-  - `src/admin/pages/DashboardHome.js`: Addressed React key warning and updated for `applicationsByStatus` array.
-  - `src/admin/pages/jobs/JobList.js` & `src/admin/pages/internships/InternshipList.js`: Updated for new flat pagination API response.
-  - `src/admin/pages/applications/JobApplications.js` & `InternshipApplications.js`: Updated for consolidated API and new response structure.
-  - `src/admin/pages/internships/InternshipDetail.js`: Updated for consolidated application API and new response structure. Cleaned up unused imports/variables.
-  - `src/admin/pages/analytics/UserAnalyticsPage.js` & `JobAnalyticsPage.js`: Fixed `TypeError` by ensuring analytics data arrays default to empty arrays.
-  - `src/admin/pages/jobs/JobCreate.js` & `src/admin/pages/internships/InternshipCreate.js`: Improved client-side validation, payload key mapping (camelCase to snake_case), and API response handling (to fix "undefined undefined" console error on success). Cleaned up unused function and ESLint issues in InternshipCreate.
-  - `src/admin/components/common/DataTable.js`: Removed unused `Link` import and `handleSearch` function.
-  - `src/admin/components/common/FormFields.js`: Removed unused `Form` import.
-  - File upload field names updated.
-  - Admin panel user management refactored.
-  - `systemPatterns.md` updated.
-  - `src/components/common/Navbar.js`: Refactored to use `AuthContext` and `AuthModal`.
-  - `src/components/common/Navbar.css`: Cleaned up and simplified.
-  - `src/components/landing/Hero.js` and `src/components/landing/Hero.css`: Updated hero section with new marketing copy and cleaned up styles.
-  - UI components (`Navbar.js`, `MobileMenu.js`, `LearningGoals.js`) have been fixed and enhanced based on user feedback, improving functionality and user experience.
+  - `src/components/common/Navbar.js`: Updated for admin link visibility and "Work Bag" feature.
+  - `src/App.js`: Admin route guard updated and diagnostic logging added.
+  - Admin pages have been restyled for a consistent and modern design.
+  - The "Cart" feature has been replaced with a "Work Bag" feature.
+  - A new enrollment flow has been implemented with the `EnrollNowModal`.
+  - The `EnrollNowModal` now updates the user's profile and sends enrollment data to an Excel sheet.
+  - The "Work Bag" icon is now visible in the mobile view.
+  - The "Grant Access" form has been converted into a modal with improved styling and accessibility.
+  - The job portal page now displays only 11 jobs and a promotional card.
+  - The "Apply Now" button on the `JobCard` component now triggers the login modal if the user is not authenticated.
+  - **Google authentication is now working correctly.** The `Cross-Origin-Opener-Policy` issue has been resolved by setting `ux_mode: "popup"` in the Google Sign-In initialization and adding a corresponding meta tag to `index.html`.
 
 - **What's left to build (Current Task Focus)**:
   - **Investigate Infinite Loader**: Debug the component causing the infinite re-render loop and excessive API calls to `/connect/user/progress`.
@@ -37,7 +29,9 @@
 
 - **Current status**:
   - Frontend logic for authentication, role checking, OAuth flows, admin dashboard stats, admin job/internship/application listings, detail views, analytics pages, and job/internship creation forms has been significantly revised to align with backend changes and fix reported errors.
-  - Several ESLint warnings for unused variables/imports and hook dependencies have been addressed in modified files.
+  - The admin section has a consistent and modern design.
+  - The "Work Bag" and enrollment flow have been implemented.
+  - The job portal has been updated to limit the number of jobs displayed and include a promotional card.
   - **Currently blocked by a backend database schema issue (`"type "enum_app_users_roles[]" does not exist"`)**.
 
 - **Known issues**:
@@ -54,4 +48,7 @@
   - Fixed data processing errors in admin dashboard and analytics pages.
   - Improved client-side validation, payload mapping, and API response handling in job/internship creation forms.
   - Addressed several ESLint warnings in recently modified files.
+  - Implemented a new "Work Bag" feature and enrollment flow.
+  - Overhauled the UI of the admin section for a more consistent and modern design.
+  - Updated the job portal to improve user engagement and drive internship registrations.
   - **Current efforts are paused pending resolution of a backend database schema error.**

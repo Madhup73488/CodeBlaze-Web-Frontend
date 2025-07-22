@@ -128,6 +128,17 @@ const refreshToken = async () => {
   }
 };
 
+const googleLogin = async (tokenId) => {
+  try {
+    const response = await apiClient.post("/auth/google-login", {
+      idToken: tokenId,
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
 const authApi = {
   register,
   verifyOTP,
@@ -138,6 +149,7 @@ const authApi = {
   resetPassword,
   validateToken,
   refreshToken, // Add the new method
+  googleLogin,
 };
 
 export default authApi;
