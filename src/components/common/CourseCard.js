@@ -1,10 +1,10 @@
 import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useCart } from "../../contexts/CartContext";
+import { useWorkBag } from "../../contexts/WorkBagContext";
 import { useState } from "react";
 
 export default function CourseCard({ course }) {
-  const { addToCart } = useCart();
+  const { addToWorkBag } = useWorkBag();
   const [isAdding, setIsAdding] = useState(false);
 
   const handleAddToCart = (e) => {
@@ -12,7 +12,7 @@ export default function CourseCard({ course }) {
     e.stopPropagation();
     setIsAdding(true);
     setTimeout(() => {
-      addToCart(course);
+      addToWorkBag(course);
       setIsAdding(false);
     }, 1000);
   };

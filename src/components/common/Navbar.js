@@ -7,7 +7,7 @@ import BrowseDropdown from "./BrowseDropdown";
 import SearchSuggestions from "./SearchSuggestions";
 import { allCourses } from "../../pages/CoursesPage";
 import { useAuth } from "../../contexts/AuthContext";
-import { useCart } from "../../contexts/CartContext";
+import { useWorkBag } from "../../contexts/WorkBagContext";
 import AuthModal from "../Auth/AuthModal";
 import MobileMenu from "./MobileMenu";
 import "./Navbar.css";
@@ -21,7 +21,7 @@ export default function Navbar() {
   const [suggestions, setSuggestions] = useState([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const { user, logout } = useAuth();
-  const { openCart, cart } = useCart();
+  const { openWorkBag, workBag } = useWorkBag();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const navigate = useNavigate();
@@ -38,6 +38,19 @@ export default function Navbar() {
     }, 3000); // Time between text changes
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isProfileDropdownOpen && !event.target.closest('.relative')) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isProfileDropdownOpen]);
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
@@ -151,11 +164,11 @@ export default function Navbar() {
 
             {/* Auth Buttons - Desktop */}
             <div className="hidden md:flex items-center space-x-4">
-              <Button variant="ghost" onClick={openCart} className="relative">
+              <Button variant="ghost" onClick={openWorkBag} className="relative">
                 <ShoppingCart className="h-6 w-6 text-gray-700" />
-                {cart.length > 0 && (
+                {workBag.length > 0 && (
                   <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full mt-4 mr-6">
-                    {cart.length}
+                    {workBag.length}
                   </span>
                 )}
               </Button>
@@ -221,7 +234,15 @@ export default function Navbar() {
             </div>
 
             {/* Mobile menu button */}
-            <div className="md:hidden">
+            <div className="md:hidden flex items-center space-x-4">
+              <Button variant="ghost" onClick={openWorkBag} className="relative">
+                <ShoppingCart className="h-6 w-6 text-gray-700" />
+                {workBag.length > 0 && (
+                  <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full mt-4 mr-6">
+                    {workBag.length}
+                  </span>
+                )}
+              </Button>
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="text-gray-700 hover:text-primary transition-colors"

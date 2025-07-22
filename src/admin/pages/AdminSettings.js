@@ -640,48 +640,32 @@ const AdminSettings = () => {
 
       <style jsx>{`
         .admin-settings {
-          padding: 0.5rem;
+          padding: 2rem;
+          background-color: ${theme === "dark" ? "#121212" : "#f0f2f5"};
         }
 
         .settings-header {
-          padding: 1.5rem;
-          border-radius: 0.5rem;
-          margin-bottom: 1.5rem;
-          background-color: ${theme === "dark" ? "#1f2937" : "#ffffff"};
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .settings-header.dark {
-          border: 1px solid #374151;
+          margin-bottom: 2rem;
         }
 
         .settings-header h1 {
-          font-size: 1.5rem;
-          font-weight: 600;
-          margin-bottom: 0.5rem;
-          color: ${theme === "dark" ? "#e0e0e0" : "#111827"};
+          font-size: 2rem;
+          font-weight: 700;
+          color: ${theme === "dark" ? "#ffffff" : "#1f2937"};
         }
 
         .settings-header p {
-          color: ${theme === "dark" ? "#9ca3af" : "#6b7280"};
+          font-size: 1rem;
+          color: ${theme === "dark" ? "#a0aec0" : "#6b7280"};
         }
 
         .settings-container {
           display: flex;
-          border-radius: 0.5rem;
-          background-color: ${theme === "dark" ? "#1f2937" : "#ffffff"};
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-          overflow: hidden;
-        }
-
-        .settings-container.dark {
-          border: 1px solid #374151;
+          gap: 2rem;
         }
 
         .settings-sidebar {
-          width: 220px;
-          border-right: 1px solid ${theme === "dark" ? "#374151" : "#e5e7eb"};
-          padding: 1.5rem 0;
+          width: 240px;
           flex-shrink: 0;
         }
 
@@ -689,41 +673,44 @@ const AdminSettings = () => {
           display: flex;
           align-items: center;
           width: 100%;
-          padding: 0.75rem 1.5rem;
+          padding: 1rem;
+          margin-bottom: 0.5rem;
           background: none;
           border: none;
+          border-radius: 8px;
           text-align: left;
-          font-size: 0.875rem;
-          color: ${theme === "dark" ? "#9ca3af" : "#6b7280"};
+          font-size: 1rem;
+          color: ${theme === "dark" ? "#a0aec0" : "#4a5568"};
           cursor: pointer;
-          transition: all 0.2s;
+          transition: background-color 0.2s, color 0.2s;
         }
 
         .sidebar-tab.active {
-          color: ${theme === "dark" ? "#e0e0e0" : "#111827"};
-          background-color: ${theme === "dark" ? "#374151" : "#f3f4f6"};
-          font-weight: 500;
+          color: #ffffff;
+          background-color: #4f46e5;
+          font-weight: 600;
         }
 
         .sidebar-tab:hover:not(.active) {
-          background-color: ${theme === "dark" ? "#2d3748" : "#f9fafb"};
+          background-color: ${theme === "dark" ? "#2d3748" : "#e2e8f0"};
         }
 
         .sidebar-tab svg {
-          margin-right: 0.75rem;
-          width: 1.25rem;
-          height: 1.25rem;
+          margin-right: 1rem;
+          width: 1.5rem;
+          height: 1.5rem;
         }
 
         .settings-content {
           flex: 1;
-          min-height: 500px;
-          position: relative;
+          background-color: ${theme === "dark" ? "#1a202c" : "#ffffff"};
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .settings-panel {
           display: none;
-          padding: 1.5rem;
+          padding: 2rem;
         }
 
         .settings-panel.active {
@@ -731,41 +718,42 @@ const AdminSettings = () => {
         }
 
         .settings-panel h2 {
-          font-size: 1.25rem;
-          font-weight: 600;
-          margin-bottom: 1.5rem;
-          color: ${theme === "dark" ? "#e0e0e0" : "#111827"};
+          font-size: 1.5rem;
+          font-weight: 700;
+          margin-bottom: 2rem;
+          color: ${theme === "dark" ? "#e2e8f0" : "#2d3748"};
         }
 
         .settings-section {
-          margin-bottom: 2rem;
+          margin-bottom: 2.5rem;
         }
 
         .settings-section h3 {
-          font-size: 1rem;
+          font-size: 1.2rem;
           font-weight: 600;
-          margin-bottom: 1rem;
-          color: ${theme === "dark" ? "#e0e0e0" : "#111827"};
-          padding-bottom: 0.5rem;
-          border-bottom: 1px solid ${theme === "dark" ? "#374151" : "#e5e7eb"};
+          margin-bottom: 1.5rem;
+          color: ${theme === "dark" ? "#cbd5e0" : "#4a5568"};
+          padding-bottom: 0.75rem;
+          border-bottom: 1px solid ${theme === "dark" ? "#2d3748" : "#e2e8f0"};
         }
 
         .avatar-section {
           display: flex;
           align-items: center;
-          margin-bottom: 1.5rem;
+          margin-bottom: 2rem;
         }
 
         .avatar-preview {
-          width: 100px;
-          height: 100px;
+          width: 120px;
+          height: 120px;
           border-radius: 50%;
           overflow: hidden;
-          background-color: ${theme === "dark" ? "#374151" : "#f3f4f6"};
+          background-color: ${theme === "dark" ? "#2d3748" : "#e2e8f0"};
           display: flex;
           align-items: center;
           justify-content: center;
-          margin-right: 1.5rem;
+          margin-right: 2rem;
+          border: 3px solid ${theme === "dark" ? "#4a5568" : "#cbd5e0"};
         }
 
         .avatar-preview img {
@@ -774,182 +762,123 @@ const AdminSettings = () => {
           object-fit: cover;
         }
 
-        .avatar-placeholder {
-          width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: ${theme === "dark" ? "#9ca3af" : "#6b7280"};
-        }
-
         .avatar-placeholder svg {
-          width: 40px;
-          height: 40px;
+          width: 60px;
+          height: 60px;
+          color: ${theme === "dark" ? "#718096" : "#a0aec0"};
         }
 
         .upload-btn {
-          display: inline-block;
-          background-color: ${theme === "dark" ? "#374151" : "#f3f4f6"};
-          color: ${theme === "dark" ? "#e0e0e0" : "#111827"};
-          padding: 0.5rem 1rem;
-          border-radius: 0.375rem;
+          background-color: #4f46e5;
+          color: white;
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
           cursor: pointer;
-          font-size: 0.875rem;
-          font-weight: 500;
-          margin-bottom: 0.5rem;
-        }
-
-        .upload-btn:hover {
-          background-color: ${theme === "dark" ? "#4b5563" : "#e5e7eb"};
-        }
-
-        .file-input {
-          display: none;
+          font-size: 1rem;
+          font-weight: 600;
         }
 
         .upload-help {
-          font-size: 0.75rem;
-          color: ${theme === "dark" ? "#9ca3af" : "#6b7280"};
+          font-size: 0.875rem;
+          color: ${theme === "dark" ? "#a0aec0" : "#6b7280"};
+          margin-top: 0.5rem;
         }
 
         .form-group {
-          margin-bottom: 1.25rem;
+          margin-bottom: 1.5rem;
         }
 
         .form-row {
-          display: flex;
-          gap: 1rem;
-        }
-
-        .form-row .form-group {
-          flex: 1;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1.5rem;
         }
 
         .form-group label {
-          display: block;
-          font-size: 0.875rem;
-          font-weight: 500;
+          font-size: 1rem;
+          font-weight: 600;
           margin-bottom: 0.5rem;
-          color: ${theme === "dark" ? "#e0e0e0" : "#111827"};
+          color: ${theme === "dark" ? "#cbd5e0" : "#4a5568"};
         }
 
         .form-group input,
         .form-group select {
           width: 100%;
-          padding: 0.625rem;
-          border-radius: 0.375rem;
-          border: 1px solid ${theme === "dark" ? "#4b5563" : "#d1d5db"};
-          background-color: ${theme === "dark" ? "#374151" : "#ffffff"};
-          color: ${theme === "dark" ? "#e0e0e0" : "#111827"};
-          font-size: 0.875rem;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-          outline: none;
-          border-color: ${theme === "dark" ? "#60a5fa" : "#3b82f6"};
-          box-shadow: 0 0 0 2px ${theme === "dark" ? "rgba(96, 165, 250, 0.2)" : "rgba(59, 130, 246, 0.2)"};
+          padding: 0.75rem 1rem;
+          border-radius: 8px;
+          border: 1px solid ${theme === "dark" ? "#4a5568" : "#cbd5e0"};
+          background-color: ${theme === "dark" ? "#2d3748" : "#f7fafc"};
+          color: ${theme === "dark" ? "#e2e8f0" : "#2d3748"};
+          font-size: 1rem;
         }
 
         .input-help {
-          font-size: 0.75rem;
-          color: ${theme === "dark" ? "#9ca3af" : "#6b7280"};
-          margin-top: 0.375rem;
+          font-size: 0.875rem;
+          color: ${theme === "dark" ? "#a0aec0" : "#6b7280"};
+          margin-top: 0.5rem;
         }
 
         .checkbox-group {
           display: flex;
-          margin-bottom: 1rem;
+          align-items: flex-start;
+          margin-bottom: 1.5rem;
         }
 
         .checkbox-group input[type="checkbox"] {
-          margin-right: 0.75rem;
-          width: 1rem;
-          height: 1rem;
+          margin-right: 1rem;
+          width: 1.25rem;
+          height: 1.25rem;
           margin-top: 0.25rem;
         }
 
         .checkbox-group label {
-          flex: 1;
-        }
-
-        .checkbox-group span {
-          display: block;
-          font-size: 0.875rem;
-          font-weight: 500;
-          color: ${theme === "dark" ? "#e0e0e0" : "#111827"};
-          margin-bottom: 0.25rem;
+          font-size: 1rem;
+          font-weight: 600;
+          color: ${theme === "dark" ? "#cbd5e0" : "#4a5568"};
         }
 
         .checkbox-description {
-          font-size: 0.75rem;
-          color: ${theme === "dark" ? "#9ca3af" : "#6b7280"};
-          margin: 0;
+          font-size: 0.875rem;
+          color: ${theme === "dark" ? "#a0aec0" : "#6b7280"};
+          margin-top: 0.25rem;
         }
 
         .status-message {
-          padding: 0.75rem;
-          border-radius: 0.375rem;
-          margin-bottom: 1rem;
-          font-size: 0.875rem;
+          padding: 1rem;
+          border-radius: 8px;
+          margin-bottom: 1.5rem;
+          font-size: 1rem;
         }
 
         .status-message.success {
-          background-color: ${theme === "dark" ? "rgba(16, 185, 129, 0.2)" : "#ecfdf5"};
-          color: ${theme === "dark" ? "#34d399" : "#047857"};
-          border: 1px solid ${theme === "dark" ? "#065f46" : "#a7f3d0"};
+          background-color: #10b981;
+          color: white;
         }
 
         .status-message.error {
-          background-color: ${theme === "dark" ? "rgba(239, 68, 68, 0.2)" : "#fee2e2"};
-          color: ${theme === "dark" ? "#f87171" : "#b91c1c"};
-          border: 1px solid ${theme === "dark" ? "#7f1d1d" : "#fecaca"};
+          background-color: #ef4444;
+          color: white;
         }
 
         .form-actions {
-          margin-top: 1.5rem;
+          margin-top: 2rem;
+          border-top: 1px solid ${theme === "dark" ? "#2d3748" : "#e2e8f0"};
+          padding-top: 1.5rem;
         }
 
         .submit-btn {
           background-color: #4f46e5;
           color: white;
           border: none;
-          border-radius: 0.375rem;
-          padding: 0.625rem 1.5rem;
-          font-size: 0.875rem;
-          font-weight: 500;
+          border-radius: 8px;
+          padding: 0.75rem 2rem;
+          font-size: 1rem;
+          font-weight: 600;
           cursor: pointer;
-          transition: background-color 0.2s;
-        }
-
-        .submit-btn:hover {
-          background-color: #4338ca;
         }
 
         .submit-btn:disabled {
-          background-color: ${theme === "dark" ? "#4b5563" : "#d1d5db"};
-          cursor: not-allowed;
-        }
-
-        .error-message {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 0.75rem 1rem;
-          background-color: ${theme === "dark" ? "#471620" : "#fee2e2"};
-          color: ${theme === "dark" ? "#f87171" : "#b91c1c"};
-          border-radius: 0.25rem;
-          margin-top: 1rem;
-        }
-
-        .error-message button {
-          background: none;
-          border: none;
-          color: ${theme === "dark" ? "#f87171" : "#b91c1c"};
-          font-size: 0.875rem;
-          cursor: pointer;
-          text-decoration: underline;
+          background-color: ${theme === "dark" ? "#4a5568" : "#cbd5e0"};
         }
 
         @media (max-width: 768px) {
@@ -960,17 +889,11 @@ const AdminSettings = () => {
           .settings-sidebar {
             width: 100%;
             border-right: none;
-            border-bottom: 1px solid ${theme === "dark" ? "#374151" : "#e5e7eb"};
-            padding: 0;
-          }
-
-          .sidebar-tab {
-            padding: 1rem 1.5rem;
+            border-bottom: 1px solid ${theme === "dark" ? "#2d3748" : "#e2e8f0"};
           }
 
           .form-row {
-            flex-direction: column;
-            gap: 0;
+            grid-template-columns: 1fr;
           }
         }
       `}</style>

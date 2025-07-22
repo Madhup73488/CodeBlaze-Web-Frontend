@@ -32,12 +32,12 @@ function JobAnalyticsPage() {
   }, [fetchJobAnalytics]);
 
   const isDark = theme === 'dark';
-  const cardClasses = isDark ? 'bg-gray-800 text-gray-200 border-gray-700' : 'bg-white text-gray-800 border-gray-200';
-  const textClasses = isDark ? 'text-gray-300' : 'text-gray-700';
+  const cardClasses = isDark ? 'bg-gray-900 text-gray-200 border-gray-700' : 'bg-white text-gray-800 border-gray-200';
+  const textClasses = isDark ? 'text-gray-400' : 'text-gray-600';
 
-  if (loading) return <div className={`p-4 ${textClasses}`}>Loading job analytics...</div>;
-  if (error) return <div className={`p-4 text-red-500`}>Error: {error}</div>;
-  if (!analyticsData) return <div className={`p-4 ${textClasses}`}>No job analytics data available.</div>;
+  if (loading) return <div className={`p-6 ${textClasses}`}>Loading job analytics...</div>;
+  if (error) return <div className={`p-6 text-red-500`}>Error: {error}</div>;
+  if (!analyticsData) return <div className={`p-6 ${textClasses}`}>No job analytics data available.</div>;
 
   // Corrected destructuring: analyticsData is already the inner data object
   // Ensure each destructured property defaults to an appropriate type if not present in analyticsData
@@ -99,35 +99,35 @@ function JobAnalyticsPage() {
 
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
-      <h1 className={`text-2xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Job Analytics</h1>
+    <div className={`p-6 md:p-8 space-y-8 ${isDark ? 'bg-gray-900' : 'bg-gray-100'}`}>
+      <h1 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Job Analytics</h1>
       
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className={`p-6 rounded-lg shadow border ${cardClasses}`}>
-          <h2 className={`text-xl font-semibold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Status Distribution</h2>
-          <div className="h-72 md:h-80">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className={`p-6 rounded-xl shadow-lg border ${cardClasses}`}>
+          <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Status Distribution</h2>
+          <div className="h-80 md:h-96">
             {statusDistribution ? <Pie data={statusData} options={chartOptions} /> : <p className={textClasses}>No status data.</p>}
           </div>
         </div>
 
-        <div className={`p-6 rounded-lg shadow border ${cardClasses}`}>
-          <h2 className={`text-xl font-semibold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Work Type Distribution</h2>
-          <div className="h-72 md:h-80">
+        <div className={`p-6 rounded-xl shadow-lg border ${cardClasses}`}>
+          <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Work Type Distribution</h2>
+          <div className="h-80 md:h-96">
             {workTypeDistribution?.length > 0 ? <Bar data={workTypeData} options={barChartOptions} /> : <p className={textClasses}>No work type data.</p>}
           </div>
         </div>
         
-        <div className={`p-6 rounded-lg shadow border ${cardClasses}`}>
-          <h2 className={`text-xl font-semibold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Employment Type Distribution</h2>
-          <div className="h-72 md:h-80">
+        <div className={`p-6 rounded-xl shadow-lg border ${cardClasses}`}>
+          <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Employment Type Distribution</h2>
+          <div className="h-80 md:h-96">
             {employmentTypeDistribution?.length > 0 ? <Bar data={employmentTypeData} options={barChartOptions} /> : <p className={textClasses}>No employment type data.</p>}
           </div>
         </div>
       </div>
       
-      <div className={`p-6 rounded-lg shadow border ${cardClasses}`}>
-        <h2 className={`text-xl font-semibold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Popular Skills (Top 10)</h2>
-        <div className="h-96"> {/* Taller for potentially more skills */}
+      <div className={`p-6 rounded-xl shadow-lg border ${cardClasses}`}>
+        <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Popular Skills (Top 10)</h2>
+        <div className="h-96">
             {popularSkills?.length > 0 ? <Bar data={popularSkillsData} options={{...barChartOptions, indexAxis: 'y'}} /> : <p className={textClasses}>No popular skills data.</p>}
         </div>
       </div>

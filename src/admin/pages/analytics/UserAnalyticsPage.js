@@ -32,12 +32,12 @@ function UserAnalyticsPage() {
   }, [fetchUserAnalytics]);
 
   const isDark = theme === 'dark';
-  const cardClasses = isDark ? 'bg-gray-800 text-gray-200 border-gray-700' : 'bg-white text-gray-800 border-gray-200';
-  const textClasses = isDark ? 'text-gray-300' : 'text-gray-700';
+  const cardClasses = isDark ? 'bg-gray-900 text-gray-200 border-gray-700' : 'bg-white text-gray-800 border-gray-200';
+  const textClasses = isDark ? 'text-gray-400' : 'text-gray-600';
 
-  if (loading) return <div className={`p-4 ${textClasses}`}>Loading user analytics...</div>;
-  if (error) return <div className={`p-4 text-red-500`}>Error: {error}</div>;
-  if (!analyticsData) return <div className={`p-4 ${textClasses}`}>No user analytics data available.</div>;
+  if (loading) return <div className={`p-6 ${textClasses}`}>Loading user analytics...</div>;
+  if (error) return <div className={`p-6 text-red-500`}>Error: {error}</div>;
+  if (!analyticsData) return <div className={`p-6 ${textClasses}`}>No user analytics data available.</div>;
 
   // Corrected destructuring: analyticsData is already the inner data object
   // Ensure each destructured property defaults to an empty array if not present or not an array in analyticsData
@@ -91,27 +91,27 @@ function UserAnalyticsPage() {
 
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
-      <h1 className={`text-2xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>User Analytics</h1>
+    <div className={`p-6 md:p-8 space-y-8 ${isDark ? 'bg-gray-900' : 'bg-gray-100'}`}>
+      <h1 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>User Analytics</h1>
       
-      <div className={`p-6 rounded-lg shadow border ${cardClasses}`}>
-        <h2 className={`text-xl font-semibold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>User Registration Trends (Last 30 Days)</h2>
-        <div className="h-72 md:h-96"> {/* Increased height for line chart */}
+      <div className={`p-6 rounded-xl shadow-lg border ${cardClasses}`}>
+        <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>User Registration Trends</h2>
+        <div className="h-80 md:h-96">
           {trends.length > 0 ? <Line data={trendData} options={lineChartOptions} /> : <p className={textClasses}>No trend data available.</p>}
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className={`p-6 rounded-lg shadow border ${cardClasses}`}>
-          <h2 className={`text-xl font-semibold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Role Distribution</h2>
-          <div className="h-72 md:h-80"> {/* Increased height for pie chart */}
+      <div className="grid md:grid-cols-2 gap-8">
+        <div className={`p-6 rounded-xl shadow-lg border ${cardClasses}`}>
+          <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Role Distribution</h2>
+          <div className="h-80 md:h-96">
             {roleDistribution.length > 0 ? <Pie data={roleData} options={pieChartOptions} /> : <p className={textClasses}>No role distribution data.</p>}
           </div>
         </div>
 
-        <div className={`p-6 rounded-lg shadow border ${cardClasses}`}>
-          <h2 className={`text-xl font-semibold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Login Methods</h2>
-          <div className="h-72 md:h-80"> {/* Increased height for doughnut chart */}
+        <div className={`p-6 rounded-xl shadow-lg border ${cardClasses}`}>
+          <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Login Methods</h2>
+          <div className="h-80 md:h-96">
             {loginMethods.length > 0 ? <Doughnut data={loginMethodData} options={pieChartOptions} /> : <p className={textClasses}>No login method data.</p>}
           </div>
         </div>

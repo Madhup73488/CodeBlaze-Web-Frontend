@@ -706,513 +706,95 @@ const InternshipDetail = () => {
         </button>
       </div>
       {/* Add your CSS styles here or in a separate CSS module */}
-      <style jsx vars={{ theme }}>{`
+      <style jsx>{`
         .internship-detail-container {
-          border-radius: 0.5rem;
-          width: 100%;
-          max-width: 100%;
-          margin: 0 auto;
-          box-sizing: border-box;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-          /* Removed explicit background/color here, assumed applied by theme class */
+          padding: 2rem;
+          background-color: ${theme === "dark" ? "#1a202c" : "#f7fafc"};
         }
-
-        .internship-detail-container.light {
-          background-color: #ffffff;
-          color: #111827;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-
-        .internship-detail-container.dark {
-          background-color: #1f2937;
-          color: #e0e0e0;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .page-header,
-        .internship-sections-wrapper > * {
-          /* Apply padding to direct children of wrapper */
-          padding: 1.5rem;
-          border-bottom: 1px solid ${theme === "dark" ? "#374151" : "#e5e7eb"}; /* Add borders between sections */
-        }
-        .internship-sections-wrapper > *:last-child {
-          border-bottom: none; /* Remove bottom border for the last section in wrapper */
-        }
-
         .page-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 0;
-          flex-wrap: wrap;
-          gap: 1rem;
+          margin-bottom: 2rem;
         }
-        /* Style for breadcrumb link */
+        .breadcrumb {
+          font-size: 1.125rem;
+          color: ${theme === "dark" ? "#a0aec0" : "#6b7280"};
+        }
         .breadcrumb a {
-          color: ${theme === "dark" ? "#60a5fa" : "#3b82f6"};
+          color: #4f46e5;
           text-decoration: none;
         }
-        .breadcrumb a:hover {
-          text-decoration: underline;
-        }
-
         .header-actions {
           display: flex;
-          gap: 0.75rem;
-          align-items: center;
+          gap: 1rem;
         }
-
-        .edit-btn,
-        .delete-btn,
-        .back-btn {
-          padding: 0.5rem 1rem;
-          border-radius: 0.375rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background-color 0.2s, opacity 0.2s;
-          text-decoration: none;
+        .edit-btn, .delete-btn {
           display: inline-flex;
           align-items: center;
-          justify-content: center;
-        }
-
-        .edit-btn {
-          background-color: #3b82f6;
-          color: white;
+          gap: 0.5rem;
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          font-size: 1rem;
+          font-weight: 600;
           border: none;
+          cursor: pointer;
+          transition: all 0.2s;
         }
-
-        .edit-btn:hover:not(:disabled) {
-          background-color: #2563eb;
+        .edit-btn {
+          background-color: #4f46e5;
+          color: white;
         }
-
         .delete-btn {
           background-color: #ef4444;
           color: white;
-          border: none;
         }
-
-        .delete-btn:hover:not(:disabled) {
-          background-color: #dc2626;
-        }
-
-        .back-btn {
-          background-color: ${theme === "dark" ? "#374151" : "#f3f4f6"};
-          color: ${theme === "dark" ? "#e0e0e0" : "#111827"};
-          border: none;
-        }
-
-        .back-btn:hover:not(:disabled) {
-          background-color: ${theme === "dark" ? "#4b5563" : "#e5e7eb"};
-        }
-
-        .status-btn {
-          border: 1px solid ${theme === "dark" ? "#4b5563" : "#d1d5db"};
-          background-color: ${theme === "dark" ? "#374151" : "#ffffff"};
-          color: ${theme === "dark" ? "#e0e0e0" : "#111827"};
-          padding: 0.625rem 1.25rem;
-          min-width: 100px;
-          border-radius: 0.375rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background-color 0.2s, opacity 0.2s;
-          display: flex; /* Ensure flex for content */
-          align-items: center; /* Center text/spinner */
-          justify-content: center; /* Center text/spinner */
-        }
-
-        /* Specific color overrides for status buttons */
-        .status-btn.bg-green-500 {
-          background-color: #22c55e;
-          border-color: #22c55e;
-          color: white;
-        }
-        .status-btn.bg-green-500:hover:not(:disabled) {
-          background-color: #16a34a;
-          border-color: #16a34a;
-        }
-
-        .status-btn.bg-blue-500 {
-          background-color: #3b82f6;
-          border-color: #3b82f6;
-          color: white;
-        }
-        .status-btn.bg-blue-500:hover:not(:disabled) {
-          background-color: #2563eb;
-          border-color: #2563eb;
-        }
-
-        .status-btn.bg-orange-500 {
-          background-color: #f97316;
-          border-color: #f97316;
-          color: white;
-        }
-        .status-btn.bg-orange-500:hover:not(:disabled) {
-          background-color: #ea580c;
-          border-color: #ea580c;
-        }
-
-        .status-btn.bg-gray-500 {
-          background-color: #6b7280;
-          border-color: #6b7280;
-          color: white;
-        }
-        .status-btn.bg-gray-500:hover:not(:disabled) {
-          background-color: #4b5563;
-          border-color: #4b5563;
-        }
-
-        .status-btn:hover:not(:disabled):not(.active) {
-          background-color: ${theme === "dark" ? "#4b5563" : "#f3f4f6"};
-        }
-
-        .status-btn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .status-btn.updating {
-          opacity: 0.8;
-        }
-        .status-actions {
-          display: flex;
-          gap: 1rem;
-          flex-wrap: wrap;
-          align-items: center;
-        }
-
         .internship-header {
-          /* This section gets padding from the .internship-sections-wrapper > * rule */
-          margin-bottom: 0; /* Removed bottom margin as border adds separation */
+          background-color: ${theme === "dark" ? "#2d3748" : "#ffffff"};
+          padding: 2rem;
+          border-radius: 12px;
+          margin-bottom: 2rem;
         }
-
-        .internship-title-section {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          margin-bottom: 1.5rem;
-          flex-wrap: wrap;
-        }
-
         .internship-title-section h1 {
-          font-size: 2rem;
-          font-weight: 700;
-          margin: 0;
-          color: inherit;
+          font-size: 2.5rem;
+          font-weight: 800;
+          color: ${theme === "dark" ? "#e2e8f0" : "#2d3748"};
         }
-
         .internship-meta {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-          gap: 1.25rem;
-          font-size: 0.9rem;
+          gap: 1.5rem;
+          margin-top: 1.5rem;
         }
-
         .meta-item {
           display: flex;
-          align-items: flex-start;
-          gap: 0.5rem;
-        }
-
-        .meta-icon {
-          flex-shrink: 0;
-          margin-top: 0.25rem;
-          color: ${theme === "dark" ? "#9ca3af" : "#6b7280"};
-        }
-
-        .meta-item > div {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .meta-label {
-          font-weight: 600;
-          color: ${theme === "dark" ? "#9ca3af" : "#4b5563"};
-          margin-bottom: 0.125rem;
-          font-size: 0.875rem;
-        }
-
-        .meta-value {
-          color: inherit;
-          font-weight: 500;
-        }
-
-        .meta-item.company-logo {
-          display: flex;
-          justify-content: flex-start;
-          grid-column: span 2; /* Allow logo to span two columns on larger screens */
-        }
-        @media (max-width: 768px) {
-          .meta-item.company-logo {
-            grid-column: span 1; /* Reset span on smaller screens */
-          }
-        }
-
-        .meta-item.company-logo img {
-          max-width: 100px;
-          max-height: 100px;
-          object-fit: contain;
-          border: 1px solid ${theme === "dark" ? "#4b5563" : "#d1d5db"};
-          border-radius: 0.375rem;
-          padding: 0.5rem;
-          background-color: ${theme === "dark" ? "#4b5563" : "#f9fafb"};
-        }
-
-        .status-management-section {
-          /* Gets padding and border from .internship-sections-wrapper > * */
-          margin-top: 0;
-          margin-bottom: 0;
-        }
-
-        .status-management-section h3 {
-          font-size: 1.25rem;
-          font-weight: 600;
-          margin-bottom: 1rem;
-          color: inherit;
-          padding-bottom: 0.5rem;
-          border-bottom: 1px solid ${theme === "dark" ? "#374151" : "#e5e7eb"};
-        }
-
-        .internship-details-sections {
-          /* Gets padding and border from .internship-sections-wrapper > * */
-          margin-top: 0;
-          margin-bottom: 0;
-        }
-
-        .detail-section {
-          margin-bottom: 1.5rem;
-        }
-        .detail-section:last-child {
-          margin-bottom: 0; /* Remove margin from the last detail section */
-        }
-
-        .detail-section h3 {
-          font-size: 1.25rem;
-          font-weight: 600;
-          margin-bottom: 0.75rem;
-          color: inherit;
-        }
-
-        .detail-content {
-          line-height: 1.6;
-          color: inherit;
-        }
-
-        .detail-content p {
-          margin-bottom: 0.75rem;
-        }
-
-        .detail-content ul {
-          list-style: disc;
-          padding-left: 1.25rem;
-          margin-bottom: 0.75rem;
-        }
-
-        .detail-content ul li {
-          margin-bottom: 0.5rem;
-        }
-
-        .applications-section {
-          /* Gets padding and border from .internship-sections-wrapper > * */
-          margin-top: 0;
-          margin-bottom: 0; /* Remove margin-bottom */
-        }
-
-        .applications-section h3 {
-          font-size: 1.25rem;
-          font-weight: 600;
-          margin-bottom: 1rem;
-          color: inherit;
-        }
-
-        .view-all-applications-link {
-          color: ${theme === "dark" ? "#60a5fa" : "#3b82f6"};
-          text-decoration: none;
-          font-size: 0.9rem;
-          font-weight: 500;
-        }
-
-        .view-all-applications-link:hover {
-          text-decoration: underline;
-        }
-
-        .no-applications-message {
-          background-color: ${theme === "dark" ? "#2a3544" : "#f9fafb"};
-          border-radius: 0.375rem;
-          padding: 1.5rem;
-          margin-top: 1rem;
-          color: ${theme === "dark" ? "#9ca3af" : "#4b5563"};
-          border: 1px solid ${theme === "dark" ? "#374151" : "#e5e7eb"};
-        }
-
-        .no-applications-message p {
-          margin-bottom: 0.5rem;
-        }
-        .no-applications-message p:last-child {
-          margin-bottom: 0;
-        }
-
-        .page-footer {
-          text-align: center;
-          margin-top: 0;
-          /* Gets padding from .page-footer rule */
-        }
-
-        .loading-container,
-        .error-container {
-          display: flex;
-          flex-direction: column;
           align-items: center;
-          justify-content: center;
-          min-height: 200px;
+          gap: 1rem;
+        }
+        .meta-icon {
+          font-size: 1.5rem;
+          color: #4f46e5;
+        }
+        .meta-label {
+          font-size: 0.875rem;
+          color: ${theme === "dark" ? "#a0aec0" : "#6b7280"};
+        }
+        .meta-value {
+          font-size: 1rem;
+          font-weight: 600;
+          color: ${theme === "dark" ? "#e2e8f0" : "#2d3748"};
+        }
+        .detail-section {
+          background-color: ${theme === "dark" ? "#2d3748" : "#ffffff"};
           padding: 2rem;
-          text-align: center;
-          font-size: 1.2rem;
-          color: ${theme === "dark" ? "#e0e0e0" : "#111827"};
-          background-color: ${theme === "dark" ? "#1f2937" : "#ffffff"};
-          border-radius: 0.5rem;
-          margin: 2rem auto;
-          max-width: 600px;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+          border-radius: 12px;
+          margin-bottom: 2rem;
         }
-        .loading-container.dark,
-        .error-container.dark {
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .loading-spinner {
-          width: 30px;
-          height: 30px;
-          border: 3px solid rgba(59, 130, 246, 0.3);
-          border-top-color: #3b82f6;
-          border-radius: 50%;
-          animation: spin 0.8s linear infinite;
+        .detail-section h3 {
+          font-size: 1.5rem;
+          font-weight: 700;
           margin-bottom: 1rem;
-        }
-
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
-        .error-container h2 {
-          color: #ef4444;
-          margin-bottom: 1rem;
-        }
-
-        .error-message {
-          color: #ef4444;
-          background-color: ${theme === "dark" ? "#fecaca" : "#fee2e2"};
-          border: 1px solid #f87171;
-          padding: 1rem;
-          border-radius: 0.375rem;
-          margin-bottom: 1.5rem;
-          word-break: break-word;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-          .page-header,
-          .internship-sections-wrapper > * {
-            padding: 1rem;
-          }
-
-          .page-header {
-            flex-direction: column;
-            align-items: flex-start;
-          }
-
-          .header-actions {
-            width: 100%;
-            justify-content: flex-start;
-          }
-
-          .internship-title-section {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.5rem;
-          }
-
-          .internship-title-section h1 {
-            font-size: 1.5rem;
-          }
-
-          .internship-meta {
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 1rem;
-          }
-
-          .meta-item {
-            align-items: flex-start; /* Keep align-items: flex-start for consistency with desktop */
-          }
-
-          .meta-item.company-logo {
-            grid-column: span 1; /* Ensure it doesn't span two columns on smaller screens */
-          }
-
-          .meta-icon {
-            margin-top: 0.25rem; /* Keep alignment */
-          }
-
-          .meta-label {
-            font-size: 0.875rem; /* Keep consistent size */
-          }
-
-          .meta-value {
-            font-size: 0.9rem;
-          }
-
-          .status-btn {
-            padding: 0.5rem 1rem;
-            min-width: auto;
-          }
-
-          .status-management-section h3,
-          .internship-details-sections h3,
-          .applications-section h3 {
-            font-size: 1.1rem;
-          }
-
-          .view-all-applications-link {
-            font-size: 0.9rem; /* Keep consistent size */
-          }
-        }
-
-        @media (max-width: 480px) {
-          .page-header,
-          .internship-sections-wrapper > * {
-            padding: 0.75rem;
-          }
-
-          .internship-header {
-            margin-bottom: 0;
-            padding-bottom: 0.75rem;
-          }
-
-          .internship-title-section h1 {
-            font-size: 1.3rem;
-          }
-
-          .internship-meta {
-            gap: 0.75rem;
-          }
-
-          .detail-section h3 {
-            font-size: 1.1rem;
-          }
-
-          .status-management-section h3,
-          .applications-section h3 {
-            font-size: 1.1rem;
-          }
-
-          .status-actions {
-            gap: 0.75rem; /* Reduce gap further */
-          }
-          .status-btn {
-            padding: 0.4rem 0.8rem; /* Further reduce button padding */
-          }
+          color: ${theme === "dark" ? "#e2e8f0" : "#2d3748"};
         }
       `}</style>
     </div>

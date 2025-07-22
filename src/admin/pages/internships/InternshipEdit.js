@@ -816,255 +816,81 @@ const InternshipEdit = () => {
       {/* JSX Styles (Remains the same) */}
       <style jsx>{`
         .internship-edit-container {
-          padding: 1.5rem;
-          max-width: 1200px;
-          margin: 0 auto;
+          padding: 2rem;
+          background-color: ${theme === "dark" ? "#1a202c" : "#f7fafc"};
         }
-
-        .internship-edit-container.light {
-          background-color: #ffffff;
-          color: #111827;
-        }
-
-        .internship-edit-container.dark {
-          background-color: #1f2937;
-          color: #f9fafb;
-        }
-
         .edit-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
           margin-bottom: 2rem;
-          flex-wrap: wrap;
-          gap: 1rem;
         }
-
         .back-title {
           display: flex;
           align-items: center;
-          gap: 0.75rem;
+          gap: 1rem;
         }
-
         .back-button {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
+          background: none;
           border: none;
-          background-color: ${theme === "dark" ? "#374151" : "#F3F4F6"};
-          color: ${theme === "dark" ? "#F9FAFB" : "#111827"};
-          cursor: pointer;
-          transition: background-color 0.2s;
-        }
-
-        .back-button:hover {
-          background-color: ${theme === "dark" ? "#4B5563" : "#E5E7EB"};
-        }
-
-        h1 {
+          color: ${theme === "dark" ? "#e2e8f0" : "#2d3748"};
           font-size: 1.5rem;
-          font-weight: 600;
-          margin: 0;
+          cursor: pointer;
         }
-
-        h2 {
-          font-size: 1.25rem;
-          font-weight: 600;
-          margin: 0 0 1.5rem 0;
-          color: ${theme === "dark" ? "#F9FAFB" : "#111827"};
+        h1 {
+          font-size: 2.25rem;
+          font-weight: 800;
+          color: ${theme === "dark" ? "#e2e8f0" : "#2d3748"};
         }
-
         .actions {
           display: flex;
-          gap: 0.75rem;
-          align-items: center;
+          gap: 1rem;
         }
-
-        .cancel-button,
-        .save-button {
-          display: flex;
+        .cancel-button, .save-button {
+          display: inline-flex;
           align-items: center;
           gap: 0.5rem;
-          padding: 0.5rem 1rem;
-          border-radius: 0.375rem;
-          font-size: 0.875rem;
-          font-weight: 500;
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          font-size: 1rem;
+          font-weight: 600;
           border: none;
           cursor: pointer;
-          transition: background-color 0.2s;
+          transition: all 0.2s;
         }
-
         .cancel-button {
-          background-color: ${theme === "dark" ? "#374151" : "#F3F4F6"};
-          color: ${theme === "dark" ? "#F9FAFB" : "#111827"};
+          background-color: ${theme === "dark" ? "#4a5568" : "#e2e8f0"};
+          color: ${theme === "dark" ? "#e2e8f0" : "#4a5568"};
         }
-
-        .cancel-button:hover {
-          background-color: ${theme === "dark" ? "#4B5563" : "#E5E7EB"};
-        }
-
         .save-button {
           background-color: #4f46e5;
           color: white;
         }
-
-        .save-button:hover {
-          background-color: #4338ca;
-        }
-
-        .save-button:disabled {
-          background-color: #6b7280;
-          cursor: not-allowed;
-          opacity: 0.7;
-        }
-
-        .error-message {
-          padding: 1rem;
-          border-radius: 0.375rem;
-          background-color: ${theme === "dark" ? "#FEE2E2" : "#FEF2F2"};
-          color: #b91c1c;
-          margin-bottom: 1.5rem;
-          border-left: 4px solid #dc2626;
-        }
-
-        form {
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-        }
-
         .form-section {
-          background-color: ${theme === "dark" ? "#374151" : "#FFFFFF"};
-          border: 1px solid ${theme === "dark" ? "#4B5563" : "#E5E7EB"};
-          border-radius: 0.5rem;
-          padding: 1.5rem;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          background-color: ${theme === "dark" ? "#2d3748" : "#ffffff"};
+          padding: 2rem;
+          border-radius: 12px;
+          margin-bottom: 2rem;
         }
-
         .form-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          grid-template-columns: repeat(2, 1fr);
           gap: 1.5rem;
         }
-
-        .form-group {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
+        .form-group label {
+          font-size: 1rem;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+          color: ${theme === "dark" ? "#cbd5e0" : "#4a5568"};
         }
-
-        .full-width {
-          grid-column: 1 / -1;
-        }
-
-        label {
-          font-weight: 500;
-          font-size: 0.875rem;
-          color: ${theme === "dark" ? "#D1D5DB" : "#4B5563"};
-        }
-
-        .required {
-          color: #ef4444;
-          margin-left: 0.25rem;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        input[type="url"],
-        input[type="date"],
-        select,
-        textarea {
-          padding: 0.625rem;
-          border: 1px solid ${theme === "dark" ? "#4B5563" : "#D1D5DB"};
-          border-radius: 0.375rem;
-          background-color: ${theme === "dark" ? "#1F2937" : "#F9FAFB"};
-          color: ${theme === "dark" ? "#F9FAFB" : "#111827"};
-          font-size: 0.875rem;
+        .form-group input, .form-group select, .form-group textarea {
           width: 100%;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-          outline: none;
-          border-color: #4f46e5;
-          box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
-        }
-
-        .checkbox-group {
-          flex-direction: row;
-          align-items: center;
-          gap: 0.75rem;
-        }
-
-        input[type="checkbox"] {
-          width: 1rem;
-          height: 1rem;
-          accent-color: #4f46e5;
-        }
-
-        .field-error {
-          color: #ef4444;
-          font-size: 0.75rem;
-          margin-top: 0.25rem;
-        }
-
-        .form-actions {
-          display: flex;
-          justify-content: flex-end;
-          gap: 1rem;
-          margin-top: 1rem;
-        }
-
-        .form-actions .cancel-button,
-        .form-actions .save-button {
-          padding: 0.625rem 1.25rem;
-        }
-
-        @media (max-width: 768px) {
-          .edit-header {
-            flex-direction: column;
-            align-items: flex-start;
-          }
-
-          .actions {
-            width: 100%;
-            justify-content: space-between;
-          }
-
-          .form-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .button-text {
-            display: none;
-          }
-
-          .cancel-button,
-          .save-button {
-            padding: 0.5rem;
-            width: 40px;
-            height: 40px;
-            justify-content: center;
-          }
-
-          .form-actions .cancel-button,
-          .form-actions .save-button {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.625rem 1rem;
-            width: auto;
-            height: auto;
-          }
-
-          .form-actions .cancel-button span,
-          .form-actions .save-button span {
-            display: inline;
-          }
+          padding: 0.75rem 1rem;
+          border-radius: 8px;
+          border: 1px solid ${theme === "dark" ? "#4a5568" : "#cbd5e0"};
+          background-color: ${theme === "dark" ? "#1a202c" : "#f7fafc"};
+          color: ${theme === "dark" ? "#e2e8f0" : "#2d3748"};
+          font-size: 1rem;
         }
       `}</style>
     </div>

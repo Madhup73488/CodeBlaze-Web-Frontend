@@ -60,85 +60,85 @@ function BannerCarouselPage() {
   }
 
   return (
-    <> {/* Use a fragment instead of AdminLayout */}
-      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
+    <div className="p-6 md:p-8 space-y-8 bg-gray-100 dark:bg-gray-900">
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
         Banner & Carousel Management
       </h1>
-      <p className="text-gray-600 dark:text-gray-400 mb-8">
-        Manage the banners and carousels displayed on the main website landing
-        pages. You can add, edit, or remove content, and control its visibility
-        and order.
+      <p className="text-lg text-gray-600 dark:text-gray-400">
+        Manage the banners and carousels for the main website.
       </p>
 
-      <JsonEditor
-        initialData={bannerData}
-        onSave={saveBanners}
-        schema={{
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string", description: "Unique ID for the item" },
-              type: {
-                type: "string",
-                enum: ["banner", "carousel"],
-                description: "Type of content",
+      <div className="p-6 rounded-xl shadow-lg bg-white dark:bg-gray-800">
+        <JsonEditor
+          initialData={bannerData}
+          onSave={saveBanners}
+          schema={{
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                id: { type: "string", description: "Unique ID for the item" },
+                type: {
+                  type: "string",
+                  enum: ["banner", "carousel"],
+                  description: "Type of content",
+                },
+                imageUrl: {
+                  type: "string",
+                  format: "uri",
+                  description: "URL of the image",
+                },
+                title: { type: "string", description: "Main heading text" },
+                description: {
+                  type: "string",
+                  description: "Short description text",
+                },
+                linkUrl: {
+                  type: "string",
+                  format: "uri",
+                  description: "URL to navigate to on click",
+                },
+                buttonText: {
+                  type: "string",
+                  description: "Text for the call-to-action button",
+                  optional: true,
+                },
+                isActive: {
+                  type: "boolean",
+                  description: "Whether the item is currently active",
+                },
+                order: {
+                  type: "number",
+                  description: "Display order (lower number appears first)",
+                },
+                startDate: {
+                  type: "string",
+                  format: "date-time",
+                  description: "Start date for display (ISO format)",
+                  optional: true,
+                },
+                endDate: {
+                  type: "string",
+                  format: "date-time",
+                  description: "End date for display (ISO format)",
+                  optional: true,
+                },
               },
-              imageUrl: {
-                type: "string",
-                format: "uri",
-                description: "URL of the image",
-              },
-              title: { type: "string", description: "Main heading text" },
-              description: {
-                type: "string",
-                description: "Short description text",
-              },
-              linkUrl: {
-                type: "string",
-                format: "uri",
-                description: "URL to navigate to on click",
-              },
-              buttonText: {
-                type: "string",
-                description: "Text for the call-to-action button",
-                optional: true,
-              },
-              isActive: {
-                type: "boolean",
-                description: "Whether the item is currently active",
-              },
-              order: {
-                type: "number",
-                description: "Display order (lower number appears first)",
-              },
-              startDate: {
-                type: "string",
-                format: "date-time",
-                description: "Start date for display (ISO format)",
-                optional: true,
-              },
-              endDate: {
-                type: "string",
-                format: "date-time",
-                description: "End date for display (ISO format)",
-                optional: true,
-              },
+              required: [
+                "id",
+                "type",
+                "imageUrl",
+                "title",
+                "description",
+                "linkUrl",
+                "isActive",
+                "order",
+              ],
             },
-            required: [
-              "id",
-              "type",
-              "imageUrl",
-              "title",
-              "description",
-              "linkUrl",
-              "isActive",
-              "order",
-            ],
-          },
-        }}
-      />
-    </>
+          }}
+        />
+      </div>
+    </div>
   );
 }
 
