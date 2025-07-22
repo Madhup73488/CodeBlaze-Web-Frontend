@@ -211,7 +211,7 @@ export const AuthProvider = ({ children }) => {
       }
       const { isValid, user: userData } = await authApi.validateToken();
       if (isValid && userData) {
-        setUser(userData); // Expect userData to have 'roles' array
+        setUser(userData); // Expect userData to have a 'roles' array
         setIsAuthenticated(true);
         setAuthFlowState("initial");
         return { success: true, message: "Logged in successfully with Google." };
@@ -239,6 +239,21 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   }, [setError, setLoading, setUser, setIsAuthenticated, setAuthFlowState]);
+
+  const handleGoogleLogin = async (credentialResponse) => {
+    try {
+      const tokenId = credentialResponse.credential;
+      console.log("Google Token ID:", tokenId);
+      const data = await authApi.googleLogin(tokenId);
+      if (data.token) {
+        loginWithTokens(data.token, data.refreshToken);
+      } else {
+        throw new Error("Google login failed");
+      }
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
   const openAuthModal = useCallback(() => {
     setIsAuthModalOpen(true);
@@ -270,6 +285,7 @@ export const AuthProvider = ({ children }) => {
     loginWithTokens,
     openAuthModal,
     closeAuthModal,
+    handleGoogleLogin,
     // Updated role checks
     isAdmin: user && user.roles && (user.roles.includes('admin') || user.roles.includes('superadmin')),
     isSuperAdmin: user && user.roles && user.roles.includes('superadmin'),

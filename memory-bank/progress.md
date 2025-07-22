@@ -15,6 +15,7 @@
   - The "Grant Access" form has been converted into a modal with improved styling and accessibility.
   - The job portal page now displays only 11 jobs and a promotional card.
   - The "Apply Now" button on the `JobCard` component now triggers the login modal if the user is not authenticated.
+  - **Google authentication is now working correctly.** The `Cross-Origin-Opener-Policy` issue has been resolved by setting `ux_mode: "popup"` in the Google Sign-In initialization and adding a corresponding meta tag to `index.html`.
 
 - **What's left to build (Current Task Focus)**:
   - **Investigate Infinite Loader**: Debug the component causing the infinite re-render loop and excessive API calls to `/connect/user/progress`.
