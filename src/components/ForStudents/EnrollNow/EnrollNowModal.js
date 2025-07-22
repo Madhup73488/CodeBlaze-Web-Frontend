@@ -62,6 +62,7 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
   };
 
   const handleSubmit = async (e) => {
+    console.log("handleSubmit called"); // New log
     e.preventDefault();
     setIsLoading(true);
 
@@ -272,6 +273,7 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
                   type="submit"
                   className="submit-button"
                   disabled={isLoading}
+                  onClick={() => console.log("Continue to Payment button clicked")} // New log
                 >
                   {isLoading ? (
                     <div className="loader"></div>
