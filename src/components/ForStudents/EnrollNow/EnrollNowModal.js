@@ -123,7 +123,9 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
         description: `Enrollment for ${internship.title}`,
         image: codeblazeLogoOrange,
         order_id: order.id,
+        callback_url: `${apiUrl}/api/payment/verify-payment`, // We can use this as a fallback
         handler: async (response) => {
+          console.log("Razorpay handler called", response); // New log
           try {
             const verificationResponse = await fetch(
               `${apiUrl}/api/payment/verify-payment`,
@@ -169,7 +171,8 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
                 console.error("Failed to save enrollment after payment");
               }
             } else {
-              console.error("Payment verification failed");
+              const errorData = await verificationResponse.json(); // Get error from backend
+              console.error("Payment verification failed", errorData); // Log the error
             }
           } catch (error) {
             console.error(
@@ -177,6 +180,11 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
               error
             );
           }
+        },
+        modal: {
+            ondismiss: function(){
+                console.log('Checkout form closed');
+            }
         },
         prefill: {
           name: updatedFormData.name,
