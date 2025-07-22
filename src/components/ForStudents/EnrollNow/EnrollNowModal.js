@@ -129,7 +129,6 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
         currency: order.currency,
         name: "CodeBlaze",
         description: `Enrollment for ${internship.title}`,
-        image: codeblazeLogoOrange,
         order_id: order.id,
         handler: async (response) => {
           console.log("Razorpay handler called", response); // New log
