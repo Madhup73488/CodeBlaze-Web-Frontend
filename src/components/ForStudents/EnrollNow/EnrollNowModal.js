@@ -75,11 +75,14 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
     };
 
     try {
+      console.log("Inside try block");
       const apiUrl = process.env.REACT_APP_BACKEND_URL;
+      console.log("apiUrl:", apiUrl);
 
       // Update user profile
       const token = localStorage.getItem("token");
       if (token) {
+        console.log("Updating user profile...");
         await fetch(`${apiUrl}/api/users/me`, {
           method: "PUT",
           headers: {
@@ -91,8 +94,10 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
             college: updatedFormData.college,
           }),
         });
+        console.log("User profile updated.");
       }
 
+      console.log("Creating Razorpay order...");
       const orderResponse = await fetch(`${apiUrl}/api/payment/create-order`, {
         method: "POST",
         headers: {
@@ -109,12 +114,14 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
           },
         }),
       });
+      console.log("Razorpay order response:", orderResponse);
 
       if (!orderResponse.ok) {
         throw new Error("Failed to create Razorpay order");
       }
 
       const order = await orderResponse.json();
+      console.log("Razorpay order:", order);
 
       const options = {
         key: process.env.REACT_APP_RAZORPAY_KEY_ID,
@@ -183,9 +190,9 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
           }
         },
         modal: {
-            ondismiss: function(){
-                console.log('Checkout form closed');
-            }
+          ondismiss: function () {
+            console.log("Checkout form closed");
+          },
         },
         prefill: {
           name: updatedFormData.name,
@@ -200,10 +207,11 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
         },
       };
 
+      console.log("Opening Razorpay checkout...");
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error in handleSubmit:", error);
     } finally {
       setIsLoading(false);
     }
@@ -273,7 +281,9 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
                   type="submit"
                   className="submit-button"
                   disabled={isLoading}
-                  onClick={() => console.log("Continue to Payment button clicked")} // New log
+                  onClick={() =>
+                    console.log("Continue to Payment button clicked")
+                  } // New log
                 >
                   {isLoading ? (
                     <div className="loader"></div>
