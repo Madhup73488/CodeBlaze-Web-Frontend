@@ -32,12 +32,12 @@ function ApplicationAnalyticsPage() {
   }, [fetchApplicationAnalytics]);
 
   const isDark = theme === 'dark';
-  const cardClasses = isDark ? 'bg-gray-800 text-gray-200 border-gray-700' : 'bg-white text-gray-800 border-gray-200';
-  const textClasses = isDark ? 'text-gray-300' : 'text-gray-700';
+  const cardClasses = isDark ? 'bg-gray-900 text-gray-200 border-gray-700' : 'bg-white text-gray-800 border-gray-200';
+  const textClasses = isDark ? 'text-gray-400' : 'text-gray-600';
 
-  if (loading) return <div className={`p-4 ${textClasses}`}>Loading application analytics...</div>;
-  if (error) return <div className={`p-4 text-red-500`}>Error: {error}</div>;
-  if (!analyticsData) return <div className={`p-4 ${textClasses}`}>No application analytics data available.</div>;
+  if (loading) return <div className={`p-6 ${textClasses}`}>Loading application analytics...</div>;
+  if (error) return <div className={`p-6 text-red-500`}>Error: {error}</div>;
+  if (!analyticsData) return <div className={`p-6 ${textClasses}`}>No application analytics data available.</div>;
   
   // Corrected destructuring: analyticsData is already the inner data object
   const { trends, statusDistribution, topJobs, topInternships, applicationSummary } = analyticsData || {};
@@ -79,31 +79,31 @@ function ApplicationAnalyticsPage() {
   } : { labels: [], datasets: [] };
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
-      <h1 className={`text-2xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Application Analytics</h1>
+    <div className={`p-6 md:p-8 space-y-8 ${isDark ? 'bg-gray-900' : 'bg-gray-100'}`}>
+      <h1 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Application Analytics</h1>
 
-      <div className={`p-6 rounded-lg shadow border ${cardClasses}`}>
-        <h2 className={`text-xl font-semibold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Application Submission Trends (Last 30 Days)</h2>
-        <div className="h-72 md:h-96">
+      <div className={`p-6 rounded-xl shadow-lg border ${cardClasses}`}>
+        <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Application Submission Trends</h2>
+        <div className="h-80 md:h-96">
           {trends?.length > 0 ? <Line data={trendData} options={lineChartOptions} /> : <p className={textClasses}>No trend data available.</p>}
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className={`p-6 rounded-lg shadow border ${cardClasses}`}>
-          <h2 className={`text-xl font-semibold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Status Distribution</h2>
-          <div className="h-72 md:h-80">
+      <div className="grid md:grid-cols-2 gap-8">
+        <div className={`p-6 rounded-xl shadow-lg border ${cardClasses}`}>
+          <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Status Distribution</h2>
+          <div className="h-80 md:h-96">
             {statusDistribution ? <Pie data={statusData} options={pieChartOptions} /> : <p className={textClasses}>No status distribution data.</p>}
           </div>
         </div>
-        <div className={`p-6 rounded-lg shadow border ${cardClasses}`}>
-          <h2 className={`text-xl font-semibold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Application Summary</h2>
+        <div className={`p-6 rounded-xl shadow-lg border ${cardClasses}`}>
+          <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Application Summary</h2>
            {applicationSummary ? (
-            <ul className="space-y-2">
+            <ul className="space-y-4">
               {Object.entries(applicationSummary).map(([key, value]) => (
-                <li key={key} className={`flex justify-between ${textClasses}`}>
-                  <span className="font-medium">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</span>
-                  <span>{typeof value === 'number' ? value.toFixed(2) : value}</span>
+                <li key={key} className={`flex justify-between text-lg ${textClasses}`}>
+                  <span className="font-semibold">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</span>
+                  <span className="font-bold">{typeof value === 'number' ? value.toFixed(2) : value}</span>
                 </li>
               ))}
             </ul>
@@ -111,23 +111,23 @@ function ApplicationAnalyticsPage() {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className={`p-6 rounded-lg shadow border ${cardClasses}`}>
-          <h2 className={`text-xl font-semibold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Top Jobs by Applications</h2>
+      <div className="grid md:grid-cols-2 gap-8">
+        <div className={`p-6 rounded-xl shadow-lg border ${cardClasses}`}>
+          <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Top Jobs by Applications</h2>
           {topJobs && topJobs.length > 0 ? (
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {topJobs.map(job => (
-                <li key={job._id} className={`text-sm ${textClasses}`}>{job.title} ({job.company}) - {job.count} applications</li>
+                <li key={job._id} className={`text-base ${textClasses}`}>{job.title} ({job.company}) - <strong>{job.count}</strong> applications</li>
               ))}
             </ul>
           ) : <p className={textClasses}>No data on top jobs.</p>}
         </div>
-        <div className={`p-6 rounded-lg shadow border ${cardClasses}`}>
-          <h2 className={`text-xl font-semibold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Top Internships by Applications</h2>
+        <div className={`p-6 rounded-xl shadow-lg border ${cardClasses}`}>
+          <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Top Internships by Applications</h2>
            {topInternships && topInternships.length > 0 ? (
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {topInternships.map(internship => (
-                <li key={internship._id} className={`text-sm ${textClasses}`}>{internship.title} ({internship.company}) - {internship.count} applications</li>
+                <li key={internship._id} className={`text-base ${textClasses}`}>{internship.title} ({internship.company}) - <strong>{internship.count}</strong> applications</li>
               ))}
             </ul>
           ) : <p className={textClasses}>No data on top internships.</p>}

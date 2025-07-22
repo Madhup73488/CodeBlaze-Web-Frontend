@@ -5,11 +5,11 @@ import { allCourses } from "../../pages/CoursesPage";
 import InternshipDetailSkeleton from "../Internships/InternshipDetailSkeleton";
 import CourseAccessCard from "../common/CourseAccessCard";
 import { Button } from "../ui/button";
-import { useCart } from "../../contexts/CartContext";
+import { useWorkBag } from "../../contexts/WorkBagContext";
 
 const InternshipDetailPage = () => {
   const { id } = useParams();
-  const { addToCart } = useCart();
+  const { addToWorkBag } = useWorkBag();
   const [internship, setInternship] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -26,7 +26,7 @@ const InternshipDetailPage = () => {
   const handleAddToCart = () => {
     setIsAdding(true);
     setTimeout(() => {
-      addToCart(internship);
+      addToWorkBag(internship);
       setIsAdding(false);
     }, 1000);
   };

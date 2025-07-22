@@ -245,44 +245,70 @@ const JobApplications = () => {
         !error && <div className="empty-state"><p>No job applications found.</p></div>
       )}
       <style jsx>{`
-        /* Styles adapted from InternshipApplications.js for consistency */
-        .applications-container { padding: 1.5rem; font-family: sans-serif; }
-        .applications-container.light { background-color: #f9fafb; color: #111827; }
-        .applications-container.dark { background-color: #111827; color: #f3f4f6; }
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
-        .page-header h1 { font-size: 1.75rem; font-weight: 600; color: ${theme === "dark" ? "#f9fafb" : "#111827"}; }
-        .filter-controls { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
-        .filter-select, .search-input { padding: 0.5rem 0.75rem; border-radius: 0.375rem; border: 1px solid ${theme === "dark" ? "#4b5563" : "#d1d5db"}; background-color: ${theme === "dark" ? "#1f2937" : "#ffffff"}; color: ${theme === "dark" ? "#e5e7eb" : "#111827"}; font-size: 0.875rem; }
-        .filter-toggle-button { padding: 0.5rem 1rem; background-color: ${theme === "dark" ? "#374151" : "#e5e7eb"}; color: ${theme === "dark" ? "#f3f4f6" : "#374151"}; border-radius: 0.375rem; border: none; cursor: pointer; display: none; }
-        .actions-container { display: flex; gap: 0.5rem; align-items: center; }
-        .action-button { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.375rem 0.75rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 500; border: none; cursor: pointer; transition: background-color 0.2s; white-space: nowrap; }
-        .action-button:disabled { opacity: 0.6; cursor: not-allowed; }
-        .view-button { background-color: ${theme === "dark" ? "#2563eb" : "#3b82f6"}; color: white; }
-        .view-button:hover:not(:disabled) { background-color: ${theme === "dark" ? "#1d4ed8" : "#2563eb"}; }
-        .approve-button { background-color: ${theme === "dark" ? "#16a34a" : "#22c55e"}; color: white; }
-        .approve-button:hover:not(:disabled) { background-color: ${theme === "dark" ? "#15803d" : "#16a34a"}; }
-        .reject-button { background-color: ${theme === "dark" ? "#dc2626" : "#ef4444"}; color: white; }
-        .reject-button:hover:not(:disabled) { background-color: ${theme === "dark" ? "#b91c1c" : "#dc2626"}; }
-        .review-button { background-color: ${theme === "dark" ? "#d97706" : "#f59e0b"}; color: white; }
-        .review-button:hover:not(:disabled) { background-color: ${theme === "dark" ? "#b45309" : "#d97706"}; }
-        .reset-button { background-color: ${theme === "dark" ? "#4b5563" : "#6b7280"}; color: white; }
-        .reset-button:hover:not(:disabled) { background-color: ${theme === "dark" ? "#374151" : "#4b5563"}; }
-        .action-select { padding: 0.4rem 0.6rem; border-radius: 0.25rem; font-size: 0.75rem; background-color: ${theme === "dark" ? "#374151" : "#f3f4f6"}; color: ${theme === "dark" ? "#e5e7eb" : "#374151"}; border: 1px solid ${theme === "dark" ? "#4b5563" : "#d1d5db"};}
-        .mobile-card { padding: 0.75rem; border-bottom: 1px solid ${theme === "dark" ? "#374151" : "#e5e7eb"}; }
-        .mobile-card strong { color: ${theme === "dark" ? "#e5e7eb" : "#111827"}; }
-        .empty-state { text-align: center; padding: 2rem; color: ${theme === "dark" ? "#9ca3af" : "#6b7280"}; }
-        .button-text-desktop { display: inline; }
-        .button-text-mobile { display: inline; }
-
-        @media (max-width: 768px) {
-          .filter-toggle-button { display: block; width: 100%; margin-bottom: 0.75rem; }
-          .hidden-mobile { display: none; }
-          .filter-controls.hidden-mobile { display: none !important; }
-          .filter-controls { flex-direction: column; width: 100%; }
-          .filter-select, .search-input { width: 100%; }
-          .button-text-desktop { display: none; }
-          .actions-container.mobile-actions { flex-direction: row; justify-content: flex-start; gap: 0.5rem; }
-          .actions-container.mobile-actions .action-button, .actions-container.mobile-actions .action-select { flex-grow: 1; text-align: center; justify-content: center;}
+        .applications-container {
+          padding: 2rem;
+          background-color: ${theme === "dark" ? "#1a202c" : "#f7fafc"};
+        }
+        .page-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 2rem;
+        }
+        .page-header h1 {
+          font-size: 2.25rem;
+          font-weight: 800;
+          color: ${theme === "dark" ? "#e2e8f0" : "#2d3748"};
+        }
+        .filter-controls {
+          display: flex;
+          gap: 1rem;
+        }
+        .filter-select, .search-input {
+          padding: 0.75rem 1rem;
+          border-radius: 8px;
+          border: 1px solid ${theme === "dark" ? "#4a5568" : "#cbd5e0"};
+          background-color: ${theme === "dark" ? "#2d3748" : "#ffffff"};
+          color: ${theme === "dark" ? "#e2e8f0" : "#2d3748"};
+          font-size: 1rem;
+        }
+        .action-button {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          border-radius: 6px;
+          font-size: 0.875rem;
+          font-weight: 600;
+          border: none;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .view-button {
+          background-color: #3b82f6;
+          color: white;
+        }
+        .approve-button {
+          background-color: #10b981;
+          color: white;
+        }
+        .reject-button {
+          background-color: #ef4444;
+          color: white;
+        }
+        .review-button {
+          background-color: #f59e0b;
+          color: white;
+        }
+        .reset-button {
+          background-color: #6b7280;
+          color: white;
+        }
+        .empty-state {
+          text-align: center;
+          padding: 4rem;
+          font-size: 1.2rem;
+          color: ${theme === "dark" ? "#a0aec0" : "#6b7280"};
         }
       `}</style>
     </div>

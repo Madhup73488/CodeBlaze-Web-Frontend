@@ -528,7 +528,6 @@ const JobCreate = () => {
           width: 100%;
           max-width: 1400px;
           margin: 0 auto;
-          padding: 1.5rem; /* Added padding */
           box-sizing: border-box; /* Ensure padding doesn't increase width */
         }
 

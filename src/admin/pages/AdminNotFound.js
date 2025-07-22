@@ -22,59 +22,60 @@ const AdminNotFound = () => {
           display: flex;
           justify-content: center;
           align-items: center;
-          min-height: calc(100vh - 200px);
+          height: 100%;
           padding: 2rem;
         }
 
         .not-found-content {
           text-align: center;
-          max-width: 600px;
-          padding: 2rem;
-          border-radius: 0.5rem;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          padding: 3rem;
+          border-radius: 12px;
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
         }
 
         .not-found-content.light {
-          background-color: #ffffff;
-          color: #111827;
+          background-color: #f8f9fa;
+          color: #343a40;
         }
 
         .not-found-content.dark {
-          background-color: #1f2937;
-          color: #e0e0e0;
+          background-color: #212529;
+          color: #e9ecef;
         }
 
         h1 {
-          font-size: 6rem;
-          font-weight: 800;
+          font-size: 5rem;
+          font-weight: 900;
           margin: 0;
-          color: ${theme === "dark" ? "#4f46e5" : "#4f46e5"};
+          color: ${theme === "dark" ? "#6c757d" : "#495057"};
         }
 
         h2 {
-          font-size: 1.5rem;
-          margin: 0.5rem 0;
+          font-size: 2rem;
+          margin: 1rem 0;
+          font-weight: 700;
         }
 
         p {
-          font-size: 1rem;
-          margin-bottom: 2rem;
-          color: ${theme === "dark" ? "#9ca3af" : "#6b7280"};
+          font-size: 1.1rem;
+          margin-bottom: 2.5rem;
+          color: ${theme === "dark" ? "#adb5bd" : "#6c757d"};
         }
 
         .return-home {
           display: inline-block;
-          padding: 0.75rem 1.5rem;
-          background-color: #4f46e5;
+          padding: 0.8rem 2rem;
+          background-color: #007bff;
           color: white;
-          border-radius: 0.375rem;
+          border-radius: 8px;
           text-decoration: none;
-          font-weight: 500;
-          transition: background-color 0.2s;
+          font-weight: 600;
+          transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
         .return-home:hover {
-          background-color: #4338ca;
+          background-color: #0056b3;
+          transform: translateY(-2px);
         }
 
         @media (max-width: 768px) {
@@ -83,7 +84,11 @@ const AdminNotFound = () => {
           }
 
           h2 {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
+          }
+          
+          p {
+            font-size: 1rem;
           }
         }
       `}</style>

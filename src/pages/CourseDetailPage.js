@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { allCourses } from "./CoursesPage";
-import { useCart } from "../contexts/CartContext";
+import { useWorkBag } from "../contexts/WorkBagContext";
 import CourseDetailSkeleton from "../components/common/CourseDetailSkeleton";
 import { FiClock, FiVideo, FiFileText, FiAward, FiStar } from "react-icons/fi";
 import CourseAccessCard from "../components/common/CourseAccessCard";
 
 const CourseDetailPage = () => {
   const { id } = useParams();
-  const { cart, addToCart } = useCart();
+  const { workBag, addToWorkBag } = useWorkBag();
   const [course, setCourse] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isInCart, setIsInCart] = useState(false);
 
   useEffect(() => {
-    if (cart && course) {
-      setIsInCart(cart.some((item) => item.id === course.id));
+    if (workBag && course) {
+      setIsInCart(workBag.some((item) => item.id === course.id));
     }
-  }, [cart, course]);
+  }, [workBag, course]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -88,7 +88,7 @@ const CourseDetailPage = () => {
                   if (isInCart) return;
                   setIsAdding(true);
                   setTimeout(() => {
-                    addToCart(course);
+                    addToWorkBag(course);
                     setIsAdding(false);
                   }, 1000);
                 }}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useCart } from "../../contexts/CartContext";
+import { useWorkBag } from "../../contexts/WorkBagContext";
 import { Star, MapPin, Calendar, Briefcase } from "lucide-react";
 import codeblazeLogo from "../../assets/images/codeblazelogoorange.png";
 
@@ -13,7 +13,7 @@ const InternshipCard = ({
   toggleSaveInternship,
   formatDate,
 }) => {
-  const { addToCart } = useCart();
+  const { addToWorkBag } = useWorkBag();
   const [isAdding, setIsAdding] = useState(false);
 
   const handleAddToCart = (e) => {
@@ -21,7 +21,7 @@ const InternshipCard = ({
     e.stopPropagation();
     setIsAdding(true);
     setTimeout(() => {
-      addToCart(internship);
+      addToWorkBag(internship);
       setIsAdding(false);
     }, 1000);
   };

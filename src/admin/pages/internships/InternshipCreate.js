@@ -684,326 +684,63 @@ const InternshipCreate = () => {
 
       <style jsx>{`
         .internship-form-container {
-          width: 100%;
-          max-width: 1400px;
-          margin: 0 auto;
+          padding: 2rem;
+          background-color: ${theme === "dark" ? "#1a202c" : "#f7fafc"};
         }
-
-        /* Add theme colors for dark mode */
-        .internship-form-container.dark {
-          color: #e0e0e0;
-        }
-        .internship-form-container.dark .form-card {
-          background-color: #1f2937;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .internship-form-container.dark .form-section {
-          border-bottom-color: #374151;
-        }
-        .internship-form-container.dark h2,
-        .internship-form-container.dark h3 {
-          color: #f9fafb;
-        }
-        .internship-form-container.dark .logo-suggestions-dropdown {
-          border-color: #4b5563;
-          background-color: #1f2937;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .internship-form-container.dark .logo-suggestion-item {
-          border-bottom-color: #374151;
-          color: #d1d5db;
-        }
-        .internship-form-container.dark .logo-suggestion-item:hover {
-          background-color: #374151;
-        }
-        .internship-form-container.dark .loading-message,
-        .internship-form-container.dark .no-results {
-          color: #9ca3af;
-        }
-        .internship-form-container.dark .form-actions {
-          background-color: #111827;
-          border-top-color: #374151;
-        }
-
         .page-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 1.5rem;
+          margin-bottom: 2rem;
         }
-
-        h2 {
-          font-size: 1.5rem;
-          font-weight: 600;
-          margin: 0;
+        .page-header h2 {
+          font-size: 2.25rem;
+          font-weight: 800;
+          color: ${theme === "dark" ? "#e2e8f0" : "#2d3748"};
         }
-
         .page-actions {
           display: flex;
-          gap: 0.75rem;
+          gap: 1rem;
         }
-
-        .icon {
-          margin-right: 0.375rem;
-          vertical-align: middle;
-        }
-
         .form-card {
-          border-radius: 0.5rem;
-          overflow: hidden;
+          background-color: ${theme === "dark" ? "#2d3748" : "#ffffff"};
+          padding: 2rem;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-
         .form-section {
-          margin-bottom: 1rem;
-          padding: 1.25rem;
+          margin-bottom: 2rem;
         }
-
-        .form-section:last-child {
-          border-bottom: none;
+        .form-section h3 {
+          font-size: 1.5rem;
+          font-weight: 700;
+          margin-bottom: 1.5rem;
+          color: ${theme === "dark" ? "#cbd5e0" : "#4a5568"};
         }
-
-        h3 {
-          font-size: 1.125rem;
-          font-weight: 500;
-          margin-top: 0;
-          margin-bottom: 1rem;
-        }
-
         .form-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          grid-gap: 1.25rem;
+          gap: 1.5rem;
         }
-
-        .company-column {
-          position: relative; /* Needed for absolute dropdown positioning */
-        }
-
-        .company-input-container {
-          position: relative;
-          width: 100%;
-        }
-
-        .logo-suggestions-dropdown {
-          position: absolute;
-          top: 100%; /* Position below the input */
-          left: 0;
-          right: 0;
-          z-index: 100;
-          border-radius: 0.25rem;
-          max-height: 200px;
-          overflow-y: auto;
-          margin-top: 4px; /* Small space below input */
-        }
-
-        .logo-suggestion-item {
-          display: flex;
+        .create-button, .cancel-button {
+          display: inline-flex;
           align-items: center;
-          padding: 0.625rem;
+          gap: 0.5rem;
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          font-size: 1rem;
+          font-weight: 600;
+          border: none;
           cursor: pointer;
-          transition: background-color 0.2s;
+          transition: all 0.2s;
         }
-
-        .logo-suggestion-item:last-child {
-          border-bottom: none;
-        }
-
-        .logo-suggestion-item img {
-          width: 24px;
-          height: 24px;
-          margin-right: 0.5rem;
-          object-fit: contain;
-          background-color: rgba(255, 255, 255, 0.1); /* subtle background */
-          border-radius: 4px;
-          padding: 2px;
-          flex-shrink: 0; /* Prevent image from shrinking */
-        }
-
-        .logo-suggestion-item span {
-          font-size: 0.8125rem;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          flex-grow: 1; /* Allow text to take space */
-        }
-
-        .loading-message,
-        .no-results {
-          padding: 0.625rem;
-          font-size: 0.8125rem;
-          text-align: center;
-        }
-
-        .company-logo-column {
-          /* Use flexbox for the input and preview side-by-side */
-          display: flex;
-          flex-direction: column; /* Stack label and input/preview */
-        }
-
-        .logo-url-input-wrapper {
-          display: flex;
-          align-items: flex-end; /* Align items at the bottom */
-          gap: 10px; /* Space between input field and preview */
-          width: 100%;
-        }
-
-        /* Style the InputField component's internal div to take available space */
-        .logo-url-input-wrapper > :first-child {
-          flex-grow: 1;
-        }
-
-        .logo-preview {
-          width: 40px; /* Small square size */
-          height: 40px;
-          object-fit: contain; /* Contain the image without stretching */
-          border: 1px solid #4b5563; /* Optional border */
-          border-radius: 4px; /* Optional rounded corners */
-          background-color: rgba(
-            255,
-            255,
-            255,
-            0.1
-          ); /* Background for transparency */
-          flex-shrink: 0; /* Prevent the preview from shrinking */
-          margin-bottom: 23px;
-        }
-
-        .checkbox-wrapper {
-          height: 100%;
-          display: flex;
-          align-items: center;
-          padding-top: 1.5rem; /* Align with label spacing of other fields */
-        }
-
-        .form-actions {
-          display: flex;
-          justify-content: flex-end;
-          gap: 0.75rem;
-          padding: 1.25rem;
-          border-top: 1px solid #374151;
-        }
-
         .create-button {
-          padding: 0.5rem 1rem;
           background-color: #4f46e5;
           color: white;
-          border: none;
-          border-radius: 0.25rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background-color 0.2s;
-          display: flex;
-          align-items: center;
         }
-
-        .create-button:hover:not(:disabled) {
-          background-color: #4338ca;
-        }
-
-        .create-button:disabled {
-          background-color: #6366f1;
-          opacity: 0.7;
-          cursor: not-allowed;
-        }
-
         .cancel-button {
-          padding: 0.5rem 1rem;
-          background-color: #374151;
-          color: #f3f4f6;
-          border: none;
-          border-radius: 0.25rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background-color 0.2s;
-          display: flex;
-          align-items: center;
-        }
-
-        .cancel-button:hover:not(:disabled) {
-          background-color: #4b5563;
-        }
-
-        .cancel-button:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
-        }
-
-        .error-message {
-          color: #f87171;
-          background-color: rgba(239, 68, 68, 0.15);
-          border: 1px solid #ef4444;
-          padding: 0.75rem 1rem;
-          border-radius: 0.375rem;
-          margin-bottom: 1rem;
-          font-size: 0.875rem;
-        }
-
-        @media (max-width: 992px) {
-          .form-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .checkbox-wrapper {
-            padding-top: 0.5rem; /* Adjust spacing */
-          }
-
-          .page-header {
-            flex-direction: column;
-            align-items: flex-start;
-          }
-
-          .page-actions {
-            margin-top: 1rem;
-            width: 100%;
-            justify-content: flex-end;
-          }
-
-          .logo-url-input-wrapper {
-            flex-direction: row; /* Keep side-by-side on small screens too */
-            align-items: flex-end;
-          }
-        }
-
-        /* Optional: Add a bit more padding to the InputField wrapper if needed */
-        /* to ensure proper alignment when used with logo preview */
-        .form-column .input-field-wrapper {
-          padding-bottom: 0; /* Remove default bottom padding */
-        }
-        .form-column .input-field-wrapper label {
-          margin-bottom: 0.5rem; /* Add some space below label */
-        }
-
-        .logo-suggestion-item {
-          display: flex;
-          align-items: center;
-          padding: 8px;
-          cursor: pointer;
-        }
-
-        .logo-suggestion-item img {
-          width: 24px;
-          height: 24px;
-          margin-right: 10px;
-          object-fit: contain;
-        }
-
-        .logo-info {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .logo-name {
-          font-weight: 500;
-          font-size: 14px;
-        }
-
-        .logo-domain {
-          font-size: 12px;
-          color: #666;
-        }
-
-        .dark .logo-domain {
-          color: #aaa;
+          background-color: ${theme === "dark" ? "#4a5568" : "#e2e8f0"};
+          color: ${theme === "dark" ? "#e2e8f0" : "#4a5568"};
         }
       `}</style>
     </div>

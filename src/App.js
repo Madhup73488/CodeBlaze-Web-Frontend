@@ -53,9 +53,9 @@ import OfferLetterGeneratorPage from "./admin/pages/documents/OfferLetterGenerat
 import CertificateGeneratorPage from "./admin/pages/documents/CertificateGeneratorPage";
 import BannerCarouselPage from "./admin/pages/ContentManagement/BannerCarouselPage";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { CartProvider } from "./contexts/CartContext";
+import { WorkBagProvider } from "./contexts/WorkBagContext";
 import AuthModal from "./components/Auth/AuthModal";
-import CartDrawer from "./components/common/CartDrawer";
+import WorkBagModal from "./components/common/WorkBagModal";
 import ProfileDashboard from "./components/profile/ProfileDashboard";
 import PublicProfile from "./components/profile/PublicProfile";
 import ProfilePage from "./components/profile/ProfilePage";
@@ -504,7 +504,7 @@ const AppContent = () => {
         theme={theme}
         initialSelectedService={initialServiceForModal}
       />
-      <CartDrawer />
+      <WorkBagModal />
     </div>
   );
 };
@@ -513,9 +513,9 @@ function App() {
   return (
     <LoaderProvider color="orange">
       <AuthProvider>
-        <CartProvider>
+        <WorkBagProvider>
           <AppContent />
-        </CartProvider>
+        </WorkBagProvider>
       </AuthProvider>
     </LoaderProvider>
   );
