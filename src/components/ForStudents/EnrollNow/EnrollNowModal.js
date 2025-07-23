@@ -172,7 +172,6 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
                 });
                 setIsSubmitted(true);
                 clearWorkBag();
-                window.location.href = "/";
               } else {
                 console.error("Failed to save enrollment after payment");
               }
