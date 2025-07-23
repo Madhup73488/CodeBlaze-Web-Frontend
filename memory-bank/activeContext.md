@@ -1,29 +1,19 @@
 # Active Context
 
-- **Current Work Focus**: Standardizing the UI across the entire admin section, including padding, margins, headings, and background colors. Implementing a new "Work Bag" feature to replace the old cart system and creating a new enrollment flow. Modifying the job portal page to display a limited number of jobs and a promotional card.
+## Current Work Focus
+- **Task**: Fix the issue where a single internship card expands to fill the entire width of the container.
+- **Status**: Completed.
 
-- **Recent Changes**:
-    - **UI Overhaul**: Updated the styling of all admin pages to ensure a consistent and modern design.
-    - **"Work Bag" Feature**: Replaced the `Cart` with a `WorkBag`, including renaming components and contexts.
-    - **Enrollment Flow**: Implemented a new `EnrollNowModal` that appears after a user logs in to collect additional details before proceeding to payment.
-    - **User Profile Update**: The `EnrollNowModal` now updates the user's profile with their phone number and college name.
-    - **Excel Export**: After a successful payment, the enrollment data is sent to a new endpoint to be saved in an Excel sheet.
-    - **Mobile View**: Added the "Work Bag" icon to the mobile view of the navbar.
-    - **Grant Access Modal**: Refactored the "Grant Access" form into a modal and fixed various styling and accessibility issues.
-    - **Job Portal**: Modified the job portal page to display only 11 jobs and a promotional card at the end that links to the internships page.
-    - **Job Card**: The "Apply Now" button on the `JobCard` component now triggers the login modal if the user is not authenticated.
+## Recent Changes
+- Modified `src/components/ForStudents/Internships.css`:
+  - Changed the `grid-template-columns` of the `.internships-list` from `repeat(auto-fit, minmax(300px, 1fr))` to `repeat(auto-fill, minmax(300px, 1fr))`.
 
-- **Next Steps**:
-    - Continue to monitor and address any UI inconsistencies or bugs that arise.
-    - Conduct thorough testing of the new "Work Bag" and enrollment flow.
+## Next Steps
+- Verify that a single card no longer expands to fill the container.
+- No further modifications are planned for this task.
 
-- **Important Patterns and Preferences**:
-    - Adhering to the Memory Bank structure and update workflows.
-    - Ensuring frontend API calls match the backend contract precisely.
-    - Prioritizing robust error handling and user feedback for API interactions.
+## Important Patterns and Preferences
+- **UI/UX**: The user wants a consistent and predictable layout, even when there is only one item in the grid.
 
-- **Learnings and Project Insights**:
-    - The admin section now has a consistent and modern design.
-    - The new "Work Bag" feature provides a more intuitive user experience.
-    - The enrollment flow is now more streamlined and collects all necessary user information.
-    - The job portal page now has a clear call to action to encourage users to register for internships.
+## Learnings and Project Insights
+- The `auto-fill` and `auto-fit` values for `repeat()` in CSS Grid have different behaviors. `auto-fit` will expand the grid items to fill the available space, while `auto-fill` will create as many columns as can fit, even if there are not enough items to fill them. `auto-fill` is useful in cases where you want to prevent a single item from expanding.

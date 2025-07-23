@@ -87,81 +87,83 @@ const Hero = () => {
   };
 
   return (
-    <div className="hero-section-container" style={{ backgroundColor: 'hsl(var(--website-background))' }}>
+    <div
+      className="hero-section-container"
+      style={{ backgroundColor: "hsl(var(--website-background))" }}
+    >
       <div className="container">
-      <div className="decorative-circle-1"></div>
-      <div className="decorative-circle-2"></div>
-
-      <motion.div
-        className="hero-content-wrapper"
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-      >
-        <div className="text-content">
-          <motion.p className="social-proof" variants={textVariants}>
-            Trusted by 100+ Students
-          </motion.p>
-          <motion.h1 className="hero-main-title" variants={textVariants}>
-            LEARN. <br />
-            <span className="text-highlight">CREATE.</span> <br />
-            SUCCEED.
-          </motion.h1>
-          <motion.p className="hero-subtitle-text" variants={textVariants}>
-            Transform your career with industry-leading courses designed by
-            experts. Start your journey to success today.
-          </motion.p>
-
-          <motion.div className="cta-buttons" variants={containerVariants}>
-            <motion.div variants={itemVariants}>
-              <Button asChild className="explore-courses-btn">
-                <Link to="/courses">Explore Courses</Link>
-              </Button>
-            </motion.div>
-            <motion.div variants={itemVariants}>
-              <Button asChild variant="outline" className="learn-more-btn">
-                <Link to="/internships">Explore Internships</Link>
-              </Button>
-            </motion.div>
-          </motion.div>
-
-        </div>
+        <div className="decorative-circle-1"></div>
+        <div className="decorative-circle-2"></div>
 
         <motion.div
-          className="graphic-content"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, ease: "easeOut", delay: 0.5 }}
+          className="hero-content-wrapper"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
         >
-          <div className="image-placeholder">
-            <img
-              src={heroImage}
-              alt="Group of students holding laptops"
-              className="w-full h-auto object-cover"
-            />
+          <div className="text-content">
+            <motion.p className="social-proof" variants={textVariants}>
+              Trusted by 9271+ Students
+            </motion.p>
+            <motion.h1 className="hero-main-title" variants={textVariants}>
+              LEARN. <br />
+              <span className="text-highlight">CREATE.</span> <br />
+              SUCCEED.
+            </motion.h1>
+            <motion.p className="hero-subtitle-text" variants={textVariants}>
+              Transform your career with industry-leading courses designed by
+              experts. Start your journey to success today.
+            </motion.p>
+
+            <motion.div className="cta-buttons" variants={containerVariants}>
+              <motion.div variants={itemVariants}>
+                <Button asChild className="explore-courses-btn">
+                  <Link to="/courses">Explore Courses</Link>
+                </Button>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <Button asChild variant="outline" className="learn-more-btn">
+                  <Link to="/internships">Explore Internships</Link>
+                </Button>
+              </motion.div>
+            </motion.div>
           </div>
 
-          <motion.div className="feature-cards" variants={containerVariants}>
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                className="feature-card"
-                variants={itemVariants}
-              >
-                {feature.icon}
-                <p className="feature-title">{feature.title}</p>
-              </motion.div>
-            ))}
+          <motion.div
+            className="graphic-content"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, ease: "easeOut", delay: 0.5 }}
+          >
+            <div className="image-placeholder">
+              <img
+                src={heroImage}
+                alt="Group of students holding laptops"
+                className="w-full h-auto object-cover"
+              />
+            </div>
+
+            <motion.div className="feature-cards" variants={containerVariants}>
+              {features.map((feature, index) => (
+                <motion.div
+                  key={index}
+                  className="feature-card"
+                  variants={itemVariants}
+                >
+                  {feature.icon}
+                  <p className="feature-title">{feature.title}</p>
+                </motion.div>
+              ))}
+            </motion.div>
           </motion.div>
         </motion.div>
-      </motion.div>
 
-      <motion.div
-        className="scroll-indicator"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.5, duration: 0.8 }}
-      ></motion.div>
+        <motion.div
+          className="scroll-indicator"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.5, duration: 0.8 }}
+        ></motion.div>
       </div>
     </div>
   );

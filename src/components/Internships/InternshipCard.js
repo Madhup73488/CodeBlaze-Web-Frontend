@@ -37,82 +37,79 @@ const InternshipCard = ({
       : internship.location;
 
   return (
-    <Link to={`/internships/${internship.id}`} className="block group">
-      <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out overflow-hidden h-full flex flex-col">
-        <div className="relative">
+    <Link to={`/internships/${internship.id}`} className="block group h-full">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200 h-full flex flex-col">
+        <div className="relative aspect-[16/9] sm:aspect-[4/3] w-full overflow-hidden rounded-t-lg">
           <img
             src={internship.image}
             alt={internship.title}
-            className="w-full h-48 object-cover"
+            className="w-full h-full object-cover"
+            loading="lazy"
           />
-          <div className="absolute inset-0 bg-black/50"></div>
-          <div className="absolute bottom-4 left-4 text-white">
-            <h3 className="font-bold text-lg leading-tight text-white">
-              {internship.title}
-            </h3>
-          </div>
-          <div className="absolute top-4 right-4 bg-white text-primary px-3 py-1 rounded-full text-xs font-semibold">
-            {internship.category}
-          </div>
+          {internship.category && (
+            <div
+              className="absolute top-2 right-2 px-2 py-1 text-xs font-semibold rounded-full bg-purple-200 text-purple-800"
+            >
+              {internship.category}
+            </div>
+          )}
         </div>
 
-        <div className="p-4 flex flex-col flex-grow">
-          <div className="flex items-center mb-3">
+        <div className="p-2 sm:p-4 flex flex-col flex-grow">
+          <div className="flex items-center mb-1 sm:mb-2">
             <img
               src={codeblazeLogo}
               alt="Codeblaze Logo"
-              className="w-6 h-6 mr-2"
+              className="w-5 h-5 object-contain mr-1"
+              loading="lazy"
             />
-            <span className="text-sm font-semibold text-gray-700">
+            <span className="text-xs text-gray-600 font-medium">
               Codeblaze Academy
             </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-gray-600 mb-4">
-            <div className="flex items-center">
-              <MapPin className="w-4 h-4 mr-2 text-primary" />
-              <span>{displayLocation}</span>
-            </div>
-            <div className="flex items-center">
-              <Calendar className="w-4 h-4 mr-2 text-primary" />
-              <span>{internship.duration}</span>
-            </div>
-            <div className="flex items-center col-span-2">
-              <Briefcase className="w-4 h-4 mr-2 text-primary" />
-              <span>{internship.work_type}</span>
-            </div>
-          </div>
+          <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-1 sm:mb-2 line-clamp-2 leading-tight flex-grow">
+            {internship.title}
+          </h3>
 
-          <div className="flex items-center mb-4">
-            <div className="flex items-center text-yellow-500">
-              <Star className="w-5 h-5 fill-current" />
-              <span className="ml-1 font-bold">{internship.rating.toFixed(1)}</span>
+          <div className="flex items-center mb-1 sm:mb-2">
+            <div className="flex items-center">
+              <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-yellow-400 text-yellow-400" />
+              <span className="ml-1 text-xs sm:text-sm font-medium text-gray-700">
+                {internship.rating.toFixed(1)}
+              </span>
             </div>
-            <span className="ml-2 text-sm text-gray-500">
+            <span className="ml-1 sm:ml-2 text-xs sm:text-sm text-gray-500">
               ({internship.reviews.toLocaleString()} reviews)
             </span>
           </div>
 
-          <div className="mt-auto">
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="text-2xl font-bold text-gray-900">
-                  {internship.fees}
-                </span>
-                {internship.originalFees && (
-                  <span className="ml-2 text-sm text-gray-500 line-through">
-                    {internship.originalFees}
-                  </span>
-                )}
-              </div>
-              <button
-                onClick={handleAddToCart}
-                className="bg-primary text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors disabled:bg-gray-400"
-                disabled={isAdding || isApplied}
-              >
-                {isApplied ? "Applied" : isAdding ? "Adding..." : "Apply Now"}
-              </button>
+          <div className="flex flex-col text-xs sm:text-sm text-gray-500 mb-2 space-y-1">
+            <div className="flex items-center">
+              <MapPin className="w-4 h-4 mr-2 text-gray-500" />
+              <span>{displayLocation}</span>
             </div>
+            <div className="flex items-center">
+              <Calendar className="w-4 h-4 mr-2 text-gray-500" />
+              <span>{internship.duration}</span>
+            </div>
+            <div className="flex items-center">
+              <Briefcase className="w-4 h-4 mr-2 text-gray-500" />
+              <span>{internship.work_type}</span>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between mt-auto pt-2">
+            <span className="text-base sm:text-lg font-bold text-gray-900">
+              {internship.fees}
+            </span>
+            <button
+              onClick={handleAddToCart}
+              className="bg-primary text-white px-2 py-1 sm:px-4 sm:py-2 rounded-md text-xs sm:text-sm font-medium hover:bg-primary/90 transition-colors"
+              disabled={isAdding || isApplied}
+            >
+              {isApplied ? "Applied" : isAdding ? "Adding..." : "Apply Now"}
+            </button>
           </div>
         </div>
       </div>

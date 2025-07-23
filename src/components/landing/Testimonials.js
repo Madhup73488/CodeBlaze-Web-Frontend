@@ -41,13 +41,15 @@ const testimonials = [
 ];
 
 const Testimonials = () => {
+  const duplicatedTestimonials = [...testimonials, ...testimonials];
+
   return (
     <section className="testimonials-container" style={{ backgroundColor: 'hsl(var(--website-background))' }}>
       <div className="testimonials-content">
         <h2 className="text-2xl sm:text-3xl font-bold text-left sm:text-center text-gray-900 mb-8">What our <span className="text-red-500">students</span> say</h2>
         <div className="testimonials-slider">
           <div className="testimonials-slider-inner">
-            {testimonials.map((testimonial, index) => (
+            {duplicatedTestimonials.map((testimonial, index) => (
               <div key={index} className="testimonial-card-wrapper">
                 <div className="testimonial-card">
                   <div className="testimonial-card-inner">

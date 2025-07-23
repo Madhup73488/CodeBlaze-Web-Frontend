@@ -6,7 +6,7 @@ import CloseConsent from "./CloseConsent";
 import EnrollmentSuccess from "./EnrollmentSuccess";
 import codeblazeLogoOrange from "../../../assets/images/codeblazelogoorange.png";
 
-const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
+const EnrollNowModal = ({ internship, onClose, theme }) => {
   const { user } = useAuth();
   const { clearWorkBag } = useWorkBag();
   const [formData, setFormData] = useState({
@@ -62,7 +62,6 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
   };
 
   const handleSubmit = async (e) => {
-    console.log("handleSubmit called"); // New log
     e.preventDefault();
     setIsLoading(true);
 
@@ -72,17 +71,14 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
       phone: e.target.phone.value,
       course: internship.title,
       college: e.target.college.value,
+      userId: user?.id,
     };
 
     try {
-      console.log("Inside try block");
       const apiUrl = process.env.REACT_APP_BACKEND_URL;
-      console.log("apiUrl:", apiUrl);
-
-      // Update user profile
       const token = localStorage.getItem("token");
+
       if (token) {
-        console.log("Updating user profile...");
         await fetch(`${apiUrl}/api/users/me`, {
           method: "PUT",
           headers: {
@@ -94,34 +90,31 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
             college: updatedFormData.college,
           }),
         });
-        console.log("User profile updated.");
       }
 
-      console.log("Creating Razorpay order...");
       const orderResponse = await fetch(`${apiUrl}/api/payment/create-order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          amount: parseInt(internship.fees.replace(/[^0-9]/g, "")) * 100, // Amount in paise
+          amount: parseInt(internship.fees.replace(/[^0-9]/g, "")) * 100,
           currency: "INR",
           receipt: `receipt_enroll_${Date.now()}`,
           notes: {
             course: internship.title,
             name: updatedFormData.name,
             email: updatedFormData.email,
+            userId: updatedFormData.userId,
           },
         }),
       });
-      console.log("Razorpay order response:", orderResponse);
 
       if (!orderResponse.ok) {
         throw new Error("Failed to create Razorpay order");
       }
 
       const order = await orderResponse.json();
-      console.log("Razorpay order:", order);
 
       const options = {
         key: process.env.REACT_APP_RAZORPAY_KEY_ID,
@@ -130,64 +123,17 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
         name: "CodeBlaze",
         description: `Enrollment for ${internship.title}`,
         order_id: order.id,
-        handler: async (response) => {
-          console.log("Razorpay handler called", response); // New log
-          try {
-            const verificationResponse = await fetch(
-              `${apiUrl}/api/payment/verify-payment`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature: response.razorpay_signature,
-                }),
-              }
-            );
-
-            if (verificationResponse.ok) {
-              // Payment is successful, now save the enrollment
-              const enrollmentResponse = await fetch(
-                `${apiUrl}/api/enrollment`,
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(updatedFormData),
-                }
-              );
-
-              if (enrollmentResponse.ok) {
-                // Push data to Excel sheet
-                await fetch(`${apiUrl}/api/enrollment/excel`, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(updatedFormData),
-                });
-                setIsSubmitted(true);
-                clearWorkBag();
-              } else {
-                console.error("Failed to save enrollment after payment");
-              }
-            } else {
-              const errorData = await verificationResponse.json(); // Get error from backend
-              console.error("Payment verification failed", errorData); // Log the error
-            }
-          } catch (error) {
-            console.error(
-              "Error during payment verification or enrollment:",
-              error
-            );
-          }
+        handler: function (response) {
+          // This function will be called after the payment is successful.
+          // We will show the success message and clear the workbag.
+          setIsSubmitted(true);
+          clearWorkBag();
         },
         modal: {
           ondismiss: function () {
+            // This function is called when the user closes the modal without completing the payment.
+            // We can choose to do nothing or show a message.
+            setIsLoading(false);
             console.log("Checkout form closed");
           },
         },
@@ -204,12 +150,10 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
         },
       };
 
-      console.log("Opening Razorpay checkout...");
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (error) {
       console.error("Error in handleSubmit:", error);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -278,9 +222,6 @@ const EnrollNowModal = ({ internship, onClose, onSubmit, theme }) => {
                   type="submit"
                   className="submit-button"
                   disabled={isLoading}
-                  onClick={() =>
-                    console.log("Continue to Payment button clicked")
-                  } // New log
                 >
                   {isLoading ? (
                     <div className="loader"></div>

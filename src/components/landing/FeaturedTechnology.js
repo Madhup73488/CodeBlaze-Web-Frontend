@@ -134,7 +134,7 @@ const FeaturedTechnology = ({ theme = "light", color = "orange" }) => {
   return (
     <section
       ref={containerRef}
-      className="w-full py-16 lg:py-24"
+      className="w-full pt-16 lg:py-24"
       style={{
         backgroundColor: bgColor,
         color: textColor,

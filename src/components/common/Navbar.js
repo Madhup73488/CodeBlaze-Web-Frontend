@@ -41,14 +41,14 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (isProfileDropdownOpen && !event.target.closest('.relative')) {
+      if (isProfileDropdownOpen && !event.target.closest(".relative")) {
         setIsProfileDropdownOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isProfileDropdownOpen]);
 
@@ -96,7 +96,7 @@ export default function Navbar() {
               </Link>
 
               {/* Desktop Navigation Links */}
-              <nav className="hidden lg:flex items-center ml-10 space-x-8">
+              <nav className="hidden lg:flex items-center ml-10 space-x-4">
                 <div
                   className="relative"
                   onMouseEnter={() => setIsBrowseDropdownOpen(true)}
@@ -164,7 +164,11 @@ export default function Navbar() {
 
             {/* Auth Buttons - Desktop */}
             <div className="hidden md:flex items-center space-x-4">
-              <Button variant="ghost" onClick={openWorkBag} className="relative">
+              <Button
+                variant="ghost"
+                onClick={openWorkBag}
+                className="relative"
+              >
                 <ShoppingCart className="h-6 w-6 text-gray-700" />
                 {workBag.length > 0 && (
                   <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full mt-4 mr-6">
@@ -235,7 +239,11 @@ export default function Navbar() {
 
             {/* Mobile menu button */}
             <div className="md:hidden flex items-center space-x-4">
-              <Button variant="ghost" onClick={openWorkBag} className="relative">
+              <Button
+                variant="ghost"
+                onClick={openWorkBag}
+                className="relative"
+              >
                 <ShoppingCart className="h-6 w-6 text-gray-700" />
                 {workBag.length > 0 && (
                   <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full mt-4 mr-6">

@@ -88,18 +88,6 @@
   }
 }
 
-@media (max-width: 767px) {
-  .testimonials-slider-inner {
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-  }
-  .testimonial-card-wrapper {
-    scroll-snap-align: center;
-  }
-}
-
-@media (min-width: 768px) {
-  .testimonials-slider-inner {
-    animation: marquee 20s linear infinite;
-  }
+.testimonials-slider-inner {
+  animation: marquee 20s linear infinite;
 }
