@@ -60,15 +60,18 @@ export default function AccreditedBy() {
   };
 
   return (
-    <section className="py-12" style={{ backgroundColor: 'hsl(var(--website-background))' }}>
+    <section className="pt-12">
       <div className="container">
         <h2 className="text-2xl sm:text-3xl font-bold text-left sm:text-center text-gray-900 mb-8">
           <span className="text-red-500">Accredited</span> by
         </h2>
 
-        <div className="flex overflow-x-auto space-x-8 pb-4 lg:flex-wrap items-center justify-center lg:space-x-0 lg:gap-8 lg:gap-12">
+        <div className="flex overflow-x-auto gap-2 pb-4 lg:flex-wrap items-center justify-start lg:justify-center lg:space-x-0 lg:gap-16 px-4 no-scrollbar scroll-px-4 scrolling-container">
           {logos.map((accreditation, index) => (
-            <div key={index} className="flex-shrink-0 lg:flex-shrink-1 accredited-by-card">
+            <div
+              key={index}
+              className="flex-shrink-0 lg:flex-shrink-1 accredited-by-card bg-gray-50"
+            >
               <img
                 src={accreditation.logo}
                 alt={`${accreditation.name} logo`}

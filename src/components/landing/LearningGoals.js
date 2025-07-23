@@ -7,36 +7,36 @@ import FocusedMode from "../../assets/images/connectImages/FocusedMode.mov";
 import QualityContent from "../../assets/images/connectImages/QualityContent.png";
 import ContentBreakup from "../../assets/images/connectImages/ContentBreakup.png";
 
-const learningData = {
-  "Track your progress": {
-    description:
-      "Monitor your learning journey with our intuitive progress tracking.",
-    image: ProgressSection,
-    icon: <BarChart size={48} className="text-blue-500" />,
-  },
-  "Distraction-free learning": {
-    description:
-      "A full-screen, do-not-disturb mode for a focused learning experience.",
-    video: FocusedMode,
-    icon: <BookOpen size={48} className="text-purple-500" />,
-  },
-  "Quality content & resources": {
-    description:
-      "Access high-quality content and curated resources to supplement your learning.",
-    image: QualityContent,
-    icon: <Zap size={48} className="text-green-500" />,
-  },
-  "Detailed breakdowns": {
-    description:
-      "Courses, modules, and lessons are broken down for easy understanding.",
-    image: ContentBreakup,
-    icon: <FolderKanban size={48} className="text-orange-500" />,
-  },
-};
-
 const LearningGoals = () => {
   const [activeTab, setActiveTab] = useState("Track your progress");
   const [isMobile, setIsMobile] = useState(false);
+
+  const learningData = {
+    "Track your progress": {
+      description:
+        "Monitor your learning journey with our intuitive progress tracking.",
+      image: ProgressSection,
+      icon: <BarChart size={isMobile ? 16 : 32} className="text-blue-500" />,
+    },
+    "Distraction-free learning": {
+      description:
+        "A full-screen, do-not-disturb mode for a focused learning experience.",
+      video: FocusedMode,
+      icon: <BookOpen size={isMobile ? 16 : 32} className="text-purple-500" />,
+    },
+    "Quality content & resources": {
+      description:
+        "Access high-quality content and curated resources to supplement your learning.",
+      image: QualityContent,
+      icon: <Zap size={isMobile ? 16 : 32} className="text-green-500" />,
+    },
+    "Detailed breakdowns": {
+      description:
+        "Courses, modules, and lessons are broken down for easy understanding.",
+      image: ContentBreakup,
+      icon: <FolderKanban size={isMobile ? 16 : 32} className="text-orange-500" />,
+    },
+  };
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);

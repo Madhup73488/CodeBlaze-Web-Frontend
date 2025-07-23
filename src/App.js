@@ -76,6 +76,7 @@ import {
 import { ROUTES } from "./constants/routes";
 import OAuthCallbackPage from "./pages/OAuthCallbackPage"; 
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import ScrollToTop from "./components/common/ScrollToTop";
 
 
 const AppContent = () => {
@@ -139,6 +140,7 @@ const AppContent = () => {
         />
       )}
 
+      <ScrollToTop />
       <Routes>
         <Route
           path={ROUTES.HOME}

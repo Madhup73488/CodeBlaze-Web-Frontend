@@ -83,7 +83,7 @@ const Faq = () => {
 
   return (
     <section
-      className="py-16"
+      className="pt-16"
       style={{ backgroundColor: "hsl(var(--website-background))" }}
     >
       <div className="container mx-auto">

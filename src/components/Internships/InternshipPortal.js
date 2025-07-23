@@ -59,66 +59,50 @@ function InternshipPortal({ theme = "light", color = "purple" }) {
 
   return (
     <div className={`internships-container ${theme} ${color}`}>
-      <div className="internships-header">
-        <h1 className="internships-title">
-          Internship Programs at Codeblaze
-        </h1>
-        <div
-          className="accent-line"
-        ></div>
-        <p className="internships-subtitle">
-          Intensive, industry-focused internship programs designed to accelerate
-          your tech career. Get hands-on experience, build real projects, and
-          secure your dream job.
-        </p>
-      </div>
-
-      <section className="search-section">
-        <div className="search-container">
+      <div className="internships-content">
+        <h2 className="text-xl font-bold text-gray-900 mb-8">All Internships</h2>
+        <div className="flex justify-between mb-8">
           <input
             type="text"
-            placeholder="Search programs, technologies, or companies..."
-            className="search-input"
-            value={searchQuery}
+            placeholder="Search for internships..."
+            className="w-1/2 p-2 border border-gray-300 rounded-md"
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <button
-            className="search-button"
-            style={{ backgroundColor: color === 'purple' ? '#a855f7' : '#f97316' }}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
+          <div className="flex gap-4">
+            <select
+              className="p-2 border border-gray-300 rounded-md"
+              onChange={(e) => setActiveCategory(e.target.value)}
             >
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-          </button>
-        </div>
-      </section>
-
-      <section className="internships-section">
-        <div className="internships-list">
-          {loading
-            ? Array.from({ length: 6 }).map((_, index) => (
-                <InternshipCardSkeleton key={index} />
-              ))
-            : filteredInternships.map((internship) => (
-                <InternshipCard
-                  key={internship.id}
-                  internship={internship}
-                  theme={theme}
-                  primaryColor={color === "purple" ? "#a855f7" : "#f97316"}
-                  savedInternships={savedInternships}
-                  appliedInternships={appliedInternships}
-                  toggleSaveInternship={toggleSaveInternship}
-                  formatDate={formatDate}
-                />
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
               ))}
+            </select>
+          </div>
         </div>
-      </section>
+
+        <section className="internships-section">
+          <div className="internships-list">
+            {loading
+              ? Array.from({ length: 6 }).map((_, index) => (
+                  <InternshipCardSkeleton key={index} />
+                ))
+              : filteredInternships.map((internship) => (
+                  <InternshipCard
+                    key={internship.id}
+                    internship={internship}
+                    theme={theme}
+                    primaryColor={color === "purple" ? "#a855f7" : "#f97316"}
+                    savedInternships={savedInternships}
+                    appliedInternships={appliedInternships}
+                    toggleSaveInternship={toggleSaveInternship}
+                    formatDate={formatDate}
+                  />
+                ))}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

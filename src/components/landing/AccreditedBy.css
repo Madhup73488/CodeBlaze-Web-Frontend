@@ -1,5 +1,4 @@
 .accredited-by-card {
-  background-color: #f9fafb;
   border-radius: 0.5rem;
   padding: 1.5rem;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -9,7 +8,6 @@
   align-items: center;
   width: 12rem;
   height: 8rem;
-  margin: 0 auto;
 }
 
 .accredited-by-card:hover {
@@ -24,4 +22,29 @@
 
 .accredited-by-logo.large {
   height: 8rem;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+@media (max-width: 767px) {
+  .accredited-by-card {
+    width: 6rem;
+    height: 4.5rem;
+    padding: 0.75rem;
+  }
+
+  .accredited-by-logo {
+    height: 2.5rem;
+  }
+
+  .accredited-by-logo.large {
+    height: 3.5rem;
+  }
 }
