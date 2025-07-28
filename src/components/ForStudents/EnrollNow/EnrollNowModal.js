@@ -65,7 +65,7 @@ const EnrollNowModal = ({ internship, onClose, theme }) => {
     e.preventDefault();
     setIsLoading(true);
 
-    const updatedFormData = {
+    const applicationData = {
       name: e.target.fullName.value,
       email: e.target.email.value,
       phone: e.target.phone.value,
@@ -78,82 +78,29 @@ const EnrollNowModal = ({ internship, onClose, theme }) => {
       const apiUrl = process.env.REACT_APP_BACKEND_URL;
       const token = localStorage.getItem("token");
 
-      if (token) {
-        await fetch(`${apiUrl}/api/users/me`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            phone: updatedFormData.phone,
-            college: updatedFormData.college,
-          }),
-        });
-      }
-
-      const orderResponse = await fetch(`${apiUrl}/api/payment/create-order`, {
+      const response = await fetch(`${apiUrl}/api/enrollment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          amount: parseInt(internship.fees.replace(/[^0-9]/g, "")) * 100,
-          currency: "INR",
-          receipt: `receipt_enroll_${Date.now()}`,
-          notes: {
-            course: internship.title,
-            name: updatedFormData.name,
-            email: updatedFormData.email,
-            userId: updatedFormData.userId,
-          },
-        }),
+        body: JSON.stringify(applicationData),
       });
 
-      if (!orderResponse.ok) {
-        throw new Error("Failed to create Razorpay order");
+      const result = await response.json();
+
+      if (result.success) {
+        setIsSubmitted(true);
+        clearWorkBag();
+      } else {
+        // Handle submission error
+        console.error("Application submission failed:", result.message);
+        // Optionally, show an error message to the user
       }
-
-      const order = await orderResponse.json();
-
-      const options = {
-        key: process.env.REACT_APP_RAZORPAY_KEY_ID,
-        amount: order.amount,
-        currency: order.currency,
-        name: "CodeBlaze",
-        description: `Enrollment for ${internship.title}`,
-        order_id: order.id,
-        handler: function (response) {
-          // This function will be called after the payment is successful.
-          // We will show the success message and clear the workbag.
-          setIsSubmitted(true);
-          clearWorkBag();
-        },
-        modal: {
-          ondismiss: function () {
-            // This function is called when the user closes the modal without completing the payment.
-            // We can choose to do nothing or show a message.
-            setIsLoading(false);
-            console.log("Checkout form closed");
-          },
-        },
-        prefill: {
-          name: updatedFormData.name,
-          email: updatedFormData.email,
-          contact: updatedFormData.phone,
-        },
-        notes: {
-          address: "CodeBlaze Technologies",
-        },
-        theme: {
-          color: "#F37254",
-        },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
     } catch (error) {
       console.error("Error in handleSubmit:", error);
+      // Optionally, show an error message to the user
+    } finally {
       setIsLoading(false);
     }
   };
@@ -226,7 +173,7 @@ const EnrollNowModal = ({ internship, onClose, theme }) => {
                   {isLoading ? (
                     <div className="loader"></div>
                   ) : (
-                    "Continue to Payment"
+                    "Apply"
                   )}
                 </button>
               </form>
