@@ -2,10 +2,6 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { BarChart, BookOpen, Zap, FolderKanban } from "lucide-react";
 import "./LearningGoals.css";
-import ProgressSection from "../../assets/images/connectImages/ProgressSection.png";
-import FocusedMode from "../../assets/images/connectImages/FocusedMode.mov";
-import QualityContent from "../../assets/images/connectImages/QualityContent.png";
-import ContentBreakup from "../../assets/images/connectImages/ContentBreakup.png";
 
 const LearningGoals = () => {
   const [activeTab, setActiveTab] = useState("Track your progress");
@@ -15,25 +11,25 @@ const LearningGoals = () => {
     "Track your progress": {
       description:
         "Monitor your learning journey with our intuitive progress tracking.",
-      image: ProgressSection,
+      image: "https://res.cloudinary.com/duiotumuy/image/upload/v1753720905/ProgressSection_11zon_sio7lr.webp",
       icon: <BarChart size={isMobile ? 16 : 32} className="text-blue-500" />,
     },
     "Distraction-free learning": {
       description:
         "A full-screen, do-not-disturb mode for a focused learning experience.",
-      video: FocusedMode,
+      video: "https://res.cloudinary.com/duiotumuy/video/upload/v1753720993/FocusedMode_yyfte1.mov",
       icon: <BookOpen size={isMobile ? 16 : 32} className="text-purple-500" />,
     },
     "Quality content & resources": {
       description:
         "Access high-quality content and curated resources to supplement your learning.",
-      image: QualityContent,
+      image: "https://res.cloudinary.com/duiotumuy/image/upload/v1753720905/QualityContent_11zon_jdrdxh.webp",
       icon: <Zap size={isMobile ? 16 : 32} className="text-green-500" />,
     },
     "Detailed breakdowns": {
       description:
         "Courses, modules, and lessons are broken down for easy understanding.",
-      image: ContentBreakup,
+      image: "https://res.cloudinary.com/duiotumuy/image/upload/v1753720906/ContentBreakup_11zon_nfjvjr.webp",
       icon: <FolderKanban size={isMobile ? 16 : 32} className="text-orange-500" />,
     },
   };
@@ -50,6 +46,19 @@ const LearningGoals = () => {
     updateIsMobile();
     window.addEventListener("resize", updateIsMobile);
     return () => window.removeEventListener("resize", updateIsMobile);
+  }, []);
+
+  useEffect(() => {
+    Object.values(learningData).forEach((data) => {
+      if (data.image) {
+        const img = new Image();
+        img.src = data.image;
+      }
+      if (data.video) {
+        const video = document.createElement('video');
+        video.src = data.video;
+      }
+    });
   }, []);
 
   return (

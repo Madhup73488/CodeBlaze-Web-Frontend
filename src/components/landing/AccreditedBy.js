@@ -2,38 +2,33 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../ui/button";
-import msmeLogo from "../../assets/images/Accreditedby/msme.png";
-import mcaLogo from "../../assets/images/Accreditedby/mca.png";
-import startupIndiaLogo from "../../assets/images/Accreditedby/startupindia.png";
-import aicteLogo from "../../assets/images/Accreditedby/aicte-approved.png";
-import edtechSocietyLogo from "../../assets/images/Accreditedby/edtechsociety.png";
 import "./AccreditedBy.css";
 
 export default function AccreditedBy() {
   const logos = [
     {
       name: "MSME",
-      logo: msmeLogo,
+      logo: "https://res.cloudinary.com/duiotumuy/image/upload/v1753720444/msme_wclpvp.webp",
       isLarge: true,
     },
     {
       name: "MCA",
-      logo: mcaLogo,
+      logo: "https://res.cloudinary.com/duiotumuy/image/upload/v1753720445/mca_lsfim6.webp",
       isLarge: false,
     },
     {
       name: "Startup India",
-      logo: startupIndiaLogo,
+      logo: "https://res.cloudinary.com/duiotumuy/image/upload/v1753720444/startupindia_ik17fn.webp",
       isLarge: true,
     },
     {
       name: "AICTE",
-      logo: aicteLogo,
+      logo: "https://res.cloudinary.com/duiotumuy/image/upload/v1753720444/aicte_vuhbqq.webp",
       isLarge: false,
     },
     {
       name: "Edtech Society",
-      logo: edtechSocietyLogo,
+      logo: "https://res.cloudinary.com/duiotumuy/image/upload/v1753720445/edtechsociety_ebmnly.webp",
       isLarge: false,
     },
   ];

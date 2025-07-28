@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Briefcase } from "lucide-react";
 import "./Hero.css";
-import heroImage from "../../assets/images/hero.png";
 
 const features = [
   {
@@ -137,9 +136,10 @@ const Hero = () => {
           >
             <div className="image-placeholder">
               <img
-                src={heroImage}
+                src="https://res.cloudinary.com/duiotumuy/image/upload/v1753721425/herosection_ovxe69.webp"
                 alt="Group of students holding laptops"
                 className="w-full h-auto object-cover"
+                loading="lazy"
               />
             </div>
 
