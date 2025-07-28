@@ -302,40 +302,40 @@ export const internships = [
     placement: "97% placement rate",
     logo: "ES",
   },
-  {
-    id: "f6a7b8c9-d0e1-2345-6789-0abcdef12345",
-    title: "Test Internship for Payments",
-    company: "Codeblaze",
-    category: "testing",
-    price: 2,
-    image: "https://placehold.co/600x400/cccccc/000000?text=Test",
-    location: "Bengaluru, KA, IN",
-    duration: "1 Week",
-    fees: "₹2",
-    originalFees: "₹2",
-    discount: "0% OFF",
-    batchSize: "1 Student",
-    rating: 5.0,
-    reviews: 1,
-    level: "Testing",
-    description: "This is a test internship to validate the payment gateway integration.",
-    highlights: [
-      "Live project experience with real clients",
-      "1-on-1 mentorship from senior developers",
-    ],
-    techStack: [
-      "Testing"
-    ],
-    requirements: [
-      "Being a test user"
-    ],
-    curriculum: [
-      "Week 1: Testing payments"
-    ],
-    deadline: "July 31, 2025",
-    startDate: "August 1, 2025",
-    certificate: "Certificate of Testing",
-    placement: "100% placement rate",
-    logo: "TS",
-  },
+  // {
+  //   id: "f6a7b8c9-d0e1-2345-6789-0abcdef12345",
+  //   title: "Test Internship for Payments",
+  //   company: "Codeblaze",
+  //   category: "testing",
+  //   price: 2,
+  //   image: "https://placehold.co/600x400/cccccc/000000?text=Test",
+  //   location: "Bengaluru, KA, IN",
+  //   duration: "1 Week",
+  //   fees: "₹2",
+  //   originalFees: "₹2",
+  //   discount: "0% OFF",
+  //   batchSize: "1 Student",
+  //   rating: 5.0,
+  //   reviews: 1,
+  //   level: "Testing",
+  //   description: "This is a test internship to validate the payment gateway integration.",
+  //   highlights: [
+  //     "Live project experience with real clients",
+  //     "1-on-1 mentorship from senior developers",
+  //   ],
+  //   techStack: [
+  //     "Testing"
+  //   ],
+  //   requirements: [
+  //     "Being a test user"
+  //   ],
+  //   curriculum: [
+  //     "Week 1: Testing payments"
+  //   ],
+  //   deadline: "July 31, 2025",
+  //   startDate: "August 1, 2025",
+  //   certificate: "Certificate of Testing",
+  //   placement: "100% placement rate",
+  //   logo: "TS",
+  // },
 ];

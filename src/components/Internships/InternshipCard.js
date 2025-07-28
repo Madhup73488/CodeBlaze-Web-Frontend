@@ -43,7 +43,7 @@ const InternshipCard = ({
           <img
             src={internship.image}
             alt={internship.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
             loading="lazy"
           />
           {internship.category && (
