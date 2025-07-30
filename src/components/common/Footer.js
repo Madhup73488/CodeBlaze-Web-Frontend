@@ -21,14 +21,18 @@ export default function Footer() {
       { name: "Placement Guidance", href: "/placement-guidance" },
     ],
     "Live Webinars": [{ name: "Upcoming Webinars", href: "/webinars" }],
-    Company: [
-      { name: "About Us", href: "/about" },
-      { name: "Careers", href: "/careers" },
-      { name: "Blog", href: "/blog" },
-    ],
+    Company: [{ name: "About Us", href: "/about" }],
     Support: [
       { name: "Contact Us", href: "/contact" },
-      { name: "FAQ", href: "/faq" },
+      { name: "Terms and Conditions", href: "/terms-and-conditions" },
+      {
+        name: "Cancellation and Refund Policy",
+        href: "/cancellation-and-refund-policy",
+      },
+      {
+        name: "Shipping and Delivery Policy",
+        href: "/shipping-and-delivery-policy",
+      },
     ],
   };
 
@@ -75,34 +79,18 @@ export default function Footer() {
               </h3>
               <div className="flex space-x-4">
                 <a
-                  href="#"
-                  className="text-gray-600 hover:text-primary transition-colors"
-                >
-                  <Facebook className="w-5 h-5" />
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-600 hover:text-primary transition-colors"
-                >
-                  <Twitter className="w-5 h-5" />
-                </a>
-                <a
-                  href="#"
+                  href="https://www.linkedin.com/company/codeblazee/?viewAsMember=true"
+                  target="_blank"
                   className="text-gray-600 hover:text-primary transition-colors"
                 >
                   <Linkedin className="w-5 h-5" />
                 </a>
                 <a
-                  href="#"
+                  href="https://www.instagram.com/codeblaze.tech/"
+                  target="_blank"
                   className="text-gray-600 hover:text-primary transition-colors"
                 >
                   <Instagram className="w-5 h-5" />
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-600 hover:text-primary transition-colors"
-                >
-                  <Youtube className="w-5 h-5" />
                 </a>
               </div>
             </div>
@@ -116,26 +104,7 @@ export default function Footer() {
                 © 2024 Codeblaze Inc. All rights reserved.
               </p>
             </div>
-            <div className="flex items-center space-x-6">
-              <Link
-                to="/terms"
-                className="text-sm text-gray-600 hover:text-primary transition-colors"
-              >
-                Terms
-              </Link>
-              <Link
-                to="/privacy"
-                className="text-sm text-gray-600 hover:text-primary transition-colors"
-              >
-                Privacy
-              </Link>
-              <a
-                href="#"
-                className="text-sm text-gray-600 hover:text-primary transition-colors"
-              >
-                Cookie Preferences
-              </a>
-            </div>
+            <div className="flex items-center space-x-6"></div>
           </div>
         </div>
       </div>

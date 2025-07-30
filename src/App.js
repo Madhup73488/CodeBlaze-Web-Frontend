@@ -10,13 +10,9 @@ import OurMissionPage from "./features/company/pages/OurMissionPage";
 import OurValuesPage from "./features/company/pages/OurValuesPage";
 import NotFound from "./pages/NotFound";
 import SupportPage from "./features/static/pages/SupportPage";
-import {
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import PremiumPrivacyPolicy from "./features/static/pages/PrivacyPolicyPage";
-import { LoaderProvider } from "./contexts/LoaderContext"; 
+import { LoaderProvider } from "./contexts/LoaderContext";
 import Landing from "./pages/Landing";
 import TermsOfServicePage from "./features/static/pages/TermsOfServicePage";
 import PlacementGuidance from "./components/ForStudents/PlacementGuidance";
@@ -29,6 +25,9 @@ import InternshipPortalPage from "./components/Internships/InternshipPortal";
 import InternshipDetailPage from "./components/ForStudents/InternshipDetailPage";
 import CancellationAndRefundPolicy from "./pages/CancellationAndRefundPolicy";
 import ShippingAndDeliveryPolicy from "./pages/ShippingAndDeliveryPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
+import ContactUs from "./pages/ContactUs";
+import CorporateTraining from "./pages/CorporateTraining";
 import AdminLayout from "./admin/components/layout/AdminLayout";
 import DashboardHome from "./admin/pages/DashboardHome";
 import AdminSettings from "./admin/pages/AdminSettings";
@@ -74,10 +73,10 @@ import {
   COLORS,
 } from "./constants/theme";
 import { ROUTES } from "./constants/routes";
-import OAuthCallbackPage from "./pages/OAuthCallbackPage"; 
+import OAuthCallbackPage from "./pages/OAuthCallbackPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ScrollToTop from "./components/common/ScrollToTop";
-
+import CookieConsentModal from "./components/common/CookieConsentModal";
 
 const AppContent = () => {
   const {
@@ -93,10 +92,10 @@ const AppContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isCallbackModalOpen, setIsCallbackModalOpen] = useState(false);
-  const [initialServiceForModal, setInitialServiceForModal] = useState('');
+  const [initialServiceForModal, setInitialServiceForModal] = useState("");
   const isAdminRoute = location.pathname.startsWith("/admin");
 
-  const handleOpenCallbackModal = (initialService = '') => {
+  const handleOpenCallbackModal = (initialService = "") => {
     setInitialServiceForModal(initialService);
     setIsCallbackModalOpen(true);
   };
@@ -113,8 +112,7 @@ const AppContent = () => {
     document.body.className = theme;
   }, [theme]);
 
-  
-  if (authLoading && !isAdminRoute) { 
+  if (authLoading && !isAdminRoute) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -123,10 +121,7 @@ const AppContent = () => {
   }
 
   return (
-    <div
-      className="app"
-      data-theme={theme}
-    >
+    <div className="app" data-theme={theme}>
       {!isAdminRoute && (
         <Navbar
           theme={theme}
@@ -144,11 +139,23 @@ const AppContent = () => {
       <Routes>
         <Route
           path={ROUTES.HOME}
-          element={<Landing theme={theme} color={color} openCallbackModal={handleOpenCallbackModal} />}
+          element={
+            <Landing
+              theme={theme}
+              color={color}
+              openCallbackModal={handleOpenCallbackModal}
+            />
+          }
         />
         <Route
           path={ROUTES.SERVICES}
-          element={<ServicesPage theme={theme} color={color} openCallbackModal={handleOpenCallbackModal} />}
+          element={
+            <ServicesPage
+              theme={theme}
+              color={color}
+              openCallbackModal={handleOpenCallbackModal}
+            />
+          }
         />
         <Route
           path={ROUTES.CAREERS}
@@ -223,6 +230,18 @@ const AppContent = () => {
           element={<ShippingAndDeliveryPolicy theme={theme} />}
         />
         <Route
+          path="/terms-and-conditions"
+          element={<TermsAndConditions theme={theme} />}
+        />
+        <Route
+          path="/contact"
+          element={<ContactUs theme={theme} />}
+        />
+        <Route
+          path="/training"
+          element={<CorporateTraining theme={theme} />}
+        />
+        <Route
           path={ROUTES.RESOURCES}
           element={
             <ResourcesPage
@@ -255,14 +274,8 @@ const AppContent = () => {
             />
           }
         />
-        <Route
-          path={ROUTES.RESET_PASSWORD} 
-          element={<ResetPasswordPage />} 
-        />
-         <Route 
-          path="/oauth-callback" 
-          element={<OAuthCallbackPage />} 
-        />
+        <Route path={ROUTES.RESET_PASSWORD} element={<ResetPasswordPage />} />
+        <Route path="/oauth-callback" element={<OAuthCallbackPage />} />
         <Route
           path={ROUTES.PROFILE}
           element={
@@ -307,44 +320,76 @@ const AppContent = () => {
           path={ROUTES.ADMIN}
           element={(() => {
             // Use user object from useAuth() in this render cycle for the check
-            const currentUserFromAuth = user; 
+            const currentUserFromAuth = user;
             const currentAuthLoadingState = authLoading;
             const currentIsAuthenticatedState = isAuthenticated;
 
-            console.log("[App.js Admin Route Guard] Current Path:", location.pathname);
-            console.log("[App.js Admin Route Guard] authLoading:", currentAuthLoadingState);
-            console.log("[App.js Admin Route Guard] isAuthenticated:", currentIsAuthenticatedState);
-            console.log("[App.js Admin Route Guard] user object:", JSON.stringify(currentUserFromAuth));
-            console.log("[App.js Admin Route Guard] user.roles:", currentUserFromAuth?.roles);
+            console.log(
+              "[App.js Admin Route Guard] Current Path:",
+              location.pathname
+            );
+            console.log(
+              "[App.js Admin Route Guard] authLoading:",
+              currentAuthLoadingState
+            );
+            console.log(
+              "[App.js Admin Route Guard] isAuthenticated:",
+              currentIsAuthenticatedState
+            );
+            console.log(
+              "[App.js Admin Route Guard] user object:",
+              JSON.stringify(currentUserFromAuth)
+            );
+            console.log(
+              "[App.js Admin Route Guard] user.roles:",
+              currentUserFromAuth?.roles
+            );
 
-            const userIsAdmin = currentUserFromAuth && 
-                                currentUserFromAuth.roles && 
-                                Array.isArray(currentUserFromAuth.roles) &&
-                                (currentUserFromAuth.roles.includes('admin') || currentUserFromAuth.roles.includes('superadmin'));
-            
-            console.log("[App.js Admin Route Guard] Calculated userIsAdmin:", userIsAdmin);
+            const userIsAdmin =
+              currentUserFromAuth &&
+              currentUserFromAuth.roles &&
+              Array.isArray(currentUserFromAuth.roles) &&
+              (currentUserFromAuth.roles.includes("admin") ||
+                currentUserFromAuth.roles.includes("superadmin"));
+
+            console.log(
+              "[App.js Admin Route Guard] Calculated userIsAdmin:",
+              userIsAdmin
+            );
 
             if (currentAuthLoadingState) {
-              console.log("[App.js Admin Route Guard] Decision: Show loading spinner (authLoading is true)");
+              console.log(
+                "[App.js Admin Route Guard] Decision: Show loading spinner (authLoading is true)"
+              );
               return (
                 <div className="flex items-center justify-center h-screen">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                 </div>
               );
             } else if (currentIsAuthenticatedState && userIsAdmin) {
-              console.log("[App.js Admin Route Guard] Decision: Grant access to AdminLayout");
+              console.log(
+                "[App.js Admin Route Guard] Decision: Grant access to AdminLayout"
+              );
               return (
                 <AdminProvider>
                   <AdminLayout />
                 </AdminProvider>
               );
             } else {
-              console.log("[App.js Admin Route Guard] Decision: Redirect to HOME. isAuthenticated:", currentIsAuthenticatedState, "userIsAdmin:", userIsAdmin);
+              console.log(
+                "[App.js Admin Route Guard] Decision: Redirect to HOME. isAuthenticated:",
+                currentIsAuthenticatedState,
+                "userIsAdmin:",
+                userIsAdmin
+              );
               return (
                 <Navigate
                   to={ROUTES.HOME}
                   replace
-                  state={{ from: location, openLogin: !currentIsAuthenticatedState }}
+                  state={{
+                    from: location,
+                    openLogin: !currentIsAuthenticatedState,
+                  }}
                 />
               );
             }
@@ -467,10 +512,7 @@ const AppContent = () => {
             path={ROUTES.ADMIN_CONTENT_MANAGEMENT.split("/").pop()}
             element={<BannerCarouselPage />}
           />
-          <Route
-            path="connect-access"
-            element={<ConnectAccess />}
-          />
+          <Route path="connect-access" element={<ConnectAccess />} />
           <Route path={ROUTES.NOT_FOUND} element={<AdminNotFound />} />
         </Route>
 
@@ -507,6 +549,7 @@ const AppContent = () => {
         initialSelectedService={initialServiceForModal}
       />
       <WorkBagModal />
+      <CookieConsentModal />
     </div>
   );
 };
