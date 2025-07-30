@@ -128,7 +128,7 @@ Feel free to fork the repo and submit your ideas.
 
 ## 📬 Contact Us
 
-- 📧 Email: madhup73488@gmail.com
+- 📧 Email: codeblazee@gmail.com
 - 🌐 Website: [https://codeblaze.net](https://codeblaze.net) _(Coming Soon)_
 - 💼 LinkedIn: [CodeBlaze](https://www.linkedin.com/company/codeblazee)
 

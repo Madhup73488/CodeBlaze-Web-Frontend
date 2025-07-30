@@ -49,7 +49,7 @@ const ShippingAndDeliveryPolicy = ({ theme = 'light' }) => {
           <br />
           Email: codeblazee@gmail.com
           <br />
-          Phone: +91 7348878479
+          Phone: +91 99453 90672
         </p>
       </div>
     </div>

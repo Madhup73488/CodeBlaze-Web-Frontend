@@ -9,7 +9,12 @@ const ContactUs = () => {
       </p>
       <ul className="list-disc list-inside mb-4">
         <li>Email: support@codeblaze.net</li>
-        <li>Phone: +91 7348878479</li>
+        <li>Phone: +91 99453 90672</li>
+        <li>
+          Address: #129, Syed Aslam Manzil, 1st Main, 3rd Cross, 3rd Block,
+          Bangalore – 560039, District: Bengaluru (Urban), State: Karnataka,
+          India. Mobile: +91 99453 90672 Email: codeblazee@gmail.com
+        </li>
       </ul>
     </div>
   );
