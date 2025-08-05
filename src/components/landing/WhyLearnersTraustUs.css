@@ -1,0 +1,120 @@
+/* WhyLearnersTraustUs Component - Modern Design */
+
+/* Enhanced hover effects for feature cards */
+.feature-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
+}
+
+/* Community visualization animations */
+@keyframes pulse-community {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.community-pulse {
+  animation: pulse-community 3s ease-in-out infinite;
+}
+
+/* Connection line animations */
+@keyframes draw-line {
+  from {
+    stroke-dasharray: 0 100;
+  }
+  to {
+    stroke-dasharray: 100 0;
+  }
+}
+
+.connection-line {
+  stroke-dasharray: 100 0;
+  animation: draw-line 2s ease-in-out infinite alternate;
+}
+
+/* Gradient text effects */
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Trust indicator animations */
+@keyframes badge-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+  }
+}
+
+.trust-badge {
+  animation: badge-glow 3s ease-in-out infinite;
+}
+
+/* Image hover effects */
+.feature-image {
+  transition: transform 0.3s ease;
+  overflow: hidden;
+}
+
+.feature-image:hover img {
+  transform: scale(1.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .feature-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .community-visualization {
+    height: 200px;
+  }
+  
+  .trust-indicators {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+/* Enhanced focus states for accessibility */
+.feature-card:focus-within {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+  .why-learners-trust-section {
+    break-inside: avoid;
+  }
+  
+  .community-visualization {
+    display: none;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .feature-card {
+    background-color: #1f2937;
+    border-color: #374151;
+  }
+  
+  .feature-card:hover {
+    border-color: #60a5fa;
+  }
+}

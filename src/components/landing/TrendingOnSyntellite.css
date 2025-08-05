@@ -1,0 +1,101 @@
+/* TrendingOnSyntellite Component - Modern Design */
+
+/* Enhanced hover effects for course cards */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px);
+  filter: drop-shadow(0 20px 25px rgb(0 0 0 / 0.15));
+}
+
+/* Smooth gradient animations */
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.gradient-animate {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* Enhanced pulse animation for trending indicator */
+@keyframes pulse-trending {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+.pulse-trending {
+  animation: pulse-trending 2s ease-in-out infinite;
+}
+
+/* Smooth slide transitions */
+.slide-container {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced focus states for accessibility */
+.slide-indicator:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.nav-arrow:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar for horizontal scroll areas */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #ef4444, #f97316);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #dc2626, #ea580c);
+}
+
+/* Responsive typography adjustments */
+@media (max-width: 640px) {
+  .trending-title {
+    font-size: 2rem;
+    line-height: 2.5rem;
+  }
+  
+  .trending-subtitle {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .trending-section {
+    break-inside: avoid;
+  }
+  
+  .nav-arrow {
+    display: none;
+  }
+}

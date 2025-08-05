@@ -225,6 +225,30 @@ function Sidebar({
       permission: "content.view", // New permission for content management
     },
     {
+      title: "Updates",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          <path d="M13 8l-3 3 3 3"></path>
+          <path d="M17 8v8"></path>
+        </svg>
+      ),
+      path: "/admin/updates",
+      permission: "updates.view", // Permission to view updates section
+      submenu: [
+        {
+          title: "All Updates",
+          path: "/admin/updates",
+          permission: "updates.view", // Permission to view updates list
+        },
+        {
+          title: "Create Update",
+          path: "/admin/updates/create",
+          permission: "updates.create", // Permission to create updates
+        },
+      ],
+    },
+    {
       title: "Connect Access",
       icon: (
         <svg

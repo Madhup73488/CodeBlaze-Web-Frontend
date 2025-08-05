@@ -1,50 +1,49 @@
-.accredited-by-card {
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  transition: transform 0.2s;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 12rem;
-  height: 8rem;
+/* AccreditedBy Component - Modern Design */
+
+/* Custom animations for enhanced user experience */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.accredited-by-card:hover {
-  transform: scale(1.05);
+/* Smooth scroll behavior for any internal scrolling */
+.accredited-section {
+  scroll-behavior: smooth;
 }
 
-.accredited-by-logo {
-  height: 5rem;
-  width: auto;
-  object-fit: contain;
+/* Enhanced focus states for accessibility */
+.accredited-logo-card:focus-within {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
 }
 
-.accredited-by-logo.large {
-  height: 8rem;
+/* Custom gradient backgrounds for better visual hierarchy */
+.accredited-gradient-bg {
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #eff6ff 100%);
 }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-}
-
-@media (max-width: 767px) {
-  .accredited-by-card {
-    width: 6rem;
-    height: 4.5rem;
-    padding: 0.75rem;
+/* Responsive typography adjustments */
+@media (max-width: 640px) {
+  .accredited-title {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
   }
 
-  .accredited-by-logo {
-    height: 2.5rem;
+  .accredited-description {
+    font-size: 1rem;
+    line-height: 1.5rem;
   }
+}
 
-  .accredited-by-logo.large {
-    height: 3.5rem;
+/* Print styles */
+@media print {
+  .accredited-section {
+    break-inside: avoid;
   }
 }

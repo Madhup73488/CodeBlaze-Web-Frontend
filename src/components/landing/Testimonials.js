@@ -86,6 +86,7 @@ const Testimonials = () => {
 
   return (
     <section
+      id="testimonials"
       className="testimonials-container"
       style={{ backgroundColor: "hsl(var(--website-background))" }}
     >

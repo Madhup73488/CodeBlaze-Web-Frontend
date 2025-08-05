@@ -62,13 +62,19 @@ const LearningGoals = () => {
   }, []);
 
   return (
-    <div className="learning-goals-container">
-      <div className="text-left sm:text-center mb-8">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
-          Learning become <span className="text-red-500">focussed</span>
+    <div className="learning-goals-container bg-gradient-to-br from-white via-purple-50 to-pink-50 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 right-20 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 left-20 w-80 h-80 bg-pink-400/10 rounded-full blur-3xl"></div>
+      </div>
+      
+      <div className="text-left sm:text-center mb-12 relative z-10">
+        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          Learning becomes <span className="text-purple-500">focused</span>
         </h2>
-        <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
-          Codeblaze connect helps you focus on learning
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          Syntellite Labs helps you focus on learning with our innovative approach
         </p>
       </div>
       <div className="container">
