@@ -1,6 +1,5 @@
 .learning-goals-container {
   padding: 4rem 0;
-  background-color: hsl(var(--website-background));
 }
 
 @media (max-width: 639px) {

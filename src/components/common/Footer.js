@@ -1,6 +1,6 @@
 import { Facebook, Twitter, Linkedin, Instagram, Youtube } from "lucide-react";
 import { Link } from "react-router-dom";
-import codeblazeLogo from "../../assets/images/codeblazelogoorange.png";
+import syntelliteLogo from "../../assets/images/Syntellite-labs-logo.png";
 
 export default function Footer() {
   const footerLinks = {
@@ -66,10 +66,7 @@ export default function Footer() {
           <div className="flex flex-col lg:flex-row justify-between items-center">
             <div className="mb-6 lg:mb-0">
               <Link to="/" className="flex items-center">
-                <img src={codeblazeLogo} alt="Codeblaze" className="h-8" />
-                <span className="ml-2 text-2xl font-bold text-primary">
-                  Codeblaze
-                </span>
+                <img src={syntelliteLogo} alt="Syntellite Labs" className="h-8" />
               </Link>
             </div>
 
@@ -79,14 +76,14 @@ export default function Footer() {
               </h3>
               <div className="flex space-x-4">
                 <a
-                  href="https://www.linkedin.com/company/codeblazee/?viewAsMember=true"
+                  href="https://www.linkedin.com/company/syntellite-innovations-private-limited/"
                   target="_blank"
                   className="text-gray-600 hover:text-primary transition-colors"
                 >
                   <Linkedin className="w-5 h-5" />
                 </a>
                 <a
-                  href="https://www.instagram.com/codeblaze.tech/"
+                  href="https://www.instagram.com/syntellite/"
                   target="_blank"
                   className="text-gray-600 hover:text-primary transition-colors"
                 >
@@ -101,7 +98,7 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-4 md:mb-0">
               <p className="text-sm text-gray-600">
-                © 2024 Codeblaze Inc. All rights reserved.
+                © 2024 Syntellite Labs. All rights reserved.
               </p>
             </div>
             <div className="flex items-center space-x-6"></div>

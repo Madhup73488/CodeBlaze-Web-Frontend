@@ -1,53 +1,43 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import Hero from "../components/landing/Hero";
-import TrendingOnCodeblaze from "../components/landing/TrendingOnCodeblaze";
-import AvailableInternships from "../components/landing/AvailableInternships";
-import JobPortalIntro from "../components/landing/JobPortalIntro";
-import WhyChooseCodeblaze from "../components/landing/WhyChooseCodeblaze";
+import WhyChooseSyntellite from "../components/landing/WhyChooseSyntellite";
 import AccreditedBy from "../components/landing/AccreditedBy";
+import WhyLearnersTraustUs from "../components/landing/WhyLearnersTraustUs";
+import SuccessfulLearners from "../components/landing/SuccessfulLearners";
 import LearningGoals from "../components/landing/LearningGoals";
-import Testimonials from "../components/landing/Testimonials";
 import Faq from "../components/landing/Faq";
 
 const Landing = ({ theme, color, openCallbackModal }) => {
   return (
-    <main
-      className="landing-page"
-      style={{
-        backgroundColor: `var(--bg-primary)`,
-        color: `var(--text-primary)`,
-      }}
-    >
+    <main className="landing-page min-h-screen">
       <Helmet>
-        <title>CodeBlaze - Ignite Your Tech Career</title>
+        <title>Syntellite Labs - Engineer Your Future</title>
         <meta
           name="description"
-          content="CodeBlaze offers cutting-edge internship programs, job placement services, and expert-led courses to help you launch your career in tech."
+          content="Syntellite Labs offers cutting-edge research fellowships, career opportunities, and expert-led learning labs to help you engineer your future in technology."
         />
         <meta
           property="og:title"
-          content="CodeBlaze - Ignite Your Tech Career"
+          content="Syntellite Labs - Engineer Your Future"
         />
         <meta
           property="og:description"
-          content="CodeBlaze offers cutting-edge internship programs, job placement services, and expert-led courses to help you launch your career in tech."
+          content="Syntellite Labs offers cutting-edge research fellowships, career opportunities, and expert-led learning labs to help you engineer your future in technology."
         />
         <meta
           property="og:image"
-          content="https://www.codeblaze.net/logo512.png"
+          content="https://www.syntellitelabs.com/logo512.png"
         />
-        <meta property="og:url" content="https://www.codeblaze.net" />
+        <meta property="og:url" content="https://www.syntellitelabs.com" />
         <meta property="og:type" content="website" />
       </Helmet>
       <Hero theme={theme} color={color} openCallbackModal={openCallbackModal} />
       <AccreditedBy />
-      <AvailableInternships />
-      <JobPortalIntro />
-      <TrendingOnCodeblaze />
+      <WhyLearnersTraustUs />
+      <SuccessfulLearners />
       <LearningGoals />
-      <WhyChooseCodeblaze />
-      <Testimonials />
+      <WhyChooseSyntellite />
       <Faq />
     </main>
   );
