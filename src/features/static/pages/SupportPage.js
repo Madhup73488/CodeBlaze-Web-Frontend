@@ -1,102 +1,132 @@
 import React, { useState } from "react";
+import { Helmet } from "react-helmet-async";
+import { motion } from "framer-motion";
+import {
+  Search,
+  Phone,
+  Mail,
+  MessageCircle,
+  Book,
+  Video,
+  Users,
+  HelpCircle,
+  ChevronDown,
+  Clock,
+  CheckCircle,
+  ArrowRight,
+  Headphones,
+  Globe,
+  Shield,
+  Zap
+} from "lucide-react";
 
-function Support({ theme, color }) {
-  const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
+function SupportPage({ theme, color }) {
   const [activeCategory, setActiveCategory] = useState("general");
   const [searchQuery, setSearchQuery] = useState("");
+  const [openFaq, setOpenFaq] = useState(null);
 
   const categories = [
-    { id: "general", name: "General Questions" },
-    { id: "account", name: "Account & Billing" },
-    { id: "technical", name: "Technical Issues" },
-    { id: "integration", name: "Integration Help" },
-    { id: "security", name: "Security & Privacy" },
+    { id: "general", name: "General Questions", icon: HelpCircle },
+    { id: "account", name: "Account & Billing", icon: Users },
+    { id: "technical", name: "Technical Issues", icon: Zap },
+    { id: "courses", name: "Courses & Learning", icon: Book },
+    { id: "security", name: "Security & Privacy", icon: Shield },
   ];
 
   const faqs = {
     general: [
       {
-        question: "What payment methods do you support?",
+        question: "What programs does Syntellite Labs offer?",
         answer:
-          "We support all major credit and debit cards, ACH transfers, wire transfers, and popular digital wallets including Apple Pay, Google Pay, and PayPal. For international transactions, we support over 135 currencies and local payment methods specific to various regions.",
+          "We offer comprehensive training programs in Full-Stack Web Development, Cross-Platform Applications, Data Analysis with AI, and various other cutting-edge technologies. Our programs include internships, job placement assistance, and hands-on project experience.",
       },
       {
-        question: "How do I get started with your payment platform?",
+        question: "How do I get started with Syntellite Labs?",
         answer:
-          "Getting started is simple! Create an account, complete the verification process, and integrate our solution using our API documentation or ready-to-use plugins. Our onboarding specialists will guide you through the entire process to ensure a smooth setup.",
+          "Getting started is simple! Browse our available programs, submit an application through our Apply page, and our admissions team will guide you through the enrollment process. We offer both full-time and part-time options to fit your schedule.",
       },
       {
-        question: "What are your processing fees?",
+        question: "What are the program fees and payment options?",
         answer:
-          "Our processing fees vary depending on your business volume, transaction types, and selected plan. We offer transparent pricing with no hidden fees. Contact our sales team for a customized quote tailored to your specific needs.",
+          "Our program fees vary depending on the course and duration. We offer flexible payment plans, scholarships for eligible students, and various financing options. Contact our admissions team for detailed pricing and available financial assistance.",
+      },
+      {
+        question: "Do you provide job placement assistance?",
+        answer:
+          "Yes! We have a 95% job placement rate and provide comprehensive career support including resume building, interview preparation, portfolio development, and direct connections with our hiring partners in the tech industry.",
       },
     ],
     account: [
       {
-        question: "How do I update my billing information?",
+        question: "How do I access my student dashboard?",
         answer:
-          "You can update your billing information in the Account Settings section of your dashboard. Navigate to 'Billing & Payments' and select 'Update Payment Method' to make changes to your payment details.",
+          "You can access your student dashboard by logging into your account on our website. Your dashboard contains course materials, progress tracking, assignments, and communication tools with instructors and peers.",
       },
       {
-        question: "When do you charge subscription fees?",
+        question: "How do I update my profile information?",
         answer:
-          "Subscription fees are charged on the first day of each billing cycle. The specific date depends on when you initially signed up for our services. You can find your next billing date in your account dashboard under 'Subscription Details'.",
+          "Navigate to your profile settings in the student dashboard. You can update your personal information, contact details, emergency contacts, and preferences. Make sure to save changes after updating.",
       },
       {
-        question: "How do I change my subscription plan?",
+        question: "What if I forget my login credentials?",
         answer:
-          "To change your subscription plan, go to 'Account Settings' → 'Subscription' and select 'Change Plan'. You can upgrade at any time, with the new rate prorated for the remainder of your billing period. Downgrades will take effect at the start of your next billing cycle.",
+          "Use the 'Forgot Password' link on the login page to reset your password. If you've forgotten your username or email, contact our support team with your full name and phone number for assistance.",
       },
     ],
     technical: [
       {
-        question: "My transactions are failing, what should I do?",
+        question: "What technical requirements do I need for online courses?",
         answer:
-          "First, check your API keys and ensure they're correctly implemented. Verify that the customer's payment information is accurate and that you're sending all required fields. For persistent issues, review our error logs in your dashboard and contact our technical support with the transaction ID for further assistance.",
+          "You'll need a computer with reliable internet connection, a modern web browser (Chrome, Firefox, Safari, or Edge), and basic software that we'll help you install. Specific requirements vary by program and will be provided upon enrollment.",
       },
       {
-        question: "How do I implement 3D Secure authentication?",
+        question: "I'm having trouble accessing course materials, what should I do?",
         answer:
-          "Our API automatically handles 3D Secure authentication when required. Simply use our standard payment flow, and our system will dynamically trigger 3D Secure when needed based on the card issuer's requirements and regulations in your customer's region.",
+          "First, try refreshing your browser and clearing cache. Ensure you're using a supported browser and have a stable internet connection. If issues persist, contact our technical support team with details about the specific problem you're experiencing.",
       },
       {
-        question: "Do you provide a sandbox environment for testing?",
+        question: "Do you provide technical support during courses?",
         answer:
-          "Yes, we provide a fully-featured sandbox environment that mimics our production system. This allows you to test integrations, payment flows, and features without processing real transactions. Access your sandbox credentials from the 'Developer' section of your dashboard.",
+          "Yes, we provide comprehensive technical support throughout your learning journey. Our support team is available via chat, email, and phone to help with any technical issues, software installation, or platform-related questions.",
       },
     ],
-    integration: [
+    courses: [
       {
-        question: "Do you offer plugins for common e-commerce platforms?",
+        question: "Can I switch between programs after enrollment?",
         answer:
-          "Yes, we provide official plugins for all major e-commerce platforms including Shopify, WooCommerce, Magento, BigCommerce, and more. These plugins offer seamless integration with minimal development effort required.",
+          "Program changes are possible depending on availability and timing. Contact our academic advisors to discuss your options. Some programs may have prerequisites or require additional preparation time.",
       },
       {
-        question: "How long does integration typically take?",
+        question: "What is the typical class schedule?",
         answer:
-          "Integration time varies depending on the complexity of your requirements. Basic integrations using our plugins can be completed in hours, while custom API integrations typically take 1-2 weeks. Our support team is available to assist throughout the process to ensure efficient implementation.",
+          "We offer flexible scheduling options including full-time intensive programs (Monday-Friday, 9 AM - 5 PM) and part-time evening/weekend classes. Online and hybrid options are also available to accommodate working professionals.",
       },
       {
-        question: "Do you provide sample code for common use cases?",
+        question: "Do you offer certificates upon completion?",
         answer:
-          "Yes, our developer documentation includes extensive code samples in multiple programming languages (JavaScript, Python, PHP, Ruby, Java, and .NET). We also provide complete sample applications demonstrating common payment flows that you can use as a reference.",
+          "Yes, all students receive industry-recognized certificates upon successful completion of their programs. We also provide digital badges and portfolio projects that demonstrate your skills to potential employers.",
+      },
+      {
+        question: "What kind of projects will I work on?",
+        answer:
+          "You'll work on real-world projects that mirror industry challenges. This includes building web applications, mobile apps, data analysis projects, and collaborative team assignments. Many projects are based on actual client requirements.",
       },
     ],
     security: [
       {
-        question: "How do you ensure payment security?",
+        question: "How do you protect my personal information?",
         answer:
-          "We maintain PCI DSS Level 1 compliance (the highest level) and implement multiple layers of security including encryption, tokenization, and fraud prevention systems. All sensitive data is encrypted both in transit and at rest, and we conduct regular security audits and penetration testing.",
+          "We implement industry-standard security measures including data encryption, secure servers, and strict access controls. We comply with privacy regulations and never share your personal information without consent.",
       },
       {
-        question: "What fraud prevention measures do you have?",
+        question: "Is my payment information secure?",
         answer:
-          "Our platform includes advanced fraud detection tools that use machine learning algorithms to analyze transaction patterns and flag suspicious activities. Features include address verification (AVS), CVV verification, device fingerprinting, velocity checks, and customizable risk rules tailored to your business needs.",
+          "Yes, all payment transactions are processed through secure, encrypted channels using industry-standard payment processors. We do not store credit card information on our servers.",
       },
       {
-        question: "How do you handle data protection compliance?",
+        question: "What is your privacy policy?",
         answer:
-          "We are fully compliant with GDPR, CCPA, and other regional data protection regulations. We only collect necessary data, provide transparent data processing policies, and implement appropriate technical and organizational measures to protect personal information.",
+          "Our privacy policy outlines how we collect, use, and protect your information. You can find the complete policy on our website. We are committed to transparency and protecting your privacy rights.",
       },
     ],
   };
@@ -111,679 +141,360 @@ function Support({ theme, color }) {
         )
     : faqs[activeCategory];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+      },
+    },
+  };
+
   return (
-    <div className={`support-container ${theme}`}>
-      <div className="support-header">
-        <h1 className="support-title">
-          Customer <span style={{ color: primaryColor }}>Support</span>
-        </h1>
-        <div
-          className="accent-line"
-          style={{ backgroundColor: primaryColor }}
-        ></div>
-        <p className="support-subtitle">
-          We're here to help you succeed. Find answers to common questions or
-          reach out to our team.
-        </p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <Helmet>
+        <title>Customer Support - Syntellite Labs</title>
+        <meta
+          name="description"
+          content="Get help and support for your learning journey at Syntellite Labs. Find answers to common questions or contact our support team."
+        />
+      </Helmet>
 
-      <section className="search-section">
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="Search for answers..."
-            className="search-input"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <button
-            className="search-button"
-            style={{ backgroundColor: primaryColor }}
+      {/* Hero Section */}
+      <section className="pt-24 pb-16 px-6">
+        <div className="container mx-auto max-w-7xl">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+            className="text-center mb-16"
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-          </button>
-        </div>
-      </section>
+            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 rounded-full mb-6">
+              <Headphones className="w-4 h-4 text-blue-600" />
+              <span className="text-sm font-medium text-blue-700">24/7 Support</span>
+            </motion.div>
 
-      <section className="faq-section">
-        {!searchQuery && (
-          <div className="faq-categories">
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                className={`category-button ${
-                  activeCategory === category.id ? "active" : ""
-                }`}
-                onClick={() => setActiveCategory(category.id)}
-                style={
-                  activeCategory === category.id
-                    ? { borderColor: primaryColor, color: primaryColor }
-                    : {}
-                }
+            <motion.h1 variants={itemVariants} className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+              Customer{" "}
+              <span className="text-blue-500">Support</span>
+            </motion.h1>
+
+            <motion.p variants={itemVariants} className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              We're here to help you succeed in your learning journey. Find answers to common questions 
+              or reach out to our dedicated support team for personalized assistance.
+            </motion.p>
+          </motion.div>
+
+          {/* Quick Stats */}
+          <motion.div
+            variants={containerVariants}
+            className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16"
+          >
+            {[
+              { icon: Clock, label: "Avg Response Time", value: "< 2 hours" },
+              { icon: Users, label: "Support Agents", value: "24/7" },
+              { icon: CheckCircle, label: "Resolution Rate", value: "98%" },
+              { icon: Globe, label: "Languages", value: "5+" }
+            ].map((stat, index) => (
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                className="text-center p-6 bg-white rounded-xl shadow-lg"
               >
-                {category.name}
-              </button>
+                <stat.icon className="w-8 h-8 text-blue-500 mx-auto mb-3" />
+                <div className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
+                <div className="text-sm text-gray-600">{stat.label}</div>
+              </motion.div>
             ))}
-          </div>
-        )}
+          </motion.div>
+        </div>
+      </section>
 
-        <div className="faq-list">
-          {searchQuery && filteredFaqs.length === 0 ? (
-            <div className="no-results">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke={primaryColor}
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="no-results-icon"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-              </svg>
-              <h3>No results found</h3>
-              <p>Try different keywords or browse our categories</p>
-              <button
-                className="clear-search"
-                onClick={() => setSearchQuery("")}
-                style={{ color: primaryColor }}
-              >
-                Clear search
-              </button>
-            </div>
-          ) : (
-            filteredFaqs.map((faq, index) => (
-              <div className="faq-item" key={index}>
-                <details className="faq-details">
-                  <summary className="faq-question">
-                    {faq.question}
-                    <div className="faq-icon">
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                      </svg>
-                    </div>
-                  </summary>
-                  <div className="faq-answer">
-                    <p>{faq.answer}</p>
-                  </div>
-                </details>
-                <div
-                  className="faq-divider"
-                  style={{
-                    backgroundColor: theme === "dark" ? "#2d2d2d" : "#e5e5e5",
-                  }}
-                ></div>
+      {/* Search Section */}
+      <section className="pb-16 px-6">
+        <div className="container mx-auto max-w-4xl">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+          >
+            <motion.h2 variants={itemVariants} className="text-3xl font-bold text-gray-900 text-center mb-8">
+              Search for Answers
+            </motion.h2>
+
+            <motion.div variants={itemVariants} className="relative max-w-2xl mx-auto">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search for answers, topics, or keywords..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                />
               </div>
-            ))
-          )}
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
-      <section className="contact-section">
-        <div className="contact-header">
-          <h2 className="contact-title">
-            Still have <span style={{ color: primaryColor }}>questions?</span>
-          </h2>
-          <p className="contact-subtitle">
-            Our support team is ready to assist you with any inquiries or issues
-            you may have.
-          </p>
-        </div>
+      {/* FAQ Section */}
+      <section className="pb-16 px-6">
+        <div className="container mx-auto max-w-6xl">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+          >
+            <motion.h2 variants={itemVariants} className="text-3xl font-bold text-gray-900 text-center mb-12">
+              Frequently Asked Questions
+            </motion.h2>
 
-        <div className="contact-options">
-          <div className="contact-card">
-            <div
-              className="contact-icon"
-              style={{ backgroundColor: primaryColor }}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-              </svg>
+            {!searchQuery && (
+              <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-4 mb-12">
+                {categories.map((category) => {
+                  const Icon = category.icon;
+                  const isActive = activeCategory === category.id;
+                  
+                  return (
+                    <button
+                      key={category.id}
+                      onClick={() => setActiveCategory(category.id)}
+                      className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
+                        isActive
+                          ? "bg-blue-600 text-white shadow-lg"
+                          : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      {category.name}
+                    </button>
+                  );
+                })}
+              </motion.div>
+            )}
+
+            <div className="max-w-4xl mx-auto">
+              {searchQuery && filteredFaqs.length === 0 ? (
+                <motion.div variants={itemVariants} className="text-center py-16">
+                  <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Search className="w-12 h-12 text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No results found</h3>
+                  <p className="text-gray-600 mb-4">Try different keywords or browse our categories</p>
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    Clear search
+                  </button>
+                </motion.div>
+              ) : (
+                <div className="space-y-4">
+                  {filteredFaqs.map((faq, index) => (
+                    <motion.div
+                      key={index}
+                      variants={itemVariants}
+                      className="bg-white rounded-xl shadow-lg overflow-hidden"
+                    >
+                      <button
+                        onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                        className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                      >
+                        <span className="font-semibold text-gray-900 pr-4">{faq.question}</span>
+                        <ChevronDown 
+                          className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${
+                            openFaq === index ? "rotate-180" : ""
+                          }`} 
+                        />
+                      </button>
+                      {openFaq === index && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="px-6 pb-4"
+                        >
+                          <div className="border-t border-gray-100 pt-4">
+                            <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
+                          </div>
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+              )}
             </div>
-            <h3 className="contact-method">Call Us</h3>
-            <p className="contact-info">1-800-PAY-MENT</p>
-            <p className="contact-details">
-              Available Monday-Friday, 9am-6pm EST
-            </p>
-          </div>
-
-          <div className="contact-card">
-            <div
-              className="contact-icon"
-              style={{ backgroundColor: primaryColor }}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                <polyline points="22,6 12,13 2,6"></polyline>
-              </svg>
-            </div>
-            <h3 className="contact-method">Email Support</h3>
-            <p className="contact-info">support@codeblaze.com</p>
-            <p className="contact-details">
-              We typically respond within 24 hours
-            </p>
-          </div>
-
-          <div className="contact-card">
-            <div
-              className="contact-icon"
-              style={{ backgroundColor: primaryColor }}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-              </svg>
-            </div>
-            <h3 className="contact-method">Live Chat</h3>
-            <p className="contact-info">Chat with our agents</p>
-            <p className="contact-details">
-              Available 24/7 for immediate assistance
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="resources-section">
-        <div className="resources-header">
-          <h2 className="resources-title">
-            Additional <span style={{ color: primaryColor }}>Resources</span>
-          </h2>
-        </div>
-
-        <div className="resources-grid">
-          <a href="/documentation" className="resource-card">
-            <div
-              className="resource-icon"
-              style={{ backgroundColor: primaryColor }}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-              </svg>
-            </div>
-            <h3 className="resource-title">Developer Docs</h3>
-            <p className="resource-description">
-              Comprehensive guides and API reference for developers
-            </p>
-          </a>
-
-          <a href="/tutorials" className="resource-card">
-            <div
-              className="resource-icon"
-              style={{ backgroundColor: primaryColor }}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polygon points="23 7 16 12 23 17 23 7"></polygon>
-                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-              </svg>
-            </div>
-            <h3 className="resource-title">Video Tutorials</h3>
-            <p className="resource-description">
-              Step-by-step video guides for common tasks and integrations
-            </p>
-          </a>
-
-          <a href="/knowledge-base" className="resource-card">
-            <div
-              className="resource-icon"
-              style={{ backgroundColor: primaryColor }}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-              </svg>
-            </div>
-            <h3 className="resource-title">Knowledge Base</h3>
-            <p className="resource-description">
-              In-depth articles and troubleshooting guides for common issues
-            </p>
-          </a>
-
-          <a href="/community" className="resource-card">
-            <div
-              className="resource-icon"
-              style={{ backgroundColor: primaryColor }}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
-            </div>
-            <h3 className="resource-title">Community Forum</h3>
-            <p className="resource-description">
-              Connect with other users and share best practices
-            </p>
-          </a>
+          </motion.div>
         </div>
       </section>
 
-      <style jsx>{`
-        .support-container {
-          padding: 2rem 5%;
-          max-width: 1200px;
-          margin: 0 auto;
-        }
+      {/* Contact Options */}
+      <section className="pb-16 px-6">
+        <div className="container mx-auto max-w-6xl">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+          >
+            <motion.h2 variants={itemVariants} className="text-3xl font-bold text-gray-900 text-center mb-4">
+              Still Need Help?
+            </motion.h2>
+            <motion.p variants={itemVariants} className="text-xl text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+              Our support team is ready to assist you with any questions or issues you may have.
+            </motion.p>
 
-        .support-container.dark {
-          background-color: #0a0a0a;
-          color: #ffffff;
-        }
+            <div className="grid md:grid-cols-3 gap-8">
+              <motion.div variants={itemVariants} className="bg-white rounded-2xl p-8 shadow-xl text-center group hover:shadow-2xl transition-all duration-300">
+                <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <Phone className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Call Us</h3>
+                <p className="text-lg font-semibold text-blue-600 mb-2">+1 (555) 123-4567</p>
+                <p className="text-gray-600 mb-4">Available Monday-Friday, 9am-6pm EST</p>
+                <button className="flex items-center gap-2 mx-auto text-blue-600 hover:text-blue-700 font-medium">
+                  Call Now <ArrowRight className="w-4 h-4" />
+                </button>
+              </motion.div>
 
-        .support-container.light {
-          background-color: #ffffff;
-          color: #0a0a0a;
-        }
+              <motion.div variants={itemVariants} className="bg-white rounded-2xl p-8 shadow-xl text-center group hover:shadow-2xl transition-all duration-300">
+                <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <Mail className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Email Support</h3>
+                <p className="text-lg font-semibold text-green-600 mb-2">support@syntellitelabs.com</p>
+                <p className="text-gray-600 mb-4">We typically respond within 24 hours</p>
+                <button className="flex items-center gap-2 mx-auto text-green-600 hover:text-green-700 font-medium">
+                  Send Email <ArrowRight className="w-4 h-4" />
+                </button>
+              </motion.div>
 
-        .support-header {
-          margin-bottom: 3rem;
-          text-align: center;
-        }
+              <motion.div variants={itemVariants} className="bg-white rounded-2xl p-8 shadow-xl text-center group hover:shadow-2xl transition-all duration-300">
+                <div className="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <MessageCircle className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Live Chat</h3>
+                <p className="text-lg font-semibold text-purple-600 mb-2">Chat with our agents</p>
+                <p className="text-gray-600 mb-4">Available 24/7 for immediate assistance</p>
+                <button className="flex items-center gap-2 mx-auto text-purple-600 hover:text-purple-700 font-medium">
+                  Start Chat <ArrowRight className="w-4 h-4" />
+                </button>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
-        .support-title {
-          font-size: 2.5rem;
-          font-weight: 700;
-          margin-bottom: 0.5rem;
-        }
+      {/* Resources Section */}
+      <section className="pb-16 px-6">
+        <div className="container mx-auto max-w-6xl">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+          >
+            <motion.h2 variants={itemVariants} className="text-3xl font-bold text-gray-900 text-center mb-12">
+              Additional Resources
+            </motion.h2>
 
-        .accent-line {
-          height: 4px;
-          width: 60px;
-          border-radius: 2px;
-          margin: 0 auto 1.5rem;
-        }
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <motion.a
+                variants={itemVariants}
+                href="/courses"
+                className="block p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
+              >
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-500 transition-colors">
+                  <Book className="w-6 h-6 text-blue-600 group-hover:text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Course Catalog</h3>
+                <p className="text-gray-600 text-sm">Browse our comprehensive course offerings</p>
+              </motion.a>
 
-        .support-subtitle {
-          font-size: 1.2rem;
-          max-width: 700px;
-          margin: 0 auto;
-          opacity: 0.9;
-        }
+              <motion.a
+                variants={itemVariants}
+                href="/updates"
+                className="block p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
+              >
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-500 transition-colors">
+                  <Video className="w-6 h-6 text-green-600 group-hover:text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Video Tutorials</h3>
+                <p className="text-gray-600 text-sm">Step-by-step guides and learning resources</p>
+              </motion.a>
 
-        .search-section {
-          margin-bottom: 3rem;
-        }
+              <motion.a
+                variants={itemVariants}
+                href="/resources"
+                className="block p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
+              >
+                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-500 transition-colors">
+                  <HelpCircle className="w-6 h-6 text-purple-600 group-hover:text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Knowledge Base</h3>
+                <p className="text-gray-600 text-sm">In-depth articles and troubleshooting guides</p>
+              </motion.a>
 
-        .search-container {
-          display: flex;
-          max-width: 600px;
-          margin: 0 auto;
-          position: relative;
-        }
+              <motion.a
+                variants={itemVariants}
+                href="/contact"
+                className="block p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
+              >
+                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-500 transition-colors">
+                  <Users className="w-6 h-6 text-orange-600 group-hover:text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Community</h3>
+                <p className="text-gray-600 text-sm">Connect with other learners and instructors</p>
+              </motion.a>
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
-        .search-input {
-          flex-grow: 1;
-          padding: 1rem 1.5rem;
-          border-radius: 30px;
-          border: 2px solid ${theme === "dark" ? "#333" : "#e5e5e5"};
-          background: ${theme === "dark" ? "#111" : "#fff"};
-          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
-          font-size: 1rem;
-          transition: all 0.3s ease;
-        }
-
-        .search-input:focus {
-          outline: none;
-          border-color: ${primaryColor};
-          box-shadow: 0 0 0 3px ${primaryColor}33;
-        }
-
-        .search-button {
-          position: absolute;
-          right: 8px;
-          top: 8px;
-          width: 38px;
-          height: 38px;
-          border-radius: 50%;
-          border: none;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          cursor: pointer;
-          transition: opacity 0.3s ease;
-        }
-
-        .search-button:hover {
-          opacity: 0.9;
-        }
-
-        .search-button svg {
-          width: 20px;
-          height: 20px;
-        }
-
-        .faq-section {
-          margin-bottom: 4rem;
-        }
-
-        .faq-categories {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 1rem;
-          justify-content: center;
-          margin-bottom: 2rem;
-        }
-
-        .category-button {
-          padding: 0.75rem 1.5rem;
-          border-radius: 30px;
-          border: 2px solid ${theme === "dark" ? "#333" : "#e5e5e5"};
-          background: transparent;
-          color: ${theme === "dark" ? "#fff" : "#0a0a0a"};
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-
-        .category-button:hover {
-          border-color: ${primaryColor};
-          color: ${primaryColor};
-        }
-
-        .category-button.active {
-          font-weight: 600;
-        }
-
-        .faq-list {
-          max-width: 800px;
-          margin: 0 auto;
-        }
-
-        .faq-item {
-          margin-bottom: 0.5rem;
-        }
-
-        .faq-details {
-          cursor: pointer;
-          user-select: none;
-        }
-
-        .faq-question {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1.5rem 0;
-          font-size: 1.1rem;
-          font-weight: 600;
-          list-style: none;
-        }
-
-        .faq-question::-webkit-details-marker {
-          display: none;
-        }
-
-        .faq-icon {
-          width: 24px;
-          height: 24px;
-          transition: transform 0.3s ease;
-        }
-
-        details[open] .faq-icon {
-          transform: rotate(180deg);
-        }
-
-        .faq-answer {
-          padding: 0 0 1.5rem;
-          line-height: 1.6;
-          opacity: 0.9;
-        }
-
-        .faq-divider {
-          height: 1px;
-          width: 100%;
-        }
-
-        .no-results {
-          text-align: center;
-          padding: 3rem 0;
-        }
-
-        .no-results-icon {
-          width: 48px;
-          height: 48px;
-          margin-bottom: 1rem;
-        }
-
-        .no-results h3 {
-          font-size: 1.3rem;
-          margin-bottom: 0.5rem;
-        }
-
-        .no-results p {
-          opacity: 0.7;
-          margin-bottom: 1.5rem;
-        }
-
-        .clear-search {
-          background: none;
-          border: none;
-          font-weight: 500;
-          cursor: pointer;
-          text-decoration: underline;
-          padding: 0.5rem 1rem;
-        }
-
-        .contact-section {
-          margin-bottom: 4rem;
-        }
-
-        .contact-header {
-          text-align: center;
-          margin-bottom: 3rem;
-        }
-
-        .contact-title {
-          font-size: 2rem;
-          font-weight: 700;
-          margin-bottom: 1rem;
-        }
-
-        .contact-subtitle {
-          max-width: 700px;
-          margin: 0 auto;
-          opacity: 0.9;
-        }
-
-        .contact-options {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-          gap: 2rem;
-          margin-bottom: 2rem;
-        }
-
-        .contact-card {
-          padding: 2rem;
-          text-align: center;
-          border-radius: 10px;
-          background-color: ${theme === "dark" ? "#111" : "#f8f8f8"};
-          transition: transform 0.3s ease;
-        }
-
-        .contact-card:hover {
-          transform: translateY(-5px);
-        }
-
-        .contact-icon {
-          width: 60px;
-          height: 60px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin: 0 auto 1.5rem;
-        }
-
-        .contact-icon svg {
-          width: 30px;
-          height: 30px;
-          color: white;
-        }
-
-        .contact-method {
-          font-size: 1.3rem;
-          font-weight: 600;
-          margin: 0 0 0.5rem;
-        }
-
-        .contact-info {
-          font-size: 1.1rem;
-          margin: 0 0 0.5rem;
-        }
-
-        .contact-details {
-          margin: 0;
-          opacity: 0.7;
-          font-size: 0.9rem;
-        }
-
-        .resources-section {
-          margin-bottom: 3rem;
-        }
-
-        .resources-header {
-          text-align: center;
-          margin-bottom: 3rem;
-        }
-
-        .resources-title {
-          font-size: 2rem;
-          font-weight: 700;
-          margin-bottom: 0.5rem;
-        }
-
-        .resources-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 2rem;
-        }
-
-        .resource-card {
-          padding: 2rem;
-          border-radius: 10px;
-          background-color: ${theme === "dark" ? "#111" : "#f8f8f8"};
-          text-decoration: none;
-          color: inherit;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-          transition: transform 0.3s ease;
-        }
-
-        .resource-card:hover {
-          transform: translateY(-5px);
-        }
-
-        .resource-icon {
-          width: 60px;
-          height: 60px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 1.5rem;
-        }
-
-        .resource-icon svg {
-          width: 30px;
-          height: 30px;
-          color: white;
-        }
-
-        .resource-title {
-          font-size: 1.3rem;
-          font-weight: 600;
-          margin: 0 0 0.5rem;
-        }
-
-        .resource-description {
-          margin: 0;
-          opacity: 0.9;
-          line-height: 1.5;
-        }
-
-        @media (max-width: 768px) {
-          .faq-categories {
-            flex-direction: column;
-            align-items: stretch;
-          }
-
-          .contact-options,
-          .resources-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
+      {/* CTA Section */}
+      <section className="py-16 px-6 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div className="container mx-auto max-w-4xl text-center">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+          >
+            <motion.h2 variants={itemVariants} className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Ready to Start Learning?
+            </motion.h2>
+            <motion.p variants={itemVariants} className="text-xl text-blue-100 mb-8">
+              Join thousands of students who have transformed their careers with Syntellite Labs.
+            </motion.p>
+            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2">
+                Browse Courses <ArrowRight className="w-5 h-5" />
+              </button>
+              <button className="px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-blue-600 transition-colors">
+                Contact Admissions
+              </button>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
     </div>
   );
 }
 
-export default Support;
+export default SupportPage;

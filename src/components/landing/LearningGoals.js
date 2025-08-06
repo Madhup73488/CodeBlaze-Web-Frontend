@@ -11,26 +11,32 @@ const LearningGoals = () => {
     "Track your progress": {
       description:
         "Monitor your learning journey with our intuitive progress tracking.",
-      image: "https://res.cloudinary.com/duiotumuy/image/upload/v1753720905/ProgressSection_11zon_sio7lr.webp",
-      icon: <BarChart size={isMobile ? 16 : 32} className="text-blue-500" />,
+      image:
+        "https://res.cloudinary.com/duiotumuy/image/upload/v1753720905/ProgressSection_11zon_sio7lr.webp",
+      icon: <BarChart size={isMobile ? 16 : 24} className="text-blue-500" />,
     },
     "Distraction-free learning": {
       description:
         "A full-screen, do-not-disturb mode for a focused learning experience.",
-      video: "https://res.cloudinary.com/duiotumuy/video/upload/v1753720993/FocusedMode_yyfte1.mov",
-      icon: <BookOpen size={isMobile ? 16 : 32} className="text-purple-500" />,
+      video:
+        "https://res.cloudinary.com/duiotumuy/video/upload/v1753720993/FocusedMode_yyfte1.mov",
+      icon: <BookOpen size={isMobile ? 16 : 24} className="text-purple-500" />,
     },
     "Quality content & resources": {
       description:
         "Access high-quality content and curated resources to supplement your learning.",
-      image: "https://res.cloudinary.com/duiotumuy/image/upload/v1753720905/QualityContent_11zon_jdrdxh.webp",
-      icon: <Zap size={isMobile ? 16 : 32} className="text-green-500" />,
+      image:
+        "https://res.cloudinary.com/duiotumuy/image/upload/v1753720905/QualityContent_11zon_jdrdxh.webp",
+      icon: <Zap size={isMobile ? 16 : 24} className="text-green-500" />,
     },
     "Detailed breakdowns": {
       description:
         "Courses, modules, and lessons are broken down for easy understanding.",
-      image: "https://res.cloudinary.com/duiotumuy/image/upload/v1753720906/ContentBreakup_11zon_nfjvjr.webp",
-      icon: <FolderKanban size={isMobile ? 16 : 32} className="text-orange-500" />,
+      image:
+        "https://res.cloudinary.com/duiotumuy/image/upload/v1753720906/ContentBreakup_11zon_nfjvjr.webp",
+      icon: (
+        <FolderKanban size={isMobile ? 16 : 24} className="text-orange-500" />
+      ),
     },
   };
 
@@ -55,29 +61,58 @@ const LearningGoals = () => {
         img.src = data.image;
       }
       if (data.video) {
-        const video = document.createElement('video');
+        const video = document.createElement("video");
         video.src = data.video;
       }
     });
   }, []);
 
   return (
-    <div className="learning-goals-container bg-gradient-to-br from-white via-purple-50 to-pink-50 relative overflow-hidden">
+    <section id="learning-focused" className="learning-goals-container bg-gradient-to-br from-blue-50 via-white to-purple-50 relative py-16 sm:py-24">
       {/* Background Elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 right-20 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-20 w-80 h-80 bg-pink-400/10 rounded-full blur-3xl"></div>
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 right-20 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 left-20 w-80 h-80 bg-purple-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-yellow-300/5 rounded-full blur-2xl"></div>
       </div>
-      
-      <div className="text-left sm:text-center mb-12 relative z-10">
-        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-          Learning becomes <span className="text-purple-500">focused</span>
-        </h2>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-          Syntellite Labs helps you focus on learning with our innovative approach
-        </p>
-      </div>
-      <div className="container">
+
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="text-center mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-100 rounded-full mb-4"
+          >
+            <Zap className="w-4 h-4 text-blue-600" />
+            <span className="text-sm font-medium text-blue-700">
+              Enhanced Learning Experience
+            </span>
+          </motion.div>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4"
+          >
+            Learning becomes <span className="text-blue-500">focused</span>
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed"
+          >
+            Syntellite Labs helps you focus on learning with our innovative
+            approach and cutting-edge tools
+          </motion.p>
+        </div>
+
         <div className="learning-goals-content">
           {isMobile && (
             <div className="learning-goals-panels">
@@ -152,7 +187,7 @@ const LearningGoals = () => {
           )}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Search, Star, Sparkles } from "lucide-react";
 import "./Hero.css";
-import HeroGirlImage from "../../assets/images/Hero-girl-landing.png";
+import HeroPersonImage from "../../assets/images/Hero-person-image.png";
 import HeroBackgroundGradient from "../../assets/images/hero-background-gradient.png";
 
 const Hero = ({ theme, color, openCallbackModal }) => {
@@ -41,22 +41,21 @@ const Hero = ({ theme, color, openCallbackModal }) => {
   };
 
   return (
-    <div 
-      className="relative h-screen overflow-hidden"
+    <div
+      className="relative min-h-screen overflow-hidden"
       style={{
         backgroundImage: `url(${HeroBackgroundGradient})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
       {/* Black Opacity Overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-10 z-0"></div>
-      
       {/* Decorative Elements */}
       <div className="absolute inset-0">
-        {/* Geometric shapes */}
-        <div className="absolute top-20 left-20 w-32 h-32 opacity-20">
+        {/* Sun-like icon with increased opacity */}
+        <div className="hidden md:block absolute top-20 left-20 w-32 h-32 opacity-40">
           <svg viewBox="0 0 100 100" className="w-full h-full text-yellow-300">
             <circle cx="50" cy="50" r="3" fill="currentColor">
               <animate
@@ -75,42 +74,97 @@ const Hero = ({ theme, color, openCallbackModal }) => {
                 y2={50 + 25 * Math.sin((i * 30 * Math.PI) / 180)}
                 stroke="currentColor"
                 strokeWidth="1"
-                opacity="0.6"
+                opacity="0.8"
               />
             ))}
           </svg>
         </div>
-
-        <div className="absolute top-32 right-32 w-16 h-16 bg-yellow-400 rounded-lg opacity-30 rotate-45"></div>
-        <div className="absolute bottom-40 left-40 w-12 h-12 bg-yellow-300 rounded-full opacity-40"></div>
       </div>
 
-      <div className="relative z-10 h-full">
-        <div className="container mx-auto px-6 pt-6 h-full">
-          <main className="relative pt-8 h-full">
-            <div className="flex flex-col items-center justify-between text-center h-full">
-              {/* Top Content: Badge, Heading, Description, Search */}
-              <div className="w-full max-w-4xl relative">
-                {/* Decorative SVG Swoosh */}
-                <svg
-                  className="absolute -top-12 -left-12 w-28 h-28 stroke-white/50 z-0"
-                  viewBox="0 0 100 100"
-                  fill="none"
-                >
-                  <path
-                    d="M10 50 C 20 20, 40 10, 60 20 S 80 50, 90 80"
-                    strokeWidth="2"
-                  />
-                  <path
-                    d="M15 60 C 25 30, 45 20, 65 30 S 85 60, 95 90"
-                    strokeWidth="1"
-                    strokeDasharray="4 4"
-                  />
-                </svg>
-
+      <div className="relative z-10 min-h-screen">
+        <div className="md:container md:mx-auto md:px-4 md:sm:px-6 pt-6 min-h-screen">
+          <main className="relative md:pt-8 min-h-screen">
+            {/* Mobile Layout */}
+            <div className="md:hidden flex flex-col h-screen">
+              {/* Top Content */}
+              <div className="flex-shrink-0 w-full pt-4">
                 {/* Badge */}
                 <motion.div
                   variants={textVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="mb-4 text-center"
+                >
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full border border-gray-200 text-sm">
+                    <Sparkles className="w-4 h-4 text-blue-600" />
+                    <span className="text-gray-800 font-medium">
+                      Learn From the Top Experts
+                    </span>
+                  </div>
+                </motion.div>
+
+                {/* Main Heading */}
+                <motion.div
+                  variants={textVariants}
+                  className="mb-4 text-center"
+                >
+                  <h1 className="text-2xl xs:text-3xl sm:text-4xl font-bold text-white leading-tight mb-3">
+                    Learn Anywhere, Anytime
+                    <br />
+                    <span className="text-yellow-300">Empower Your Future</span>
+                  </h1>
+                  <p className="text-sm xs:text-base text-blue-100 max-w-xs xs:max-w-sm mx-auto leading-relaxed">
+                    Join thousands of learners gaining new skills, advancing
+                    careers and shaping a better tomorrow—one lesson at a time.
+                  </p>
+                </motion.div>
+
+                {/* Search Bar - Mobile Only */}
+                <motion.div
+                  variants={textVariants}
+                  className="mb-4 w-full max-w-xs xs:max-w-sm mx-auto"
+                >
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search your Course..."
+                      className="w-full pl-10 pr-4 py-2.5 xs:py-3 bg-white/90 backdrop-blur-sm rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-gray-800 placeholder-gray-500 text-sm"
+                    />
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Main person image - Mobile - Larger with slight bottom crop */}
+              <motion.div
+                variants={textVariants}
+                className="relative z-10 flex-1 flex items-end justify-center w-full overflow-hidden"
+              >
+                <div className="relative w-full h-full flex items-end justify-center">
+                  <img
+                    src={HeroPersonImage}
+                    alt="Hero person"
+                    className="w-auto object-cover object-center max-w-full"
+                    loading="lazy"
+                    style={{
+                      height: "100%", // Use full container height
+                      objectPosition: "center bottom", // Position to show full person, crop from bottom
+                      borderRadius: "12px 12px 0 0",
+                    }}
+                  />
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Desktop Layout */}
+            <div className="hidden md:flex flex-col items-center text-center h-screen">
+              {/* Top Content: Badge, Heading, Description */}
+              <div className="w-full max-w-4xl relative pt-8">
+                {/* Badge */}
+                <motion.div
+                  variants={textVariants}
+                  initial="hidden"
+                  animate="visible"
                   className="mb-6 relative z-10"
                 >
                   <div className="inline-flex items-center gap-2 px-4 py-1 bg-white backdrop-blur-sm rounded-full border border-gray-200 text-sm">
@@ -152,14 +206,17 @@ const Hero = ({ theme, color, openCallbackModal }) => {
                     className="relative z-10 w-96 h-[450px] md:w-[450px] md:h-[500px] lg:w-[500px] lg:h-[550px] xl:w-[550px] xl:h-[600px]"
                   >
                     <img
-                      src={HeroGirlImage}
-                      alt="Hero girl landing"
-                      className="w-full h-full object-cover object-center relative z-10 rounded-lg"
+                      src={HeroPersonImage}
+                      alt="Hero person"
+                      className="w-full h-full object-cover relative z-10 rounded-lg"
                       loading="lazy"
+                      style={{
+                        objectPosition: "center top", // Position to show full person including head
+                      }}
                     />
                   </motion.div>
 
-                  {/* Rating Card */}
+                  {/* Rating Card - Desktop Only */}
                   <motion.div
                     variants={cardVariants}
                     initial="hidden"
@@ -187,7 +244,7 @@ const Hero = ({ theme, color, openCallbackModal }) => {
                     </p>
                   </motion.div>
 
-                  {/* Learners Card */}
+                  {/* Learners Card - Desktop Only */}
                   <motion.div
                     variants={cardVariants}
                     initial="hidden"
@@ -219,11 +276,11 @@ const Hero = ({ theme, color, openCallbackModal }) => {
                     </p>
                   </motion.div>
 
-                  {/* Decorative Sparkles */}
-                  <div className="absolute top-1/4 -right-32 sm:-right-48 lg:-right-64 text-2xl sm:text-3xl lg:text-4xl text-yellow-300 animate-pulse">
+                  {/* Decorative Sparkles - Desktop Only */}
+                  <div className="absolute top-1/4 -right-32 sm:-right-48 lg:-right-64 text-4xl sm:text-5xl lg:text-6xl text-yellow-300 animate-pulse">
                     &#10022;
                   </div>
-                  <div className="absolute bottom-1/4 -left-32 sm:-left-48 lg:-left-64 text-xl sm:text-2xl lg:text-3xl text-yellow-300 animate-pulse">
+                  <div className="absolute bottom-1/4 -left-32 sm:-left-48 lg:-left-64 text-3xl sm:text-4xl lg:text-5xl text-yellow-300 animate-pulse">
                     &#10022;
                   </div>
                 </div>
