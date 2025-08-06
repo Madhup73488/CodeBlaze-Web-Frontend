@@ -1,14 +1,10 @@
 // AuthContent.js
 import React from "react";
-import AuthTabs from "./AuthTabs";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import OtpForm from "./OtpForm";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import ResetPasswordForm from "./ResetPasswordForm";
-// import SocialLogin from "./SocialLogin"; // Removed unused import
-// import ErrorMessage from "./ErrorMessage"; // Removed unused import
-// import Loader from "./Loader"; // Removed unused import
 
 function AuthContent({
   authFlowState,
@@ -45,8 +41,18 @@ function AuthContent({
   setShowPassword,
   showConfirmPassword,
   setShowConfirmPassword,
-  theme, // Added theme prop
+  theme,
 }) {
+  const handleRegisterClick = () => {
+    setActiveTab("register");
+    setError(null);
+  };
+
+  const handleBackToLoginFromRegister = () => {
+    setActiveTab("login");
+    setError(null);
+  };
+
   const renderContent = () => {
     if (loading) {
       return <div>Loading...</div>;
@@ -65,7 +71,7 @@ function AuthContent({
           primaryColor={primaryColor}
           error={error}
           isButtonLoading={isButtonLoading}
-          theme={theme} // Pass theme
+          theme={theme}
         />
       );
     }
@@ -80,7 +86,7 @@ function AuthContent({
           primaryColor={primaryColor}
           error={error}
           isButtonLoading={isButtonLoading}
-          theme={theme} // Pass theme
+          theme={theme}
         />
       );
     }
@@ -122,55 +128,49 @@ function AuthContent({
           setShowPassword={setShowPassword}
           showConfirmPassword={showConfirmPassword}
           setShowConfirmPassword={setShowConfirmPassword}
-          theme={theme} // Pass theme
+          theme={theme}
         />
       );
     }
 
-    return (
-      <>
-        {authFlowState === "initial" && (
-          <AuthTabs
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            primaryColor={primaryColor}
-            setError={setError}
-          />
-        )}
+    if (activeTab === "register") {
+      return (
+        <RegisterForm
+          registerForm={registerForm}
+          handleRegisterChange={handleRegisterChange}
+          handleRequestOTP={handleRequestOTP}
+          primaryColor={primaryColor}
+          error={error}
+          loading={loading}
+          isButtonLoading={isButtonLoading}
+          showPassword={showPassword}
+          setShowPassword={setShowPassword}
+          showConfirmPassword={showConfirmPassword}
+          setShowConfirmPassword={setShowConfirmPassword}
+          theme={theme}
+          onBackToLogin={handleBackToLoginFromRegister}
+        />
+      );
+    }
 
-        {activeTab === "login" ? (
-          <LoginForm
-            loginForm={loginForm}
-            handleLoginChange={handleLoginChange}
-            handleLoginSubmit={handleLoginSubmit}
-            handleForgotPasswordClick={handleForgotPasswordClick}
-            primaryColor={primaryColor}
-            error={error}
-            isAdmin={isAdmin}
-            toggleAdminMode={toggleAdminMode}
-            loading={loading}
-            isButtonLoading={isButtonLoading}
-            showPassword={showPassword}
-            setShowPassword={setShowPassword}
-            theme={theme} // Pass theme
-          />
-        ) : (
-          <RegisterForm
-            registerForm={registerForm}
-            handleRegisterChange={handleRegisterChange}
-            handleRequestOTP={handleRequestOTP}
-            primaryColor={primaryColor}
-            error={error}
-            loading={loading}
-            isButtonLoading={isButtonLoading}
-            showPassword={showPassword}
-            setShowPassword={setShowPassword}
-            showConfirmPassword={showConfirmPassword}
-            setShowConfirmPassword={setShowConfirmPassword}
-            theme={theme} // Pass theme
-          />
-        )}
-      </>
+    // Default to login form
+    return (
+      <LoginForm
+        loginForm={loginForm}
+        handleLoginChange={handleLoginChange}
+        handleLoginSubmit={handleLoginSubmit}
+        handleForgotPasswordClick={handleForgotPasswordClick}
+        primaryColor={primaryColor}
+        error={error}
+        isAdmin={isAdmin}
+        toggleAdminMode={toggleAdminMode}
+        loading={loading}
+        isButtonLoading={isButtonLoading}
+        showPassword={showPassword}
+        setShowPassword={setShowPassword}
+        theme={theme}
+        onRegisterClick={handleRegisterClick}
+      />
     );
   };
 

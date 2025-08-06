@@ -17,13 +17,14 @@ function RegisterForm({
   setShowPassword,
   showConfirmPassword,
   setShowConfirmPassword,
+  onBackToLogin,
 }) {
   return (
     <>
       <div className="auth-welcome">
         <h2 className="auth-title">Create Account</h2>
         <p className="auth-subtitle">
-          Join CodeBlaze and start your learning journey
+          Join Syntellite Labs and start your research journey
         </p>
       </div>
 
@@ -139,6 +140,17 @@ function RegisterForm({
       </form>
 
       <SocialLogin />
+
+      <div className="auth-switch">
+        <span>Already have an account? </span>
+        <button
+          className="switch-button"
+          onClick={onBackToLogin}
+          style={{ color: primaryColor }}
+        >
+          Login
+        </button>
+      </div>
     </>
   );
 }

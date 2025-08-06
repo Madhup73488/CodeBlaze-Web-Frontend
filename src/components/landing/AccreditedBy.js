@@ -55,7 +55,7 @@ export default function AccreditedBy() {
   };
 
   return (
-    <section className="py-16 sm:py-24 bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 relative overflow-hidden">
+    <section id="accredited-by" className="py-16 sm:py-24 bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-20 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl"></div>

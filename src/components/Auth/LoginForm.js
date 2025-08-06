@@ -18,6 +18,7 @@ function LoginForm({
   isButtonLoading,
   showPassword,
   setShowPassword,
+  onRegisterClick,
 }) {
   return (
     <>
@@ -35,7 +36,7 @@ function LoginForm({
         <p className="auth-subtitle">
           {isAdmin
             ? "Login to access admin controls"
-            : "Log in to access your learning journey"}
+            : "Log in to access your research and innovation journey"}
         </p>
       </div>
 
@@ -52,7 +53,9 @@ function LoginForm({
               id="email"
               name="email"
               className="form-input"
-              placeholder={isAdmin ? "admin@codeblaze.com" : "your@email.com"}
+              placeholder={
+                isAdmin ? "admin@syntellitelabs.com" : "your@email.com"
+              }
               value={loginForm.email}
               onChange={handleLoginChange}
               required
@@ -118,15 +121,18 @@ function LoginForm({
 
       {!isAdmin && <SocialLogin />}
 
-      <div className="admin-switch">
-        <button
-          className="admin-toggle switch-button"
-          onClick={toggleAdminMode}
-          style={{ color: primaryColor }}
-        >
-          {isAdmin ? "Switch to User Login" : "Admin Login"}
-        </button>
-      </div>
+      {!isAdmin && (
+        <div className="auth-switch">
+          <span>Don't have an account? </span>
+          <button
+            className="switch-button"
+            onClick={onRegisterClick}
+            style={{ color: primaryColor }}
+          >
+            Register Now
+          </button>
+        </div>
+      )}
     </>
   );
 }

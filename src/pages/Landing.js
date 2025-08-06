@@ -34,10 +34,10 @@ const Landing = ({ theme, color, openCallbackModal }) => {
       </Helmet>
       <Hero theme={theme} color={color} openCallbackModal={openCallbackModal} />
       <AccreditedBy />
+      <WhyChooseSyntellite />
+      <LearningGoals />
       <WhyLearnersTraustUs />
       <SuccessfulLearners />
-      <LearningGoals />
-      <WhyChooseSyntellite />
       <Faq />
     </main>
   );

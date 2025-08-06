@@ -33,7 +33,7 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
   const [otpInputs, setOtpInputs] = useState(["", "", "", "", "", ""]);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
-  const primaryColor = color === "purple" ? "#a855f7" : "#f97316";
+  const primaryColor = color === "purple" ? "#a855f7" : "#3b82f6";
 
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
   const [registerForm, setRegisterForm] = useState({
@@ -269,7 +269,10 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
       // If the modal is closing (isOpen is false):
       // Reset authFlowState if it's 'otp_sent' or 'forgot_password_requested' (interrupted flows).
       // Do not reset 'reset_password_form' here, as AuthContext manages its lifecycle based on the URL.
-      if (authFlowState === "otp_sent" || authFlowState === "forgot_password_requested") {
+      if (
+        authFlowState === "otp_sent" ||
+        authFlowState === "forgot_password_requested"
+      ) {
         setAuthFlowState("initial");
       }
     } else {
@@ -307,8 +310,7 @@ function AuthModal({ isOpen, onClose, theme, color, onLoginSuccess }) {
       <div
         className={`auth-modal ${isMobileView ? "mobile-modal" : ""}`}
         style={{
-          backgroundColor:
-            theme === "dark" ? "#111827" : "#ffffff",
+          backgroundColor: theme === "dark" ? "#111827" : "#ffffff",
         }}
       >
         <button className="close-button" onClick={onClose}>
